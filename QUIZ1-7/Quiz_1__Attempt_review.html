@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz 1 — Security Principles · PKPL</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script>tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{display:['Syne','sans-serif'],mono:['Space Mono','monospace']}}}}</script>
+<style>
+*{box-sizing:border-box}
+body{background:#070d1a;color:#e2e8f0;font-family:'Syne',sans-serif}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#070d1a}::-webkit-scrollbar-thumb{background:#1e293b;border-radius:3px}
+.grad{background:linear-gradient(135deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.glow-c{box-shadow:0 0 24px rgba(6,182,212,0.12)}
+.card{background:#0f1829;border:1px solid #1e293b;border-radius:12px;padding:20px;margin-bottom:12px;transition:border-color .2s}
+.card:hover{border-color:#334155}
+.opt-correct{background:rgba(16,185,129,.13)!important;border-color:#10b981!important}
+.opt-wrong{background:rgba(239,68,68,.1)!important;border-color:#ef4444!important}
+.callout{border-left:3px solid;padding:12px 16px;border-radius:0 8px 8px 0;margin:10px 0}
+.cl-c{border-color:#06b6d4;background:rgba(6,182,212,.07)}
+.cl-w{border-color:#f59e0b;background:rgba(245,158,11,.07)}
+.cl-g{border-color:#10b981;background:rgba(16,185,129,.07)}
+.cl-r{border-color:#ef4444;background:rgba(239,68,68,.07)}
+.tag{display:inline-block;padding:2px 9px;border-radius:999px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700}
+.sticky-top{position:sticky;top:0;z-index:50;background:rgba(7,13,26,.92);backdrop-filter:blur(14px);border-bottom:1px solid #1e293b}
+.popt{display:block;width:100%;text-align:left;padding:11px 14px;border-radius:8px;border:1px solid #1e293b;background:#141f33;margin-bottom:7px;cursor:pointer;transition:all .18s;font-family:'Syne',sans-serif;font-size:14px;color:#e2e8f0}
+.popt:hover:not(:disabled){border-color:#06b6d4;background:rgba(6,182,212,.07)}
+.popt.pc{background:rgba(16,185,129,.14);border-color:#10b981;color:#10b981}
+.popt.pw{background:rgba(239,68,68,.1);border-color:#ef4444;color:#ef4444}
+.popt.rc{background:rgba(16,185,129,.07);border-color:#10b981}
+pre code{font-family:'Space Mono',monospace;font-size:12.5px;line-height:1.7}
+.kw{color:#06b6d4}.str{color:#10b981}.cmt{color:#475569;font-style:italic}.fn{color:#f59e0b}.num{color:#a78bfa}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fi{animation:fi .3s ease forwards}
+.sbar{height:5px;border-radius:3px;background:#1e293b;overflow:hidden}
+.sfill{height:100%;border-radius:3px;background:linear-gradient(90deg,#06b6d4,#8b5cf6);transition:width .5s}
+.missed-badge{display:inline-block;padding:1px 8px;border-radius:4px;font-size:10px;font-family:'Space Mono',monospace;background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3)}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div style="background:radial-gradient(ellipse at 20% 0%,rgba(6,182,212,.09) 0%,transparent 55%),radial-gradient(ellipse at 85% 80%,rgba(139,92,246,.08) 0%,transparent 55%),#070d1a">
+  <div class="max-w-5xl mx-auto px-4 pt-14 pb-10">
+    <div class="flex flex-wrap gap-2 mb-4">
+      <span class="tag" style="background:rgba(6,182,212,.12);color:#06b6d4;border:1px solid rgba(6,182,212,.2)">PKPL · Genap 2025/2026</span>
+      <span class="tag" style="background:rgba(139,92,246,.12);color:#a78bfa;border:1px solid rgba(139,92,246,.2)">Topic 1</span>
+      <span class="tag" style="background:rgba(16,185,129,.12);color:#10b981;border:1px solid rgba(16,185,129,.2)">19/20 · 95%</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-bold mb-3 font-display leading-tight"><span class="grad">Quiz 1</span><br>Security Principles</h1>
+    <p class="text-slate-400 text-lg max-w-xl mb-6">CIA Triad, prinsip-prinsip keamanan Saltzer & Schroeder, threat modeling, dan Secure SDLC.</p>
+    <div class="flex flex-wrap gap-3">
+      <button onclick="go('soal')" class="px-5 py-2.5 rounded-lg font-semibold text-sm" style="background:#06b6d4;color:#070d1a">Lihat Semua Soal →</button>
+      <button onclick="go('practice')" class="px-5 py-2.5 rounded-lg font-semibold text-sm border" style="border-color:#06b6d4;color:#06b6d4">Mulai Latihan</button>
+      <button onclick="go('konsep')" class="px-5 py-2.5 rounded-lg font-semibold text-sm border border-slate-700 text-slate-400">Pelajari Konsep</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="sticky-top">
+  <div class="max-w-5xl mx-auto px-4 py-2.5 flex gap-2 overflow-x-auto">
+    <button onclick="go('soal')" class="px-4 py-1.5 rounded-lg text-sm font-semibold border border-slate-700 text-slate-400 hover:border-cyan-500 hover:text-cyan-400 transition-all whitespace-nowrap">📄 Semua Soal</button>
+    <button onclick="go('konsep')" class="px-4 py-1.5 rounded-lg text-sm font-semibold border border-slate-700 text-slate-400 hover:border-cyan-500 hover:text-cyan-400 transition-all whitespace-nowrap">🧠 Konsep</button>
+    <button onclick="go('visualisasi')" class="px-4 py-1.5 rounded-lg text-sm font-semibold border border-slate-700 text-slate-400 hover:border-cyan-500 hover:text-cyan-400 transition-all whitespace-nowrap">🔍 Visualisasi</button>
+    <button onclick="go('practice')" class="px-4 py-1.5 rounded-lg text-sm font-semibold border border-slate-700 text-slate-400 hover:border-cyan-500 hover:text-cyan-400 transition-all whitespace-nowrap">⚡ Latihan</button>
+    <button onclick="go('ref')" class="px-4 py-1.5 rounded-lg text-sm font-semibold border border-slate-700 text-slate-400 hover:border-cyan-500 hover:text-cyan-400 transition-all whitespace-nowrap">📚 Referensi</button>
+  </div>
+</div>
+
+<div class="max-w-5xl mx-auto px-4 py-8">
+
+<!-- ═══ SOAL ═══ -->
+<section id="soal" class="mb-14">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm" style="background:#06b6d4;color:#070d1a">📄</div>
+    <h2 class="text-2xl font-bold font-display">Semua Soal + Jawaban</h2>
+  </div>
+  <p class="text-slate-400 text-sm mb-5">Jawaban benar = latar <span style="color:#10b981">hijau</span>. <span class="missed-badge">❌ Salah di kuis</span> = soal yang dijawab salah.</p>
+  <div id="q-container"></div>
+</section>
+
+<!-- ═══ KONSEP ═══ -->
+<section id="konsep" class="mb-14">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm" style="background:#8b5cf6;color:#fff">🧠</div>
+    <h2 class="text-2xl font-bold font-display">Conceptual Deep Dive</h2>
+  </div>
+
+  <!-- CIA + Extended -->
+  <div class="card mb-5">
+    <h3 class="font-bold text-lg mb-1 font-display" style="color:#06b6d4">Extended Security Goals</h3>
+    <p class="text-slate-400 text-sm mb-4">Di luar CIA Triad, ada security goals tambahan yang sering diuji.</p>
+    <div class="grid md:grid-cols-2 gap-3 mb-4" id="goals-grid"></div>
+    <div class="callout cl-w">
+      <div class="text-xs font-bold mb-1" style="color:#f59e0b">COMMON PITFALL</div>
+      <p class="text-sm text-slate-400"><strong style="color:#e2e8f0">Audit trail</strong> sering dikira berkaitan dengan Integrity. Padahal audit trail mencatat SIAPA melakukan APA dan KAPAN — ini adalah <strong style="color:#06b6d4">Accountability</strong>. Integrity = data tidak berubah tanpa izin.</p>
+    </div>
+  </div>
+
+  <!-- Saltzer Schroeder -->
+  <div class="card mb-5">
+    <h3 class="font-bold text-lg mb-1 font-display" style="color:#a78bfa">Prinsip Keamanan Saltzer & Schroeder (8 Prinsip)</h3>
+    <p class="text-slate-400 text-sm mb-4">Prinsip-prinsip klasik yang diajukan 1975, masih relevan sampai sekarang. <strong>Semua keluar di kuis!</strong></p>
+    <div class="space-y-2" id="principles-grid"></div>
+    <div class="callout cl-w mt-4">
+      <div class="text-xs font-bold mb-1" style="color:#f59e0b">COMMON PITFALL</div>
+      <p class="text-sm text-slate-400"><strong style="color:#ef4444">Mengurangi endpoint API publik</strong> bukan "meningkatkan availability" — tujuannya adalah <strong style="color:#06b6d4">mengurangi exposure</strong> (attack surface). Semakin sedikit endpoint terbuka, semakin kecil permukaan serangan.</p>
+    </div>
+  </div>
+
+  <!-- Threat Concepts -->
+  <div class="card mb-5">
+    <h3 class="font-bold text-lg mb-1 font-display" style="color:#10b981">Konsep Ancaman: Threat, Vulnerability, Risk, Exposure, Loss</h3>
+    <div class="grid md:grid-cols-2 gap-3 mb-4" id="threat-concepts"></div>
+    <div class="callout cl-c">
+      <div class="text-xs font-bold mb-1" style="color:#06b6d4">KEY TERM</div>
+      <p class="text-sm text-slate-400"><strong style="color:#e2e8f0">Threat Agent</strong> = entitas yang MEMILIKI kemampuan DAN NIAT untuk mengeksploitasi kerentanan. Berbeda dari threat (ancaman abstrak) dan vulnerability (kelemahan sistem).</p>
+    </div>
+  </div>
+
+  <!-- Ransomware -->
+  <div class="card">
+    <h3 class="font-bold text-lg mb-1 font-display" style="color:#ef4444">Ransomware vs CIA Triad</h3>
+    <p class="text-slate-400 text-sm mb-3">Ransomware mengenkripsi file → menyerang <strong style="color:#f59e0b">Availability</strong> (file tidak bisa diakses) dan <strong style="color:#f59e0b">Integrity</strong> (file dimodifikasi tanpa izin). BUKAN hanya Confidentiality.</p>
+    <div class="grid md:grid-cols-3 gap-3">
+      <div class="p-3 rounded-lg" style="background:rgba(6,182,212,.07);border:1px solid rgba(6,182,212,.2)">
+        <div class="font-bold text-sm mb-1" style="color:#06b6d4">Confidentiality</div>
+        <p class="text-xs text-slate-400">Data bocor ke pihak tidak berwenang. Ransomware biasanya TIDAK membocorkan (kecuali double extortion).</p>
+      </div>
+      <div class="p-3 rounded-lg" style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2)">
+        <div class="font-bold text-sm mb-1" style="color:#f59e0b">Integrity ✓</div>
+        <p class="text-xs text-slate-400">File dienkripsi = diubah tanpa izin. Melanggar Integrity.</p>
+      </div>
+      <div class="p-3 rounded-lg" style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2)">
+        <div class="font-bold text-sm mb-1" style="color:#ef4444">Availability ✓</div>
+        <p class="text-xs text-slate-400">File tidak bisa dibuka tanpa kunci. Melanggar Availability.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ VISUALISASI ═══ -->
+<section id="visualisasi" class="mb-14">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm" style="background:#f59e0b;color:#070d1a">🔍</div>
+    <h2 class="text-2xl font-bold font-display">Algorithm & Logic Visualization</h2>
+  </div>
+
+  <!-- Fail-safe defaults -->
+  <div class="card mb-5">
+    <h3 class="font-bold text-lg mb-2 font-display" style="color:#06b6d4">Fail-Safe Defaults — Logika Keamanan</h3>
+    <pre class="rounded-lg p-4 overflow-x-auto text-sm mb-3" style="background:#070d1a;border:1px solid #1e293b"><code><span class="cmt">// ❌ MELANGGAR Fail-Safe Defaults</span>
+<span class="kw">function</span> <span class="fn">checkAccess</span>(user) {
+  <span class="kw">try</span> {
+    <span class="kw">if</span> (authService.<span class="fn">verify</span>(user)) {
+      <span class="kw">return</span> <span class="str">"GRANTED"</span>;
+    }
+  } <span class="kw">catch</span> (err) {
+    <span class="cmt">// Sistem crash → akses diberikan penuh! 🚨</span>
+    <span class="kw">return</span> <span class="str">"GRANTED"</span>;
+  }
+}
+
+<span class="cmt">// ✅ MENGIKUTI Fail-Safe Defaults</span>
+<span class="kw">function</span> <span class="fn">checkAccess</span>(user) {
+  <span class="kw">try</span> {
+    <span class="kw">if</span> (authService.<span class="fn">verify</span>(user)) {
+      <span class="kw">return</span> <span class="str">"GRANTED"</span>;
+    }
+    <span class="kw">return</span> <span class="str">"DENIED"</span>; <span class="cmt">// default = tolak</span>
+  } <span class="kw">catch</span> (err) {
+    <span class="cmt">// Error → TOLAK akses (aman)</span>
+    <span class="kw">return</span> <span class="str">"DENIED"</span>;
+  }
+}</code></pre>
+    <div class="callout cl-c">
+      <div class="text-xs font-bold mb-1" style="color:#06b6d4">STEP-BY-STEP</div>
+      <div class="text-xs text-slate-400 space-y-1">
+        <p>1️⃣ Sistem mencoba verifikasi user</p>
+        <p>2️⃣ Jika verifikasi berhasil → izinkan akses</p>
+        <p>3️⃣ Jika verifikasi gagal → tolak akses</p>
+        <p>4️⃣ Jika terjadi ERROR (crash) → <strong style="color:#10b981">TETAP TOLAK</strong> (fail secure)</p>
+        <p>⚠️ Prinsip: saat gagal, sistem harus ke kondisi PALING AMAN (denied), bukan paling permisif (granted)</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Defense in Depth -->
+  <div class="card mb-5">
+    <h3 class="font-bold text-lg mb-2 font-display" style="color:#a78bfa">Defense in Depth — Segmentasi Jaringan</h3>
+    <pre class="rounded-lg p-4 overflow-x-auto text-sm mb-3" style="background:#070d1a;border:1px solid #1e293b"><code><span class="cmt">// Tanpa Defense in Depth (satu lapis)</span>
+Internet ──→ [Firewall] ──→ Public Server ──→ Database
+                               <span class="cmt">↑ jika server dikompromikan,</span>
+                               <span class="cmt">  database langsung bisa diakses!</span>
+
+<span class="cmt">// Dengan Defense in Depth (berlapis)</span>
+Internet ──→ [Firewall] ──→ [DMZ] ──→ Public Server
+                                          │
+                                    [Firewall 2]
+                                          │
+                                   [Internal Network]
+                                          │
+                                      Database
+<span class="cmt">// Penyerang harus menembus SETIAP lapisan</span></code></pre>
+    <div class="callout cl-g">
+      <p class="text-sm text-slate-400">Soal Quiz: "tidak ada segmentasi jaringan antara server publik dan database internal" → melanggar <strong style="color:#10b981">Defense in Depth</strong>. Segmentasi = lapisan perlindungan tambahan.</p>
+    </div>
+  </div>
+
+  <!-- Session Hijacking Prevention -->
+  <div class="card">
+    <h3 class="font-bold text-lg mb-2 font-display" style="color:#10b981">Session Management — Mencegah Session Hijacking</h3>
+    <pre class="rounded-lg p-4 overflow-x-auto text-sm" style="background:#070d1a;border:1px solid #1e293b"><code><span class="cmt">// ❌ Praktik buruk</span>
+session_id = <span class="fn">md5</span>(username + timestamp)  <span class="cmt">// mudah ditebak</span>
+<span class="kw">GET</span> /dashboard?session=abc123           <span class="cmt">// ID di URL → bocor di log!</span>
+<span class="kw">Set-Cookie:</span> session=abc123               <span class="cmt">// tanpa Secure & HttpOnly</span>
+
+<span class="cmt">// ✅ Praktik aman</span>
+session_id = <span class="fn">crypto.randomBytes</span>(<span class="num">32</span>)     <span class="cmt">// acak & panjang (256-bit)</span>
+<span class="kw">Set-Cookie:</span> session=...; <span class="fn">Secure</span>; <span class="fn">HttpOnly</span>; <span class="fn">SameSite=Strict</span>
+<span class="cmt">// Secure → hanya lewat HTTPS</span>
+<span class="cmt">// HttpOnly → tidak bisa diakses JavaScript (anti-XSS)</span>
+<span class="cmt">// SameSite → mencegah CSRF attack</span></code></pre>
+  </div>
+</section>
+
+<!-- ═══ PRACTICE ═══ -->
+<section id="practice" class="mb-14">
+  <div class="flex items-center gap-3 mb-2">
+    <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm" style="background:#10b981;color:#070d1a">⚡</div>
+    <h2 class="text-2xl font-bold font-display">Interactive Practice Suite</h2>
+  </div>
+  <p class="text-slate-400 text-sm mb-5">Fokus pada soal-soal yang perlu dipahami lebih dalam, termasuk soal yang salah di kuis.</p>
+  <div class="card mb-4 p-4">
+    <div class="flex items-center justify-between mb-2">
+      <span class="text-sm font-semibold text-slate-400">Progress</span>
+      <span class="font-mono text-sm" style="color:#06b6d4" id="sc-disp">0 / 10 benar</span>
+    </div>
+    <div class="sbar"><div class="sfill" id="sc-bar" style="width:0%"></div></div>
+  </div>
+  <div id="prac-container"></div>
+  <div class="mt-5 text-center">
+    <button onclick="resetP()" class="px-6 py-2.5 rounded-lg font-semibold text-sm" style="background:rgba(139,92,246,.2);border:1px solid #8b5cf6;color:#a78bfa">🔄 Ulangi Latihan</button>
+  </div>
+</section>
+
+<!-- ═══ REFERENSI ═══ -->
+<section id="ref" class="mb-14">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm" style="background:#f59e0b;color:#070d1a">📚</div>
+    <h2 class="text-2xl font-bold font-display">References — Belajar dari Nol</h2>
+  </div>
+  <div id="ref-container" class="space-y-4"></div>
+</section>
+
+<div class="text-center py-8 border-t border-slate-800">
+  <p class="text-slate-500 text-sm font-mono">Quiz 1 · Topic 1: Security Principles · PKPL Genap 2025/2026</p>
+</div>
+
+</div>
+
+<script>
+const L=['A','B','C','D','E'];
+const soalData=[
+  {no:1,soal:"Ransomware yang mengenkripsi seluruh file organisasi terutama mempengaruhi aspek:",opsi:["Authenticity saja","Non-repudiation saja","Open Design","Availability dan Integrity"],jawaban:3,missed:false},
+  {no:2,soal:"Akar penyebab paling umum dari injection attack adalah kegagalan dalam:",opsi:["Redundansi jaringan","Validasi input dan sanitasi data","Pengaturan timeout sesi","Enkripsi disk"],jawaban:1,missed:false},
+  {no:3,soal:"Code review dalam Secure SDLC terutama bertujuan untuk:",opsi:["Menghapus kebutuhan patch","Mengurangi dokumentasi","Mendeteksi kerentanan sebelum aplikasi diproduksi","Menggantikan pengujian keamanan"],jawaban:2,missed:false},
+  {no:4,soal:"Tujuan utama threat modeling dalam SDLC adalah:",opsi:["Menghapus kebutuhan dokumentasi","Menguji sistem setelah produksi","Mengidentifikasi dan memitigasi ancaman sejak tahap desain","Meningkatkan kompleksitas sistem"],jawaban:2,missed:false},
+  {no:5,soal:"Security posture suatu organisasi paling tepat menggambarkan:",opsi:["Tingkat kesiapan dan efektivitas kontrol keamanan dalam menghadapi ancaman","Jumlah perangkat keamanan yang dimiliki","Nilai total aset organisasi","Jumlah karyawan dalam tim IT"],jawaban:0,missed:false},
+  {no:6,soal:"Ransomware terutama memengaruhi aspek apa dalam CIA triad?",opsi:["Ketersediaan dan integritas data","Hanya autentikasi","Hanya kerahasiaan","Tidak memengaruhi CIA triad"],jawaban:0,missed:false},
+  {no:7,soal:"Control atau safeguard dalam keamanan informasi bertujuan untuk:",opsi:["Mengurangi kemungkinan atau dampak risiko","Menghilangkan semua ancaman","Menggantikan manajemen risiko","Meningkatkan kompleksitas sistem"],jawaban:0,missed:false},
+  {no:8,soal:"Prinsip economy of mechanism menyarankan bahwa:",opsi:["Kode harus dirahasiakan seluruhnya","Semua fitur keamanan harus ditambahkan tanpa mempertimbangkan kompleksitas","Mekanisme keamanan harus sederhana dan sekecil mungkin untuk meminimalkan kesalahan","Sistem keamanan harus kompleks agar sulit dipahami penyerang"],jawaban:2,missed:false},
+  {no:9,soal:"Mengurangi jumlah endpoint API publik yang tidak digunakan bertujuan untuk:",opsi:["Meningkatkan availability","Mengurangi exposure sistem","Meningkatkan kompleksitas sistem","Menghilangkan kebutuhan autentikasi"],jawaban:1,missed:true},
+  {no:10,soal:"Jika sistem gagal dan secara otomatis memberikan akses penuh, prinsip apa yang dilanggar?",opsi:["Open design","Least common mechanism","Fail-safe defaults","Psychological acceptability"],jawaban:2,missed:false},
+  {no:11,soal:"Prinsip separation of privilege menekankan bahwa:",opsi:["Akses kritis sebaiknya membutuhkan lebih dari satu kondisi atau otorisasi","Satu administrator harus memiliki semua hak akses","Sistem hanya memiliki satu mekanisme keamanan","Hak akses diberikan permanen"],jawaban:0,missed:false},
+  {no:12,soal:"Sistem keamanan yang terlalu kompleks cenderung:",opsi:["Menghilangkan ancaman eksternal","Selalu lebih aman","Mengurangi kebutuhan audit","Lebih rentan terhadap kesalahan implementasi"],jawaban:3,missed:false},
+  {no:13,soal:"Penggunaan TLS dalam komunikasi jaringan terutama bertujuan untuk:",opsi:["Menjamin kerahasiaan dan integritas data selama transmisi","Meningkatkan kecepatan jaringan","Mengganti kebutuhan autentikasi","Mencegah semua jenis malware"],jawaban:0,missed:false},
+  {no:14,soal:"Penerapan prinsip least privilege berarti:",opsi:["Akses diberikan secara permanen tanpa evaluasi","Hak akses dibagi rata untuk semua pengguna","Pengguna hanya diberikan hak akses minimum yang diperlukan untuk menjalankan tugasnya","Semua pengguna memiliki hak administrator"],jawaban:2,missed:false},
+  {no:15,soal:"Enkripsi data yang disimpan di database bertujuan melindungi jika:",opsi:["Server overload","Jaringan lambat","Media penyimpanan dicuri atau diakses tanpa izin","Password lemah"],jawaban:2,missed:false},
+  {no:16,soal:"Prinsip psychological acceptability menyatakan bahwa kontrol keamanan harus:",opsi:["Mudah digunakan agar tidak mendorong pengguna mencari cara untuk menghindarinya","Sangat kompleks agar terlihat aman","Mengandalkan dokumentasi panjang","Disembunyikan sepenuhnya dari pengguna"],jawaban:0,missed:false},
+  {no:17,soal:"Manakah praktik terbaik dalam manajemen sesi untuk mencegah session hijacking?",opsi:["Menggunakan session ID acak yang panjang dan dikirim melalui koneksi terenkripsi","Menyimpan session ID dalam URL","Tidak membatasi masa berlaku sesi","Menggunakan ID yang mudah ditebak"],jawaban:0,missed:false},
+  {no:18,soal:"Perbedaan paling tepat antara exposure dan loss adalah:",opsi:["Keduanya memiliki arti yang sama","Exposure adalah kondisi terpaparnya aset terhadap ancaman, sedangkan loss adalah kerugian aktual yang terjadi","Loss selalu lebih kecil daripada exposure","Exposure adalah kerugian finansial langsung"],jawaban:1,missed:false},
+  {no:19,soal:"Jika serangan berhasil karena tidak ada segmentasi jaringan antara server publik dan database internal, prinsip yang gagal diterapkan adalah:",opsi:["Economy of Mechanism","Open Design","Psychological Acceptability","Defense in Depth"],jawaban:3,missed:false},
+  {no:20,soal:"Dalam konteks keamanan informasi, threat agent adalah:",opsi:["Dampak kerugian setelah insiden terjadi","Mekanisme pengendalian keamanan","Entitas yang memiliki kemampuan dan niat untuk mengeksploitasi kerentanan","Sistem yang mengandung kerentanan"],jawaban:2,missed:false},
+];
+
+const goalsData=[
+  {name:"Confidentiality",icon:"🔒",desc:"Data hanya diakses pihak berwenang.",color:"#06b6d4"},
+  {name:"Integrity",icon:"✅",desc:"Data tidak diubah tanpa izin.",color:"#10b981"},
+  {name:"Availability",icon:"🟢",desc:"Sistem tersedia saat dibutuhkan.",color:"#f59e0b"},
+  {name:"Accountability",icon:"📋",desc:"Setiap aksi dapat dilacak ke entitas yang bertanggung jawab. Audit trail.",color:"#a78bfa"},
+  {name:"Authentication",icon:"🪪",desc:"Verifikasi identitas pengguna.",color:"#06b6d4"},
+  {name:"Non-repudiation",icon:"📝",desc:"Entitas tidak bisa menyangkal aksi yang telah dilakukan.",color:"#10b981"},
+];
+
+const principlesData=[
+  {name:"Least Privilege",desc:"Berikan hak akses minimum sesuai kebutuhan tugas.",color:"#06b6d4"},
+  {name:"Fail-Safe Defaults",desc:"Default = tolak akses. Jika sistem gagal, condong ke kondisi aman.",color:"#ef4444"},
+  {name:"Economy of Mechanism",desc:"Mekanisme keamanan sesederhana mungkin — kompleksitas = lebih banyak bug.",color:"#10b981"},
+  {name:"Complete Mediation",desc:"Setiap akses ke setiap resource HARUS divalidasi setiap saat.",color:"#f59e0b"},
+  {name:"Open Design",desc:"Keamanan tidak bergantung pada kerahasiaan desain, tapi pada kunci.",color:"#a78bfa"},
+  {name:"Separation of Privilege",desc:"Akses kritis butuh lebih dari satu kondisi/otorisasi.",color:"#06b6d4"},
+  {name:"Least Common Mechanism",desc:"Minimalkan shared resources antar pengguna.",color:"#10b981"},
+  {name:"Psychological Acceptability",desc:"Kontrol keamanan mudah digunakan agar tidak dihindari pengguna.",color:"#f59e0b"},
+];
+
+const threatConcepts=[
+  {name:"Threat",desc:"Potensi bahaya yang bisa memanfaatkan kerentanan.",color:"#ef4444"},
+  {name:"Threat Agent",desc:"Entitas dengan KEMAMPUAN + NIAT mengeksploitasi kerentanan (hacker, insider).",color:"#ef4444"},
+  {name:"Vulnerability",desc:"Kelemahan dalam sistem yang bisa dieksploitasi.",color:"#f59e0b"},
+  {name:"Risk",desc:"Kemungkinan threat berhasil memanfaatkan vulnerability dan dampaknya.",color:"#f59e0b"},
+  {name:"Exposure",desc:"Kondisi terpaparnya aset terhadap ancaman (belum tentu terjadi kerugian).",color:"#a78bfa"},
+  {name:"Loss",desc:"Kerugian AKTUAL yang terjadi setelah serangan berhasil.",color:"#06b6d4"},
+  {name:"Control/Safeguard",desc:"Mekanisme yang mengurangi kemungkinan atau dampak risiko.",color:"#10b981"},
+  {name:"Security Posture",desc:"Tingkat kesiapan & efektivitas keseluruhan kontrol keamanan organisasi.",color:"#10b981"},
+];
+
+const practiceData=[
+  {id:"p1",soal:"Seorang admin menghapus 15 endpoint API yang sudah tidak dipakai. Tindakan ini paling tepat mengimplementasikan prinsip keamanan apa?",opsi:["Fail-Safe Defaults","Psychological Acceptability","Mengurangi attack surface / exposure","Defense in Depth"],jawaban:2,penjelasan:"Mengurangi endpoint API yang tidak dipakai = memperkecil 'attack surface' (permukaan serangan). Setiap endpoint yang ada adalah potensi entry point bagi penyerang. Ini bukan tentang Defense in Depth (berlapis), tapi tentang MEMINIMALKAN apa yang bisa diserang. Terkait dengan prinsip Economy of Mechanism — sesederhana mungkin."},
+  {id:"p2",soal:'Database server sebuah perusahaan berhasil diakses langsung dari internet tanpa melewati firewall internal, karena tidak ada segmentasi antara public web server dan database. Prinsip apa yang gagal?',opsi:["Least Privilege","Economy of Mechanism","Fail-Safe Defaults","Defense in Depth"],jawaban:3,penjelasan:"Defense in Depth = strategi berlapis. Idealnya: Internet → Firewall → DMZ → Internal Firewall → Database. Tanpa segmentasi, jika web server dikompromikan, penyerang langsung bisa akses database. Tidak ada 'layer' kedua yang memproteksi."},
+  {id:"p3",soal:"Sebuah aplikasi banking memiliki fitur 2FA (OTP via SMS + password) untuk login. Ini adalah implementasi prinsip:",opsi:["Economy of Mechanism","Separation of Privilege","Fail-Safe Defaults","Least Common Mechanism"],jawaban:1,penjelasan:"Separation of Privilege = akses kritis membutuhkan LEBIH DARI SATU kondisi atau otorisasi. 2FA adalah contoh klasik: kamu perlu 'sesuatu yang kamu tahu' (password) DAN 'sesuatu yang kamu miliki' (HP untuk OTP). Satu faktor saja tidak cukup."},
+  {id:"p4",soal:"Tim developer membuat security module yang sangat kompleks dengan 50.000 baris kode dan logika berlapis. Risiko utama dari pendekatan ini adalah:",opsi:["Sistem menjadi lebih aman karena kompleks","Lebih rentan terhadap kesalahan implementasi","Tidak bisa digunakan di produksi","Meningkatkan performa sistem"],jawaban:1,penjelasan:"Prinsip Economy of Mechanism: kompleksitas adalah musuh keamanan. Semakin kompleks sebuah sistem, semakin banyak kemungkinan ada bug, celah logika, atau kesalahan implementasi yang tidak terdeteksi. Sistem keamanan yang sederhana lebih mudah diaudit, dipahami, dan diverifikasi."},
+  {id:"p5",soal:"Audit trail sistem mencatat: '2026-04-10 14:32:11 | user:admin | action:DELETE | table:users | rows:1500'. Ini berkaitan dengan security goal:",opsi:["Confidentiality","Availability","Integrity","Accountability"],jawaban:3,penjelasan:"Audit trail = catatan kronologis SIAPA melakukan APA pada KAPAN. Ini adalah implementasi Accountability — kemampuan untuk melacak dan mempertanggungjawabkan setiap aksi ke entitas tertentu. Bukan Integrity (yang berkaitan dengan data tidak diubah tanpa izin)."},
+  {id:"p6",soal:"Sebuah sistem e-commerce mewajibkan karyawan kasir untuk logout jika meninggalkan terminal, dan sistem otomatis logout setelah 5 menit idle. Ini terutama mencegah:",opsi:["SQL Injection","Session Hijacking dan unauthorized access","Ransomware attack","Man-in-the-Middle attack"],jawaban:1,penjelasan:"Session management yang baik (auto-logout, idle timeout) mencegah session hijacking dan unauthorized access. Jika terminal ditinggalkan tanpa logout, orang lain bisa menggunakannya dengan sesi yang masih aktif."},
+  {id:"p7",soal:"Ransomware WannaCry mengenkripsi seluruh file di komputer dan menampilkan pesan tebusan. Aspek CIA Triad yang PALING UTAMA terkena dampak adalah:",opsi:["Hanya Confidentiality","Hanya Integrity","Availability dan Integrity","Hanya Availability"],jawaban:2,penjelasan:"Ransomware → (1) AVAILABILITY: file tidak bisa diakses tanpa kunci dekripsi. (2) INTEGRITY: file dimodifikasi (dienkripsi) tanpa izin pemilik. Confidentiality biasanya tidak terancam pada ransomware biasa (kecuali ada data exfiltration). Beberapa ransomware modern juga mencuri data (double extortion), tapi pertanyaan ini merujuk dampak UTAMA."},
+  {id:"p8",soal:"Developer membuat fitur 'remember me' yang menyimpan session token dalam plaintext di cookie tanpa flag Secure dan HttpOnly. Kelemahan keamanan apa yang paling serius?",opsi:["Performa lebih lambat","Cookie bisa dicuri via XSS dan dibaca saat transmisi HTTP","Database bisa diinjeksi","Antivirus akan memblokir aplikasi"],jawaban:1,penjelasan:"Tanpa HttpOnly → skrip JavaScript bisa membaca cookie (rentan XSS theft). Tanpa Secure → cookie dikirim lewat HTTP biasa, bisa dicegat (Man-in-the-Middle). Best practice: Set-Cookie: token=...; Secure; HttpOnly; SameSite=Strict. Session ID juga harus acak dan panjang."},
+  {id:"p9",soal:"Suatu kontrol keamanan yang sangat bagus secara teknis, namun sangat merepotkan pengguna (misalnya harus isi CAPTCHA setiap 5 menit). Prinsip apa yang dilanggar?",opsi:["Fail-Safe Defaults","Economy of Mechanism","Psychological Acceptability","Separation of Privilege"],jawaban:2,penjelasan:"Psychological Acceptability: kontrol keamanan harus MUDAH DIGUNAKAN dan tidak menghambat produktivitas. Jika terlalu merepotkan, pengguna akan mencari cara untuk menghindarinya (workaround) yang justru menciptakan celah keamanan baru. Keamanan yang tidak bisa diterima pengguna = keamanan yang tidak efektif."},
+  {id:"p10",soal:"Dalam risk management, perbedaan 'exposure' dan 'loss' yang paling tepat adalah:",opsi:["Keduanya bermakna sama, kerugian finansial","Exposure = potensi terpapar ancaman; Loss = kerugian nyata yang sudah terjadi","Loss lebih besar dari exposure","Exposure hanya untuk data digital, loss untuk aset fisik"],jawaban:1,penjelasan:"Exposure = kondisi dimana aset BERPOTENSI terkena ancaman (belum tentu terjadi). Loss = kerugian AKTUAL setelah serangan berhasil. Contoh: server yang terhubung ke internet dan tidak di-patch = exposure terhadap ransomware. Jika ransomware berhasil menyerang = loss (kehilangan data, downtime, uang tebusan)."},
+];
+
+const refData=[
+  {topik:"CIA Triad & Extended Security Goals",soalTerkait:"Soal 1, 5, 6, 20",konsep:"CIA (Confidentiality-Integrity-Availability) adalah tiga pilar dasar. Extended goals: Accountability (audit trail), Authentication (verifikasi identitas), Non-repudiation (tidak bisa menyangkal aksi). Ransomware menyerang Availability dan Integrity.",kw:["CIA Triad","Accountability","Audit Trail","Non-repudiation"]},
+  {topik:"Prinsip Saltzer & Schroeder",soalTerkait:"Soal 8, 9, 10, 11, 12, 16, 19",konsep:"8 prinsip desain keamanan klasik (1975): Least Privilege, Fail-Safe Defaults, Economy of Mechanism, Complete Mediation, Open Design, Separation of Privilege, Least Common Mechanism, Psychological Acceptability. Semua relevan hingga hari ini.",kw:["Security Design Principles","Fail-Safe","Least Privilege","Economy of Mechanism"]},
+  {topik:"Threat Concepts & Risk Management",soalTerkait:"Soal 5, 7, 18, 20",konsep:"Threat ≠ Threat Agent ≠ Vulnerability ≠ Risk. Exposure = terpapar ancaman (belum tentu rugi). Loss = kerugian aktual. Control/Safeguard mengurangi kemungkinan atau dampak risiko, bukan menghilangkan ancaman sepenuhnya.",kw:["Risk Management","Threat Agent","Exposure","Loss","Safeguard"]},
+  {topik:"Secure SDLC & Threat Modeling",soalTerkait:"Soal 3, 4",konsep:"Code review dalam Secure SDLC bertujuan mendeteksi kerentanan SEBELUM produksi (bukan menggantikan testing). Threat modeling = identifikasi ancaman SEJAK tahap desain (shift-left security). Framework: STRIDE, PASTA, DREAD.",kw:["Secure SDLC","Code Review","Threat Modeling","Shift-Left","STRIDE"]},
+  {topik:"Session Management & TLS",soalTerkait:"Soal 13, 17",konsep:"TLS mengamankan data in-transit (Confidentiality + Integrity). Session ID harus: acak & panjang (≥128 bit), dikirim via HTTPS, cookie dengan flag Secure+HttpOnly+SameSite, ada timeout. Session ID di URL = bahaya!",kw:["TLS/SSL","HTTPS","Session Management","Cookie Security","HttpOnly"]},
+];
+
+// Render soal
+function renderSoal(){
+  const c=document.getElementById('q-container');
+  c.innerHTML=soalData.map(q=>{
+    const opts=q.opsi.map((o,i)=>{
+      const ok=i===q.jawaban;
+      const s=ok?'background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.4)':'background:#141f33;border:1px solid #1e293b';
+      const lb=ok?'background:#10b981;color:#070d1a':'background:#1e293b;color:#64748b';
+      return `<div class="flex gap-2 items-start p-2.5 rounded-lg mb-1.5" style="${s}">
+        <span class="flex-shrink-0 w-6 h-6 rounded text-xs font-bold font-mono flex items-center justify-center" style="${lb}">${L[i]}</span>
+        <span class="text-sm text-slate-300 flex-1">${o}${ok?' <span style="color:#10b981;font-size:11px;font-family:monospace">✓ BENAR</span>':''}</span>
+      </div>`;
+    }).join('');
+    return `<div class="card"><div class="flex gap-2 items-start mb-3">
+      <span class="flex-shrink-0 font-mono text-xs px-2 py-0.5 rounded font-bold" style="background:#06b6d4;color:#070d1a">${q.no}</span>
+      <p class="text-sm font-semibold leading-relaxed flex-1">${q.soal} ${q.missed?'<span class="missed-badge ml-1">❌ Salah di kuis</span>':''}</p>
+    </div>${opts}</div>`;
+  }).join('');
+}
+
+// Render goals
+document.getElementById('goals-grid').innerHTML=goalsData.map(g=>`
+  <div class="flex gap-3 items-start p-3 rounded-lg" style="background:#141f33;border:1px solid #1e293b">
+    <span class="text-xl">${g.icon}</span>
+    <div><div class="font-bold text-sm" style="color:${g.color}">${g.name}</div><p class="text-xs text-slate-400">${g.desc}</p></div>
+  </div>`).join('');
+
+document.getElementById('principles-grid').innerHTML=principlesData.map(p=>`
+  <div class="flex gap-3 items-start p-3 rounded-lg" style="background:#141f33;border:1px solid #1e293b">
+    <div class="flex-shrink-0 font-mono text-xs px-2 py-0.5 rounded font-bold mt-0.5" style="background:rgba(139,92,246,.15);color:${p.color};border:1px solid ${p.color}33">${p.name}</div>
+    <p class="text-xs text-slate-400">${p.desc}</p>
+  </div>`).join('');
+
+document.getElementById('threat-concepts').innerHTML=threatConcepts.map(t=>`
+  <div class="p-3 rounded-lg" style="background:#141f33;border:1px solid #1e293b">
+    <div class="font-bold text-sm mb-0.5" style="color:${t.color}">${t.name}</div>
+    <p class="text-xs text-slate-400">${t.desc}</p>
+  </div>`).join('');
+
+// Practice
+let pState={},pCorrect=0;
+function renderP(){
+  pState={};pCorrect=0;updScore();
+  document.getElementById('prac-container').innerHTML=practiceData.map((q,qi)=>
+    `<div class="card mb-4 fi" id="pc-${q.id}">
+      <div class="flex gap-2 items-start mb-3">
+        <span class="flex-shrink-0 font-mono text-xs px-2 py-0.5 rounded font-bold" style="background:#8b5cf6;color:#fff">${qi+1}</span>
+        <p class="text-sm font-semibold leading-relaxed">${q.soal}</p>
+      </div>
+      ${q.opsi.map((o,i)=>`<button class="popt" id="po-${q.id}-${i}" onclick="selAns('${q.id}',${i},${q.jawaban},${qi})">${L[i]}. ${o}</button>`).join('')}
+      <div id="fb-${q.id}" class="hidden mt-3 p-3 rounded-lg text-sm"></div>
+    </div>`).join('');
+}
+function selAns(id,chosen,correct,qi){
+  if(pState[id])return;
+  pState[id]=true;
+  const ok=chosen===correct;
+  if(ok){pCorrect++;updScore();}
+  practiceData[qi].opsi.forEach((_,i)=>{
+    const b=document.getElementById(`po-${id}-${i}`);
+    b.disabled=true;
+    if(i===correct)b.classList.add('pc');
+    else if(i===chosen&&!ok)b.classList.add('pw');
+  });
+  const fb=document.getElementById(`fb-${id}`);
+  fb.classList.remove('hidden');
+  fb.innerHTML=`<div class="font-bold mb-1 ${ok?'text-green-400':'text-red-400'}">${ok?'✅ Benar!':'❌ Kurang tepat.'}</div><div class="text-slate-400 text-xs leading-relaxed">${practiceData[qi].penjelasan}</div>`;
+  fb.style.cssText=`background:${ok?'rgba(16,185,129,.07)':'rgba(239,68,68,.07)'};border-left:3px solid ${ok?'#10b981':'#ef4444'}`;
+}
+function updScore(){
+  const t=practiceData.length,p=Math.round(pCorrect/t*100);
+  document.getElementById('sc-disp').textContent=`${pCorrect} / ${t} benar`;
+  document.getElementById('sc-bar').style.width=p+'%';
+}
+function resetP(){renderP();}
+
+// Refs
+document.getElementById('ref-container').innerHTML=refData.map(r=>`
+  <div class="card">
+    <div class="flex items-start justify-between gap-4 mb-2">
+      <h4 class="font-bold font-display" style="color:#06b6d4">${r.topik}</h4>
+      <span class="tag flex-shrink-0" style="background:rgba(6,182,212,.08);color:#64748b;border:1px solid #1e293b;font-size:10px">${r.soalTerkait}</span>
+    </div>
+    <p class="text-sm text-slate-400 mb-3 leading-relaxed">${r.konsep}</p>
+    <div class="flex flex-wrap gap-2">${r.kw.map(k=>`<span class="tag" style="background:rgba(139,92,246,.1);color:#a78bfa;border:1px solid rgba(139,92,246,.2)">${k}</span>`).join('')}</div>
+  </div>`).join('');
+
+function go(id){document.getElementById(id).scrollIntoView({behavior:'smooth',block:'start'});}
+renderSoal();
+renderP();
+</script>
+</body>
+</html>

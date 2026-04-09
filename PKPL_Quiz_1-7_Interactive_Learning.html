@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PKPL Quiz 1–7 · Interactive Learning Page</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{mono:['Space Mono','monospace'],display:['Syne','sans-serif']},colors:{bg:'#0b0d12',surface:'#12151e',card:'#181c27',border:'#222638',accent:'#00f5a0',accent2:'#ff6b6b',accent3:'#ffd166',accent4:'#818cf8',muted:'#5a6278',text:'#dde4f0'}}}}
+</script>
+<style>
+*{box-sizing:border-box}
+body{background:#0b0d12;color:#dde4f0;font-family:'Syne',sans-serif}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:#0b0d12}::-webkit-scrollbar-thumb{background:#222638;border-radius:4px}
+.glow{text-shadow:0 0 24px rgba(0,245,160,.35)}
+.card-h{transition:all .2s}.card-h:hover{border-color:#00f5a0;transform:translateY(-1px)}
+.btn-c{transition:all .18s;border:1.5px solid #222638}.btn-c:hover:not(:disabled){border-color:#00f5a0;background:rgba(0,245,160,.06)}
+.btn-c.correct{border-color:#00f5a0!important;background:rgba(0,245,160,.12)!important}
+.btn-c.wrong{border-color:#ff6b6b!important;background:rgba(255,107,107,.12)!important}
+.btn-c.show-correct{border-color:#00f5a0!important;background:rgba(0,245,160,.05)!important}
+.reveal{display:none}.reveal.open{display:block;animation:slideUp .3s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.fade-in{animation:fadeIn .4s ease}
+pre code{font-family:'Space Mono',monospace;font-size:.8rem;line-height:1.65}
+.kw{color:#00f5a0}.cm{color:#5a6278;font-style:italic}.st{color:#ffd166}.fn{color:#a78bfa}.num{color:#f9a8d4}
+.tag{font-family:'Space Mono',monospace;font-size:.68rem}
+.progress-bar{background:linear-gradient(90deg,#00f5a0,#818cf8)}
+.answer-box{border-left:3px solid #00f5a0;background:rgba(0,245,160,.04)}
+.wrong-answer-box{border-left:3px solid #ff6b6b;background:rgba(255,107,107,.04)}
+.quiz-nav button{transition:all .15s}
+.quiz-nav button.active{background:#00f5a0;color:#0b0d12;font-weight:700}
+.quiz-nav button:not(.active):hover{border-color:#00f5a0;color:#00f5a0}
+.section-tab{transition:all .2s;border-bottom:2px solid transparent}
+.section-tab.active{border-bottom-color:#00f5a0;color:#00f5a0}
+.tooltip{position:relative}.tooltip:hover::after{content:attr(data-tip);position:absolute;bottom:110%;left:50%;transform:translateX(-50%);background:#222638;color:#dde4f0;padding:4px 8px;border-radius:6px;font-size:.72rem;white-space:nowrap;z-index:10}
+</style>
+</head>
+<body class="min-h-screen">
+
+<!-- ═══ NAV ═══ -->
+<nav class="sticky top-0 z-50 border-b border-[#222638] bg-[#0b0d12]/92 backdrop-blur-md">
+  <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg bg-[#00f5a0]/10 border border-[#00f5a0]/30 flex items-center justify-center">
+        <i data-lucide="shield-check" class="w-4 h-4 text-[#00f5a0]"></i>
+      </div>
+      <span class="font-display font-bold text-sm">PKPL <span class="text-[#00f5a0]">Quiz Bank</span></span>
+    </div>
+    <div class="hidden md:flex items-center gap-5 text-xs font-mono text-[#5a6278]">
+      <a href="#qbank" class="hover:text-[#00f5a0] transition-colors">Answer Key</a>
+      <a href="#concepts" class="hover:text-[#00f5a0] transition-colors">Konsep</a>
+      <a href="#visual" class="hover:text-[#00f5a0] transition-colors">Visualisasi</a>
+      <a href="#practice" class="hover:text-[#00f5a0] transition-colors">Latihan</a>
+      <a href="#refs" class="hover:text-[#00f5a0] transition-colors">Referensi</a>
+    </div>
+    <div class="tag bg-[#222638] px-3 py-1 rounded-full text-[#5a6278]">Quiz 1–7 · PKPL</div>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<header class="max-w-6xl mx-auto px-4 pt-14 pb-10">
+  <div class="inline-flex items-center gap-2 bg-[#00f5a0]/5 border border-[#00f5a0]/20 rounded-full px-4 py-1.5 mb-5">
+    <i data-lucide="book-open" class="w-3.5 h-3.5 text-[#00f5a0]"></i>
+    <span class="text-[#00f5a0] text-xs font-mono">Pengantar Keamanan Perangkat Lunak — Genap 2025/2026</span>
+  </div>
+  <h1 class="font-display text-4xl md:text-5xl font-extrabold leading-tight mb-4 glow">
+    Quiz 1–7<br/><span class="text-[#00f5a0]">Interactive Learning</span>
+  </h1>
+  <p class="text-[#5a6278] text-sm max-w-xl leading-relaxed">Kunci jawaban lengkap, konsep mendalam, visualisasi algoritma, dan latihan soal interaktif dari seluruh Quiz PKPL semester ini.</p>
+  <div class="mt-7 flex flex-wrap gap-3">
+    <div class="flex items-center gap-2 bg-[#181c27] border border-[#222638] rounded-lg px-4 py-2"><i data-lucide="list-checks" class="w-4 h-4 text-[#00f5a0]"></i><span class="text-sm">7 Quiz · ~130 Soal</span></div>
+    <div class="flex items-center gap-2 bg-[#181c27] border border-[#222638] rounded-lg px-4 py-2"><i data-lucide="zap" class="w-4 h-4 text-[#ffd166]"></i><span class="text-sm">25 Soal Interaktif</span></div>
+    <div class="flex items-center gap-2 bg-[#181c27] border border-[#222638] rounded-lg px-4 py-2"><i data-lucide="brain" class="w-4 h-4 text-[#818cf8]"></i><span class="text-sm">7 Topik Utama</span></div>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 0: ANSWER KEY BANK
+═══════════════════════════════════════════════════════ -->
+<section id="qbank" class="max-w-6xl mx-auto px-4 mb-20">
+  <div class="flex items-center gap-3 mb-6">
+    <div class="w-8 h-8 rounded-lg bg-[#ffd166]/10 border border-[#ffd166]/30 flex items-center justify-center"><i data-lucide="list-checks" class="w-4 h-4 text-[#ffd166]"></i></div>
+    <h2 class="font-display text-2xl font-bold">Kunci Jawaban Lengkap</h2>
+  </div>
+  <p class="text-[#5a6278] text-sm mb-6">Seluruh soal quiz beserta jawaban benar. Jawaban benar ditampilkan dengan highlight hijau.</p>
+
+  <!-- Tab Nav -->
+  <div class="flex flex-wrap gap-2 mb-6" id="quiz-tabs">
+    <!-- rendered by JS -->
+  </div>
+
+  <div id="quiz-content"><!-- rendered by JS --></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 1: CONCEPTUAL DEEP DIVE
+═══════════════════════════════════════════════════════ -->
+<section id="concepts" class="max-w-6xl mx-auto px-4 mb-20">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="w-8 h-8 rounded-lg bg-[#818cf8]/10 border border-[#818cf8]/30 flex items-center justify-center"><i data-lucide="brain" class="w-4 h-4 text-[#818cf8]"></i></div>
+    <h2 class="font-display text-2xl font-bold">Conceptual Deep Dive</h2>
+  </div>
+
+  <!-- Q1: Security Principles -->
+  <div class="bg-[#181c27] border border-[#222638] rounded-2xl p-6 mb-5 card-h">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="tag bg-[#00f5a0]/10 text-[#00f5a0] px-2 py-0.5 rounded">Quiz 1</span>
+      <h3 class="font-display text-lg font-bold">Security Principles (Saltzer & Schroeder)</h3>
+    </div>
+    <p class="text-[#8b96b0] text-sm mb-5 leading-relaxed">8 prinsip desain keamanan klasik yang menjadi fondasi semua sistem aman.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#00f5a0] font-mono text-xs mb-1.5">Least Privilege</div>
+        <p class="text-[#5a6278] text-xs">Beri akses minimum sesuai kebutuhan tugas. Mengurangi exposure sistem.</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#ffd166] font-mono text-xs mb-1.5">Fail-safe Defaults</div>
+        <p class="text-[#5a6278] text-xs">Default = TOLAK akses. Jika sistem gagal, ia harus gagal secara aman (deny, bukan grant).</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#818cf8] font-mono text-xs mb-1.5">Economy of Mechanism</div>
+        <p class="text-[#5a6278] text-xs">Mekanisme keamanan harus sesederhana mungkin. Kompleksitas → lebih banyak bug.</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#ff6b6b] font-mono text-xs mb-1.5">Defense in Depth</div>
+        <p class="text-[#5a6278] text-xs">Berlapis-lapis pertahanan. Jika satu lapisan tembus, masih ada lapisan berikutnya.</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#00f5a0] font-mono text-xs mb-1.5">Separation of Privilege</div>
+        <p class="text-[#5a6278] text-xs">Akses kritis butuh lebih dari satu kondisi / otorisasi (misal: dual approval).</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#ffd166] font-mono text-xs mb-1.5">Psychological Acceptability</div>
+        <p class="text-[#5a6278] text-xs">Kontrol keamanan harus mudah digunakan, agar pengguna tidak mencari cara "bypass".</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2: UML Secure Functional Model -->
+  <div class="bg-[#181c27] border border-[#222638] rounded-2xl p-6 mb-5 card-h">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="tag bg-[#818cf8]/10 text-[#818cf8] px-2 py-0.5 rounded">Quiz 2</span>
+      <h3 class="font-display text-lg font-bold">UML, OCL & Secure Functional Model</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#818cf8] font-mono text-xs mb-2">&lt;&lt;include&gt;&gt;</div>
+        <p class="text-[#5a6278] text-xs leading-relaxed">Use case <strong class="text-[#dde4f0]">SELALU</strong> menyertakan use case lain. Wajib, bukan opsional.</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#ffd166] font-mono text-xs mb-2">&lt;&lt;extend&gt;&gt;</div>
+        <p class="text-[#5a6278] text-xs leading-relaxed">Use case <strong class="text-[#dde4f0]">KONDISIONAL</strong> — hanya dieksekusi dalam kondisi tertentu.</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#00f5a0] font-mono text-xs mb-2">Composition vs Aggregation</div>
+        <p class="text-[#5a6278] text-xs leading-relaxed"><strong class="text-[#dde4f0]">Composition</strong>: bagian BERGANTUNG pada keseluruhan. <strong class="text-[#dde4f0]">Aggregation</strong>: bagian dapat EKSIS sendiri.</p>
+      </div>
+    </div>
+    <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+      <div class="text-xs font-mono text-[#5a6278] mb-2">OCL — Object Constraint Language</div>
+      <p class="text-[#8b96b0] text-sm leading-relaxed">OCL digunakan untuk mendefinisikan <strong class="text-[#00f5a0]">precondition</strong> (syarat sebelum operasi) dan <strong class="text-[#00f5a0]">postcondition</strong> (jaminan setelah operasi). Keyword <code class="text-[#ffd166]">self</code> merujuk ke objek dalam konteks saat ini. Stereotype adalah <strong>anotasi semantik saja</strong> — tidak menjamin keamanan otomatis!</p>
+    </div>
+  </div>
+
+  <!-- Q3: OCL Secure Dynamic Model -->
+  <div class="bg-[#181c27] border border-[#222638] rounded-2xl p-6 mb-5 card-h">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="tag bg-[#ff6b6b]/10 text-[#ff6b6b] px-2 py-0.5 rounded">Quiz 3</span>
+      <h3 class="font-display text-lg font-bold">Secure Dynamic Model — Pre/Postcondition & Sequence Diagram</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#ff6b6b] font-mono text-xs mb-2">Aturan Precondition & Postcondition</div>
+        <ul class="text-[#5a6278] text-xs space-y-1.5">
+          <li>✦ Jika <span class="text-[#ffd166]">precondition gagal</span> → operasi DITOLAK, postcondition tidak dievaluasi</li>
+          <li>✦ Jika precondition OK tapi <span class="text-[#ffd166]">postcondition dilanggar</span> → bug implementasi</li>
+          <li>✦ Operasi tanpa postcondition = <span class="text-[#ff6b6b]">tidak ada jaminan</span> state setelah eksekusi</li>
+          <li>✦ Stereotype bersifat anotasi — OCL TIDAK otomatis mengikuti stereotype</li>
+        </ul>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#818cf8] font-mono text-xs mb-2">Elemen Sequence Diagram</div>
+        <ul class="text-[#5a6278] text-xs space-y-1.5">
+          <li><span class="text-[#00f5a0]">Activation bar</span> = durasi objek memproses pesan</li>
+          <li><span class="text-[#00f5a0]">Destroy message</span> = simbol X pada lifeline</li>
+          <li><span class="text-[#ffd166]">Fork node</span> = eksekusi paralel beberapa aktivitas</li>
+          <li><span class="text-[#ffd166]">Join node</span> = banyak panah masuk ke horizontal bar</li>
+          <li><span class="text-[#818cf8]">Final node</span> = lingkaran dengan titik di dalamnya</li>
+          <li><span class="text-[#ff6b6b]">Self-call rekursif</span> = loopback arrow + activation bar tambahan</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q4: Threat Modeling STRIDE/DREAD/Attack Tree -->
+  <div class="bg-[#181c27] border border-[#222638] rounded-2xl p-6 mb-5 card-h">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="tag bg-[#ffd166]/10 text-[#ffd166] px-2 py-0.5 rounded">Quiz 4</span>
+      <h3 class="font-display text-lg font-bold">Threat Modeling — STRIDE, DREAD, Attack Tree, DFD</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div>
+        <div class="text-xs font-mono text-[#5a6278] mb-3">STRIDE — 6 Kategori Ancaman</div>
+        <div class="space-y-2">
+          <div class="flex items-center gap-2"><span class="tag bg-[#ff6b6b]/15 text-[#ff6b6b] px-2 py-0.5 rounded w-40 shrink-0">S — Spoofing</span><span class="text-[#5a6278] text-xs">Memalsukan identitas</span></div>
+          <div class="flex items-center gap-2"><span class="tag bg-[#ffd166]/15 text-[#ffd166] px-2 py-0.5 rounded w-40 shrink-0">T — Tampering</span><span class="text-[#5a6278] text-xs">Memodifikasi data</span></div>
+          <div class="flex items-center gap-2"><span class="tag bg-[#818cf8]/15 text-[#818cf8] px-2 py-0.5 rounded w-40 shrink-0">R — Repudiation</span><span class="text-[#5a6278] text-xs">Menyangkal aksi yang dilakukan</span></div>
+          <div class="flex items-center gap-2"><span class="tag bg-[#f9a8d4]/15 text-[#f9a8d4] px-2 py-0.5 rounded w-40 shrink-0">I — Info Disclosure</span><span class="text-[#5a6278] text-xs">Kebocoran informasi sensitif</span></div>
+          <div class="flex items-center gap-2"><span class="tag bg-[#ff6b6b]/15 text-[#ff6b6b] px-2 py-0.5 rounded w-40 shrink-0">D — Denial of Service</span><span class="text-[#5a6278] text-xs">Membanjiri server</span></div>
+          <div class="flex items-center gap-2"><span class="tag bg-[#00f5a0]/15 text-[#00f5a0] px-2 py-0.5 rounded w-40 shrink-0">E — Elevation of Priv.</span><span class="text-[#5a6278] text-xs">Akses tanpa validasi wewenang</span></div>
+        </div>
+      </div>
+      <div>
+        <div class="text-xs font-mono text-[#5a6278] mb-3">Attack Tree Node Types</div>
+        <div class="space-y-2 mb-4">
+          <div class="bg-[#0b0d12] rounded-lg p-3 border border-[#222638]">
+            <span class="text-[#00f5a0] font-mono text-xs">OR node</span>
+            <p class="text-[#5a6278] text-xs mt-1">SALAH SATU cabang cukup untuk mencapai tujuan (serangan alternatif independen)</p>
+          </div>
+          <div class="bg-[#0b0d12] rounded-lg p-3 border border-[#222638]">
+            <span class="text-[#ffd166] font-mono text-xs">AND node</span>
+            <p class="text-[#5a6278] text-xs mt-1">SEMUA cabang harus terpenuhi untuk mencapai tujuan (langkah sekuensial)</p>
+          </div>
+        </div>
+        <div class="bg-[#0b0d12] rounded-lg p-3 border border-[#222638]">
+          <span class="text-[#818cf8] font-mono text-xs">DREAD Scoring</span>
+          <p class="text-[#5a6278] text-xs mt-1">Damage + Reproducibility + Exploitability + Affected Users + Discoverability. Skor lebih tinggi = prioritas mitigasi lebih tinggi.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q5: Authentication & Authorization -->
+  <div class="bg-[#181c27] border border-[#222638] rounded-2xl p-6 mb-5 card-h">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="tag bg-[#00f5a0]/10 text-[#00f5a0] px-2 py-0.5 rounded">Quiz 5</span>
+      <h3 class="font-display text-lg font-bold">Authentication, Authorization & OAuth</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#00f5a0] font-mono text-xs mb-2">What you KNOW</div>
+        <p class="text-[#5a6278] text-xs">Password, PIN, jawaban pertanyaan keamanan</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#ffd166] font-mono text-xs mb-2">What you HAVE</div>
+        <p class="text-[#5a6278] text-xs">Kartu ATM, token OTP, smartphone (Google prompt memilih angka = HAVE)</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#818cf8] font-mono text-xs mb-2">What you ARE</div>
+        <p class="text-[#5a6278] text-xs">Fingerprint, face ID, retina scan. CEK KTM di ujian = <strong class="text-[#ff6b6b]">ARE</strong> (identitas fisik)</p>
+      </div>
+    </div>
+    <div class="bg-[#ff6b6b]/5 border border-[#ff6b6b]/20 rounded-xl p-4">
+      <div class="text-[#ff6b6b] font-mono text-xs mb-2">⚠ Common Pitfalls — Quiz 5</div>
+      <div class="space-y-1.5 text-xs text-[#8b96b0]">
+        <div>• <strong class="text-[#dde4f0]">OAuth</strong> melakukan KEDUANYA — autentikasi DAN otorisasi (bukan otorisasi saja!)</div>
+        <div>• <strong class="text-[#dde4f0]">MFA yang benar</strong>: harus kombinasi DIFFERENT factors. PIN + password = sama-sama "what you know" → BUKAN MFA</div>
+        <div>• <strong class="text-[#dde4f0]">Cek KTM</strong> = "What you are" (verifikasi identitas fisik mahasiswa), bukan "what you have"</div>
+        <div>• <strong class="text-[#dde4f0]">Password terbaik</strong> = yang paling PANJANG (bukan paling kompleks kombinasi)</div>
+        <div>• <strong class="text-[#dde4f0]">SCELE enroll kuliah</strong> = autentikasi SAJA (login dulu, tidak ada otorisasi tambahan untuk enroll)</div>
+        <div>• <strong class="text-[#dde4f0]">Aplikasi aman</strong> = SALAH SEMUA dari pilihan A, B, C, D yang ada — harus lebih dari sekadar auth+authz</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q6: Input Validation -->
+  <div class="bg-[#181c27] border border-[#222638] rounded-2xl p-6 mb-5 card-h">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="tag bg-[#f9a8d4]/10 text-[#f9a8d4] px-2 py-0.5 rounded">Quiz 6</span>
+      <h3 class="font-display text-lg font-bold">Input Validation & Sanitization</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="space-y-3">
+        <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+          <div class="text-[#00f5a0] font-mono text-xs mb-2">Validation vs Sanitization</div>
+          <p class="text-[#5a6278] text-xs"><strong class="text-[#dde4f0]">Validation</strong>: memeriksa apakah data dapat DITERIMA (ya/tidak). <strong class="text-[#dde4f0]">Sanitization</strong>: mengubah data menjadi bentuk yang AMAN.</p>
+        </div>
+        <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+          <div class="text-[#ffd166] font-mono text-xs mb-2">Syntactic vs Semantic Validation</div>
+          <p class="text-[#5a6278] text-xs"><strong class="text-[#dde4f0]">Syntactic</strong>: format (email harus ada @, nomor harus angka). <strong class="text-[#dde4f0]">Semantic</strong>: logika bisnis (tanggal mulai harus sebelum selesai, umur tidak bisa 250 tahun). Syntactic DULU baru Semantic.</p>
+        </div>
+        <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+          <div class="text-[#818cf8] font-mono text-xs mb-2">Whitelisting vs Blacklisting</div>
+          <p class="text-[#5a6278] text-xs"><strong class="text-[#dde4f0]">Whitelisting</strong> (LEBIH BAIK): hanya izinkan yang diketahui aman. <strong class="text-[#dde4f0]">Blacklisting</strong>: blokir yang diketahui berbahaya (mudah di-bypass).</p>
+        </div>
+      </div>
+      <div class="space-y-3">
+        <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+          <div class="text-[#ff6b6b] font-mono text-xs mb-2">Stack Canaries (Buffer Overflow Defense)</div>
+          <p class="text-[#5a6278] text-xs">Nilai acak yang ditempatkan sebelum return address. Jika nilai berubah (karena overflow), program DIHENTIKAN.</p>
+        </div>
+        <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+          <div class="text-[#00f5a0] font-mono text-xs mb-2">Sanitize as close to the SINK</div>
+          <p class="text-[#5a6278] text-xs">Sanitasi dilakukan tepat SEBELUM data digunakan pada operasi berbahaya (bukan saat input masuk).</p>
+        </div>
+        <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+          <div class="text-[#ffd166] font-mono text-xs mb-2">Client-side validation saja TIDAK CUKUP</div>
+          <p class="text-[#5a6278] text-xs">Bisa di-bypass dengan memodifikasi request langsung ke server. Selalu validasi di server-side juga.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q7: Web App Vulnerabilities -->
+  <div class="bg-[#181c27] border border-[#222638] rounded-2xl p-6 mb-5 card-h">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="tag bg-[#ff6b6b]/10 text-[#ff6b6b] px-2 py-0.5 rounded">Quiz 7</span>
+      <h3 class="font-display text-lg font-bold">Standard Web Application Vulnerabilities</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#ff6b6b] font-mono text-xs mb-2">XSS (Cross-Site Scripting)</div>
+        <p class="text-[#5a6278] text-xs">Terjadi karena menampilkan input tanpa output encoding. Mitigasi: htmlspecialchars(), CSP header.</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#ffd166] font-mono text-xs mb-2">CSRF</div>
+        <p class="text-[#5a6278] text-xs">Browser otomatis kirim cookie korban ke situs target. Mitigasi: Anti-CSRF token unik per session.</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#818cf8] font-mono text-xs mb-2">Session Fixation</div>
+        <p class="text-[#5a6278] text-xs">Penyerang menetapkan session ID tertentu SEBELUM korban login, lalu menggunakannya setelah login.</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#00f5a0] font-mono text-xs mb-2">Credential Stuffing</div>
+        <p class="text-[#5a6278] text-xs">Memanfaatkan reuse password. Data bocor dari layanan A dipakai di layanan B. Mitigasi: MFA.</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#f9a8d4] font-mono text-xs mb-2">Clickjacking</div>
+        <p class="text-[#5a6278] text-xs">Halaman diload dalam iframe tersembunyi. Mitigasi: X-Frame-Options: DENY.</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-[#ffd166] font-mono text-xs mb-2">HSTS</div>
+        <p class="text-[#5a6278] text-xs">HTTP Strict Transport Security — mencegah protocol downgrade attack & MitM dengan memaksa HTTPS.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Terms + Common Pitfalls -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div class="bg-[#00f5a0]/5 border border-[#00f5a0]/20 rounded-2xl p-6">
+      <div class="flex items-center gap-2 mb-4"><i data-lucide="bookmark" class="w-4 h-4 text-[#00f5a0]"></i><span class="text-[#00f5a0] font-semibold text-sm">Key Terms Wajib Hafal</span></div>
+      <div class="grid grid-cols-1 gap-2 text-xs">
+        <div><span class="font-mono text-[#00f5a0]">Accountability</span><span class="text-[#5a6278]"> — audit trail, merekam siapa melakukan apa</span></div>
+        <div><span class="font-mono text-[#00f5a0]">Integrity</span><span class="text-[#5a6278]"> — data tidak dapat diubah tanpa izin</span></div>
+        <div><span class="font-mono text-[#00f5a0]">Trust Boundary</span><span class="text-[#5a6278]"> — perubahan tingkat kepercayaan dalam DFD</span></div>
+        <div><span class="font-mono text-[#00f5a0]">Threat Agent</span><span class="text-[#5a6278]"> — entitas yang punya kemampuan & niat eksploitasi</span></div>
+        <div><span class="font-mono text-[#00f5a0]">Exposure vs Loss</span><span class="text-[#5a6278]"> — terpapar ancaman vs kerugian aktual</span></div>
+        <div><span class="font-mono text-[#00f5a0]">Non-functional req.</span><span class="text-[#5a6278]"> — performa (1000 transaksi/mnt), bukan fitur</span></div>
+        <div><span class="font-mono text-[#00f5a0]">Parameterized Query</span><span class="text-[#5a6278]"> — input diperlakukan sebagai data, bukan SQL</span></div>
+        <div><span class="font-mono text-[#00f5a0]">Content-Security-Policy</span><span class="text-[#5a6278]"> — daftar sumber tepercaya untuk konten browser</span></div>
+      </div>
+    </div>
+    <div class="bg-[#ff6b6b]/5 border border-[#ff6b6b]/20 rounded-2xl p-6">
+      <div class="flex items-center gap-2 mb-4"><i data-lucide="alert-triangle" class="w-4 h-4 text-[#ff6b6b]"></i><span class="text-[#ff6b6b] font-semibold text-sm">Common Pitfalls Lintas Quiz</span></div>
+      <div class="space-y-2.5 text-xs text-[#8b96b0]">
+        <div class="flex gap-2"><i data-lucide="x-circle" class="w-3.5 h-3.5 text-[#ff6b6b] shrink-0 mt-0.5"></i><p><strong class="text-[#dde4f0]">Audit trail ≠ Integrity</strong> — audit trail berkaitan dengan Accountability, bukan Integrity</p></div>
+        <div class="flex gap-2"><i data-lucide="x-circle" class="w-3.5 h-3.5 text-[#ff6b6b] shrink-0 mt-0.5"></i><p><strong class="text-[#dde4f0]">Stereotype ≠ keamanan</strong> — stereotype UML hanya label semantik, tidak enforce keamanan</p></div>
+        <div class="flex gap-2"><i data-lucide="x-circle" class="w-3.5 h-3.5 text-[#ff6b6b] shrink-0 mt-0.5"></i><p><strong class="text-[#dde4f0]">Precondition gagal → TOLAK operasi total</strong> — bukan jalankan dulu baru cek</p></div>
+        <div class="flex gap-2"><i data-lucide="x-circle" class="w-3.5 h-3.5 text-[#ff6b6b] shrink-0 mt-0.5"></i><p><strong class="text-[#dde4f0]">MFA ≠ dua password</strong> — harus kombinasi faktor berbeda (know/have/are)</p></div>
+        <div class="flex gap-2"><i data-lucide="x-circle" class="w-3.5 h-3.5 text-[#ff6b6b] shrink-0 mt-0.5"></i><p><strong class="text-[#dde4f0]">DDoS ≠ Injection</strong> — DDoS adalah availability attack, bukan injection</p></div>
+        <div class="flex gap-2"><i data-lucide="x-circle" class="w-3.5 h-3.5 text-[#ff6b6b] shrink-0 mt-0.5"></i><p><strong class="text-[#dde4f0]">CSRF ≠ XSS</strong> — CSRF memanfaatkan cookie otomatis browser; XSS menyisipkan skrip</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 2: ALGORITHM & LOGIC VISUALIZATION
+═══════════════════════════════════════════════════════ -->
+<section id="visual" class="max-w-6xl mx-auto px-4 mb-20">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="w-8 h-8 rounded-lg bg-[#ffd166]/10 border border-[#ffd166]/30 flex items-center justify-center"><i data-lucide="code-2" class="w-4 h-4 text-[#ffd166]"></i></div>
+    <h2 class="font-display text-2xl font-bold">Algorithm & Logic Visualization</h2>
+  </div>
+
+  <!-- OCL Pre/Post Logic -->
+  <div class="bg-[#181c27] border border-[#222638] rounded-2xl p-6 mb-6">
+    <h3 class="font-display font-bold text-lg mb-2">OCL Precondition / Postcondition — Cara Baca & Analisis</h3>
+    <p class="text-[#5a6278] text-sm mb-5 leading-relaxed">Quiz 3 sering menguji kemampuan membaca OCL dan menentukan apakah precondition atau postcondition yang dilanggar.</p>
+    <div class="bg-[#0b0d12] rounded-xl p-5 border border-[#222638] mb-5 overflow-x-auto">
+<pre><code><span class="cm">// Contoh OCL dari Quiz 3</span>
+<span class="kw">context</span> <span class="fn">Person</span>::<span class="fn">createLogin</span>(username : <span class="st">String</span>, password : <span class="st">String</span>)
+<span class="kw">pre:</span>  username.size() >= <span class="num">8</span> <span class="kw">and</span> password.size() >= <span class="num">12</span>
+<span class="kw">post:</span> self.isAuthenticated = <span class="num">true</span>
+
+<span class="cm">// Skenario: password hanya 6 karakter, tapi sistem set isAuthenticated = true</span>
+<span class="cm">// ANALISIS:</span>
+<span class="cm">// 1. Apakah precondition dilanggar? YA — password.size() = 6 < 12</span>
+<span class="cm">// 2. Karena precondition gagal → operasi SEHARUSNYA ditolak</span>
+<span class="cm">// 3. Tapi sistem tetap set isAuthenticated = true → postcondition juga dilanggar</span>
+<span class="cm">// JAWABAN: Pelanggaran KEDUANYA (precondition DAN postcondition)</span>
+<span class="cm">// ❌ Salah: "hanya precondition" — postcondition juga dilanggar karena</span>
+<span class="cm">//    sistem seharusnya tidak berjalan tapi tetap mengubah state</span></code></pre>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-xs font-mono text-[#00f5a0] mb-2">STEP 1 — Cek Precondition</div>
+        <p class="text-[#5a6278] text-xs">Apakah semua kondisi sebelum method dipanggil terpenuhi? Jika tidak → operasi DITOLAK total.</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-xs font-mono text-[#ffd166] mb-2">STEP 2 — Jalankan Operasi</div>
+        <p class="text-[#5a6278] text-xs">Jika precondition OK, operasi boleh berjalan. Perhatikan apakah ada perubahan state yang relevan.</p>
+      </div>
+      <div class="bg-[#0b0d12] rounded-xl p-4 border border-[#222638]">
+        <div class="text-xs font-mono text-[#818cf8] mb-2">STEP 3 — Verifikasi Postcondition</div>
+        <p class="text-[#5a6278] text-xs">Setelah operasi selesai, apakah state sesuai yang dijanjikan? Jika tidak → bug implementasi.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attack Tree Logic -->
+  <div class="bg-[#181c27] border border-[#222638] rounded-2xl p-6 mb-6">
+    <h3 class="font-display font-bold text-lg mb-2">Attack Tree — OR node vs AND node</h3>
+    <p class="text-[#5a6278] text-sm mb-5">Kunci: "salah satu cukup" = OR node | "semua harus terpenuhi" = AND node</p>
+    <div class="bg-[#0b0d12] rounded-xl p-5 border border-[#222638] mb-4 overflow-x-auto">
+<pre><code><span class="cm">// OR node — salah satu cabang cukup untuk mencapai root goal</span>
+Root: <span class="st">"Ambil alih akun"</span>
+├─ [<span class="kw">OR</span>]─ Menebak password (brute force)
+├─ [<span class="kw">OR</span>]─ Phishing pengguna
+└─ [<span class="kw">OR</span>]─ Reset password via email yang dikompromikan
+<span class="cm">// → Penyerang hanya perlu berhasil di SATU dari tiga cara</span>
+
+<span class="cm">// AND node — SEMUA langkah harus dilakukan (sequential)</span>
+Root: <span class="st">"Ambil alih sistem admin"</span>
+├─ [<span class="kw">AND</span>]─ STEP 1: Dapatkan kredensial admin
+└─ [<span class="kw">AND</span>]─ STEP 2: Login ke panel admin
+<span class="cm">// → Penyerang HARUS berhasil di kedua langkah</span>
+
+<span class="cm">// Cara cepat bedain:</span>
+<span class="cm">// "dapat dilakukan secara independen" → OR node</span>
+<span class="cm">// "diperlukan" / "harus" / "langkah berurutan" → AND node</span></code></pre>
+    </div>
+  </div>
+
+  <!-- SQL Injection Payload Analysis -->
+  <div class="bg-[#181c27] border border-[#222638] rounded-2xl p-6 mb-6">
+    <h3 class="font-display font-bold text-lg mb-2">SQL Injection — Anatomy of a Payload</h3>
+    <div class="bg-[#0b0d12] rounded-xl p-5 border border-[#222638] mb-4 overflow-x-auto">
+<pre><code><span class="cm">-- Payload: ' OR '1'='1 dimasukkan ke field email</span>
+<span class="cm">-- Query asli:</span>
+SELECT * FROM users WHERE email='<span class="fn">[INPUT]</span>' AND password='<span class="fn">[PASS]</span>'
+
+<span class="cm">-- Setelah injeksi:</span>
+SELECT * FROM users WHERE email='<span class="num">' OR '1'='1</span>' AND password='...'
+
+<span class="cm">-- Parsing oleh database:</span>
+<span class="cm">-- WHERE email='' OR '1'='1'  ← '1'='1' selalu TRUE!</span>
+<span class="cm">-- Kondisi WHERE menjadi selalu TRUE → login berhasil tanpa password</span>
+
+<span class="cm">-- DAMPAK: Integrity + Confidentiality (CIA)</span>
+<span class="cm">-- MITIGASI: Parameterized queries</span>
+<span class="kw">const</span> q = <span class="st">"SELECT * FROM users WHERE email=? AND password=?"</span>;
+db.prepare(q).execute(email, password); <span class="cm">// input = DATA, bukan SQL</span></code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 3: INTERACTIVE PRACTICE SUITE
+═══════════════════════════════════════════════════════ -->
+<section id="practice" class="max-w-6xl mx-auto px-4 mb-20">
+  <div class="flex items-center gap-3 mb-4">
+    <div class="w-8 h-8 rounded-lg bg-[#00f5a0]/10 border border-[#00f5a0]/30 flex items-center justify-center"><i data-lucide="target" class="w-4 h-4 text-[#00f5a0]"></i></div>
+    <h2 class="font-display text-2xl font-bold">Interactive Practice Suite</h2>
+  </div>
+  <p class="text-[#5a6278] text-sm mb-4">25 soal pilihan dari Quiz 1–7. Uji pemahaman, baca penjelasan mendalam, track skor kamu.</p>
+
+  <!-- Score -->
+  <div class="bg-[#181c27] border border-[#222638] rounded-xl p-4 mb-8 flex items-center gap-4">
+    <div class="flex flex-col"><span class="text-xs text-[#5a6278] font-mono">SKOR</span><span class="text-2xl font-display font-bold"><span id="score-num">0</span><span class="text-[#5a6278] text-base">/25</span></span></div>
+    <div class="flex-1 bg-[#222638] rounded-full h-3"><div id="score-bar" class="progress-bar h-3 rounded-full transition-all duration-500" style="width:0%"></div></div>
+    <button onclick="resetPractice()" class="flex items-center gap-1.5 text-xs font-mono text-[#5a6278] hover:text-[#ff6b6b] transition-colors"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>Reset</button>
+  </div>
+
+  <div id="practice-container" class="flex flex-col gap-5"></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     SECTION 4: REFERENCES
+═══════════════════════════════════════════════════════ -->
+<section id="refs" class="max-w-6xl mx-auto px-4 mb-24">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="w-8 h-8 rounded-lg bg-[#ff6b6b]/10 border border-[#ff6b6b]/30 flex items-center justify-center"><i data-lucide="library" class="w-4 h-4 text-[#ff6b6b]"></i></div>
+    <h2 class="font-display text-2xl font-bold">📚 References — Belajar dari Nol</h2>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="refs-container"></div>
+</section>
+
+<footer class="border-t border-[#222638] py-8 text-center text-[#5a6278] text-xs font-mono">
+  PKPL Quiz 1–7 Interactive Learning · Genap 2025/2026 · Fasilkom UI
+</footer>
+
+<script>
+// ════════════════════════════════════════════════
+// QUIZ BANK DATA
+// ════════════════════════════════════════════════
+const quizBank = [
+  {
+    id: 1, label: 'Quiz 1', color: '#00f5a0', topic: 'Security Principles',
+    qs: [
+      {q:"Ransomware yang mengenkripsi seluruh file organisasi terutama mempengaruhi aspek:",cs:["Authenticity saja","Non-repudiation saja","Open Design","Availability dan Integrity"],a:3},
+      {q:"Akar penyebab paling umum dari injection attack adalah kegagalan dalam:",cs:["Redundansi jaringan","Validasi input dan sanitasi data","Pengaturan timeout sesi","Enkripsi disk"],a:1},
+      {q:"Tujuan utama threat modeling dalam SDLC adalah:",cs:["Menghapus kebutuhan dokumentasi","Menguji sistem setelah produksi","Mengidentifikasi dan memitigasi ancaman sejak tahap desain","Meningkatkan kompleksitas sistem"],a:2},
+      {q:"Prinsip economy of mechanism menyarankan bahwa:",cs:["Kode harus dirahasiakan seluruhnya","Semua fitur keamanan harus ditambahkan tanpa mempertimbangkan kompleksitas","Mekanisme keamanan harus sederhana dan sekecil mungkin","Sistem keamanan harus kompleks agar sulit dipahami"],a:2},
+      {q:"Jika sistem gagal dan secara otomatis memberikan akses penuh, prinsip apa yang dilanggar?",cs:["Open design","Least common mechanism","Fail-safe defaults","Psychological acceptability"],a:2},
+      {q:"Prinsip separation of privilege menekankan bahwa:",cs:["Akses kritis membutuhkan lebih dari satu kondisi atau otorisasi","Satu administrator harus memiliki semua hak akses","Sistem hanya memiliki satu mekanisme keamanan","Hak akses diberikan permanen"],a:0},
+      {q:"Jika serangan berhasil karena tidak ada segmentasi jaringan antara server publik dan database internal, prinsip yang gagal adalah:",cs:["Economy of Mechanism","Open Design","Psychological Acceptability","Defense in Depth"],a:3},
+      {q:"Dalam konteks keamanan informasi, threat agent adalah:",cs:["Dampak kerugian setelah insiden terjadi","Mekanisme pengendalian keamanan","Entitas yang memiliki kemampuan dan niat untuk mengeksploitasi kerentanan","Sistem yang mengandung kerentanan"],a:2},
+      {q:"Mengurangi jumlah endpoint API publik yang tidak digunakan bertujuan untuk:",cs:["Meningkatkan availability","Mengurangi exposure sistem","Meningkatkan kompleksitas sistem","Menghilangkan kebutuhan autentikasi"],a:1},
+      {q:"Perbedaan paling tepat antara exposure dan loss adalah:",cs:["Keduanya memiliki arti yang sama","Exposure adalah kondisi terpaparnya aset terhadap ancaman, sedangkan loss adalah kerugian aktual","Loss selalu lebih kecil daripada exposure","Exposure adalah kerugian finansial langsung"],a:1},
+    ]
+  },
+  {
+    id: 2, label: 'Quiz 2', color: '#818cf8', topic: 'Secure Functional Model (UML/OCL)',
+    qs: [
+      {q:"Audit trail berkaitan dengan security goal:",cs:["Accountability","Availability","Integrity","Authentication","Confidentiality"],a:0},
+      {q:"Relasi Aggregation berbeda dari Composition karena:",cs:["Aggregation selalu berarti inheritance","Aggregation tidak boleh memiliki multiplicity","Aggregation identik dengan dependency","Aggregation menyatakan ketergantungan kuat siklus hidup","Pada aggregation, bagian dapat eksis tanpa keseluruhan"],a:4},
+      {q:"Dalam OCL, kata kunci 'self' merujuk pada:",cs:["Semua class","Database","Server","Objek dalam konteks saat ini","Semua aktor"],a:3},
+      {q:"Relasi <<include>> dalam use case diagram menunjukkan bahwa:",cs:["Use case selalu menyertakan use case lain","Use case hanya berjalan saat error","Use case saling menggantikan","Use case bersifat opsional","Use case tidak memiliki hubungan"],a:0},
+      {q:"Relasi Composition dalam class diagram menunjukkan bahwa:",cs:["Relasi bersifat opsional","Relasi adalah inheritance","Bagian sangat bergantung pada keseluruhan","Bagian dapat hidup tanpa keseluruhan","Bagian tidak bergantung pada keseluruhan"],a:2},
+      {q:"Security goal Integrity berarti:",cs:["Sistem memiliki autentikasi","Sistem memiliki audit trail","Sistem selalu tersedia","Data hanya dapat diakses oleh pihak berwenang","Data tidak dapat diubah tanpa izin"],a:4},
+      {q:"Stereotype dalam UML ditulis dalam format:",cs:["(stereotype)","<stereotype>","{stereotype}","//stereotype//","[stereotype]"],a:1},
+      {q:"Relasi <<extend>> digunakan ketika:",cs:["Use case bersifat tambahan dan kondisional","Use case tidak memiliki aktor","Use case adalah dependency","Use case adalah inheritance","Use case selalu dijalankan"],a:0},
+      {q:"Stereotype <<sensitive>> biasanya diberikan pada:",cs:["Package diagram","Class controller","Aktor manusia","Atribut yang menyimpan data sensitif","Use case umum"],a:3},
+      {q:"Threat-driven modeling berarti:",cs:["Memulai dari coding","Memulai dari ancaman dan tujuan penyerang","Memulai dari deployment","Memulai dari fitur UI","Memulai dari database"],a:1},
+      {q:"Stereotype tanpa constraint tambahan berarti:",cs:["Otomatis aman","Menggantikan testing","Hanya label semantik","Tidak perlu validasi","Menghapus kebutuhan OCL"],a:2},
+      {q:"SQL Injection terutama mengancam:",cs:["Accountability","Integrity dan Confidentiality","Authentication saja","Authorization saja","Availability"],a:1},
+      {q:"Dalam Secure SDLC, secure functional model memiliki sifat:",cs:["forensik","preventif","reaktif","korektif","detektif"],a:1},
+      {q:"Stereotype yang paling tepat untuk kelas yang bertanggung jawab terhadap pengelolaan kriptografi adalah:",cs:["<<threat>>","<<audit>>","<<secure>>","<<crypto>>","<<sensitive>>"],a:3},
+      {q:"Non-functional requirement yang berkaitan dengan performa adalah:",cs:["Sistem mampu memproses 1000 transaksi per menit","Sistem menyediakan fitur login","Sistem memiliki dashboard admin","Sistem dapat mengirim email","Sistem memiliki fitur pencarian"],a:0},
+    ]
+  },
+  {
+    id: 3, label: 'Quiz 3', color: '#ff6b6b', topic: 'Secure Dynamic Model',
+    qs: [
+      {q:"Jika method addPayment dipanggil saat status Order = 'Confirmed' (padahal precondition: status = 'Pending'), maka:",cs:["Operasi berjalan tetapi totalPaid tidak berubah","Operasi tetap berjalan karena amount > 0","Postcondition tetap bisa dievaluasi","Operasi harus ditolak karena precondition tidak terpenuhi"],a:3},
+      {q:"Jika setelah process() status Payment = 'Success' tetapi Order tetap 'Pending' (padahal post: 'Success' implies Order = 'Confirmed'), maka:",cs:["OCL tidak relevan","Postcondition dilanggar","Precondition dilanggar","Tidak ada pelanggaran"],a:1},
+      {q:"Jika sistem tetap mengatur isAuthenticated = true meskipun password hanya 6 karakter (pre: password.size() >= 12), maka yang terjadi adalah:",cs:["Hanya pelanggaran postcondition","Tidak ada pelanggaran","Hanya pelanggaran precondition","Pelanggaran precondition dan postcondition"],a:3},
+      {q:"Jika precondition OCL menyatakan 'amount > 0' dan nilai yang dikirim adalah '-5', maka sistem akan:",cs:["Mengubah nilai menjadi positif secara otomatis","Tetap mengeksekusi operasi lalu mencatat log","Mengabaikan constraint tersebut","Mencegah eksekusi operasi dan menghasilkan error"],a:3},
+      {q:"Activation bar pada sequence diagram menunjukkan:",cs:["Hubungan inheritance","Visibility atribut","Masa hidup objek","Durasi objek sedang memproses pesan"],a:3},
+      {q:"Destroy message pada sequence diagram ditandai dengan:",cs:["Diamond","Panah putus-putus","Lingkaran hitam","Simbol X pada lifeline"],a:3},
+      {q:"Fork node pada activity diagram menunjukkan:",cs:["Eksekusi paralel beberapa aktivitas","Sinkronisasi thread","Percabangan kondisi","Akhir proses"],a:0},
+      {q:"Pada activity diagram, jika beberapa panah masuk ke horizontal bar, maka elemen tersebut adalah:",cs:["Join node","Fork node","Decision node","Merge node"],a:0},
+      {q:"Proses lock ticket pada sistem ticketing terutama berfungsi untuk:",cs:["Mengurangi kompleksitas","Mencegah race condition dan double booking","Menghapus state Sold","Menghilangkan logging"],a:1},
+      {q:"Tidak adanya error handling dalam dynamic model dapat menyebabkan:",cs:["Race condition","Silent failure dan inkonsistensi state","Strong encapsulation","Weak encapsulation"],a:1},
+    ]
+  },
+  {
+    id: 4, label: 'Quiz 4', color: '#ffd166', topic: 'Threat Modeling (STRIDE, DFD, Attack Tree)',
+    qs: [
+      {q:"Pada DFD sistem akademik, proses 'Update Nilai Mahasiswa' menerima input dari Staff tanpa validasi akses. Ancaman STRIDE yang paling mungkin:",cs:["Elevation of Privilege","Repudiation","Denial of Service","Spoofing"],a:0},
+      {q:"Dalam DFD sebuah aplikasi cloud storage, data file pengguna disimpan pada Data Store. Jika penyerang dapat membaca file tanpa izin, prinsip keamanan apa yang dilanggar?",cs:["Confidentiality","Integrity","Availability","Authentication"],a:0},
+      {q:"Pada DFD sistem login, seorang penyerang mengubah parameter request sebelum mencapai server. Ancaman STRIDE apa yang terjadi?",cs:["Tampering","Repudiation","Spoofing","Denial of Service"],a:0},
+      {q:"Komponen DFD yang menunjukkan perubahan tingkat kepercayaan (trust level) adalah:",cs:["Trust Boundary","External Entity","Data Store","Process"],a:0},
+      {q:"Sebuah API internal mengembalikan pesan error yang berisi struktur database dan query SQL. Ancaman STRIDE apa yang paling relevan?",cs:["Repudiation","Spoofing","Information Disclosure","Elevation of Privilege"],a:2},
+      {q:"Dalam attack tree 'Mengambil alih akun', attacker dapat: 1. Menebak password  2. Phishing  3. Reset via email dikompromikan. Struktur node yang tepat:",cs:["AND node","Sequential node","OR node","Root node"],a:2},
+      {q:"Untuk mencapai 'Mengambil alih sistem admin', attacker HARUS: 1. Dapatkan kredensial admin  2. Login ke panel admin. Hubungan node tersebut:",cs:["OR node","Root node","AND node","Leaf node"],a:2},
+      {q:"Dalam threat modeling e-commerce, Threat A: 8,8,7,9,7 dan Threat B: 4,4,3,5,4. Keputusan paling tepat dalam risk prioritization:",cs:["Kedua ancaman memiliki risiko sama","Threat B lebih berbahaya","Kedua ancaman diabaikan","Threat A harus diprioritaskan untuk mitigasi"],a:3},
+      {q:"Dalam DFD sistem web, proses login menghasilkan token sesi yang disimpan di browser. Jika token dapat ditebak dengan mudah, jenis kerentanan apa yang paling mungkin?",cs:["Spoofing","Logging failure","Repudiation","Denial of Service"],a:0},
+      {q:"Dalam sistem transfer bank, penyerang berhasil memodifikasi nilai transaksi selama transmisi data. Ancaman yang terjadi adalah:",cs:["Repudiation","Spoofing","Denial of Service","Tampering"],a:3},
+    ]
+  },
+  {
+    id: 5, label: 'Quiz 5', color: '#f9a8d4', topic: 'Authentication & Authorization',
+    qs: [
+      {q:"Ketika login gmail dari komputer lain, google meminta kita untuk memilih sebuah angka. Ini adalah mekanisme autentikasi:",cs:["What you have","What you know","What you are","Salah semua"],a:0},
+      {q:"OAuth melakukan fungsi:",cs:["Autentikasi","Otorisasi","Salah semua","Autentikasi dan Otorisasi"],a:3},
+      {q:"Ketika ujian akhir, asisten akan mengecek KTM sebelum mengikuti ujian. Mekanisme ini termasuk:",cs:["What you know","Salah semua","What you have","What you are"],a:3},
+      {q:"Password yang paling baik adalah:",cs:["Yang susah diingat","Yang paling panjang","Lebih banyak menggunakan karakter tanda baca","8 karakter kombinasi huruf besar kecil, angka dan tanda baca"],a:1},
+      {q:"Contoh multi factor authentication yang BENAR:",cs:["Menggunakan kartu ATM dan OTP","Salah semua","Menggunakan PIN dan password","Menggunakan fingerprint dan face ID"],a:1},
+      {q:"Mahasiswa enroll ke kuliah PKPL di SCELE, apa saja metode yang digunakan:",cs:["Autentikasi dan otorisasi","Otorisasi saja","Autentikasi saja","Salah semua"],a:2},
+    ]
+  },
+  {
+    id: 6, label: 'Quiz 6', color: '#4ade80', topic: 'Input Validation & Sanitization',
+    qs: [
+      {q:"Dalam buffer overflow defense, apa fungsi dari 'stack canaries'?",cs:["Mengenkripsi stack memory","Mempercepat akses ke stack","Membersihkan stack secara otomatis","Nilai acak yang ditempatkan sebelum return address; jika berubah, program dihentikan"],a:3},
+      {q:"Apa tujuan utama dari input sanitization?",cs:["Mempercepat query database","Melakukan enkripsi untuk keamanan pengguna","Membersihkan input dari pengguna yang mencurigakan","Melakukan kompresi data sebelum disimpan"],a:2},
+      {q:"Mengapa syntactic validation harus dilakukan sebelum semantic validation?",cs:["Karena lebih cepat","Karena syntactic validation lebih aman","Karena tidak ada gunanya memeriksa logika bisnis jika format data tidak valid","Karena semantic validation lebih sulit"],a:2},
+      {q:"Manakah contoh semantic validation yang benar?",cs:["Nomor telepon harus 10 digit","Password harus minimal 8 karakter","Email harus mengikuti format user@domain.com","Tanggal mulai harus sebelum tanggal selesai"],a:3},
+      {q:"Apa perbedaan utama antara input validation dan input sanitization?",cs:["Input validation memeriksa apakah data dapat diterima, sedangkan input sanitization mengubah data menjadi bentuk yang aman","Keduanya adalah istilah yang sama","Input validation mengubah data menjadi bentuk yang aman, sedangkan input sanitization memeriksa","Input validation hanya untuk client-side, sanitization untuk server-side"],a:0},
+      {q:"Dalam konteks input validation, apa yang dimaksud dengan 'whitelisting'?",cs:["Hanya mengizinkan input yang diketahui aman dan sesuai pola yang ditentukan","Menyimpan daftar pengguna yang diizinkan","Mengamankan semua input pengguna","Memblokir karakter berbahaya yang sudah diketahui"],a:0},
+      {q:"Manakah dari berikut ini yang BUKAN termasuk jenis injection attack?",cs:["XSS","OSCi","DDoS","SQLi"],a:2},
+      {q:"Mengapa client-side validation tidak boleh menjadi satu-satunya validasi?",cs:["Karena dapat di-bypass dengan memodifikasi request langsung ke server","Karena lebih lambat daripada server-side","Karena memerlukan JavaScript yang kompleks","Karena tidak kompatibel dengan semua browser"],a:0},
+      {q:"Apa yang dimaksud dengan 'sanitize as close to the sink as possible'?",cs:["Membersihkan data sesegera mungkin saat masuk sistem","Membersihkan data tepat sebelum data digunakan pada 'operasi berbahaya'","Membersihkan data hanya di client-side","Membersihkan data setelah disimpan di database"],a:1},
+      {q:"Layer keamanan apa yang bisa membatasi dampak breach meskipun attacker berhasil mengakses database?",cs:["Encryption at rest","User training","Input validation","Strong password policy"],a:0},
+    ]
+  },
+  {
+    id: 7, label: 'Quiz 7', color: '#fb923c', topic: 'Standard Web Application Vulnerabilities',
+    qs: [
+      {q:"Konfigurasi cookie session yang paling aman secara umum dalam aplikasi web adalah:",cs:["Secure=false, HttpOnly=true, SameSite=Lax","Secure=false, HttpOnly=false, SameSite=None","Secure=true, HttpOnly=true, SameSite=Strict (Hanya HTTPS, tidak bisa diakses JS, tidak dikirim lintas domain)","Secure=true, HttpOnly=false, SameSite=None"],a:2},
+      {q:"Dalam skenario CSRF, mengapa request berbahaya dari penyerang dapat diterima oleh server target sebagai request yang sah?",cs:["Karena browser menonaktifkan validasi origin secara default","Karena penyerang mengetahui password korban","Karena browser otomatis menambahkan session cookie korban pada request ke situs target","Karena server selalu menolak request POST dari pengguna anonim"],a:2},
+      {q:"Fungsi htmlspecialchars() pada PHP digunakan sebagai mitigasi XSS karena:",cs:["Mengenkripsi nilai input pengguna sebelum disimpan ke database","Mengubah karakter HTML khusus seperti <, >, &, dan \" menjadi HTML entities yang aman","Menghasilkan token acak untuk diverifikasi saat form dikirimkan","Memvalidasi format email dan URL"],a:1},
+      {q:"Session fixation adalah serangan di mana penyerang:",cs:["Mencuri session ID yang sudah aktif menggunakan XSS","Menetapkan session ID tertentu pada browser korban sebelum login, lalu menggunakannya setelah korban terautentikasi","Menebak session ID korban secara sistematis","Memperpanjang masa berlaku session korban"],a:1},
+      {q:"Mekanisme perlindungan yang paling umum digunakan untuk mencegah CSRF pada form dan request adalah:",cs:["Menonaktifkan cookie session sepenuhnya","Anti-CSRF token unik untuk setiap sesi atau request","CAPTCHA pada semua halaman","Menyembunyikan URL endpoint sensitif"],a:1},
+      {q:"Serangan credential stuffing memanfaatkan kondisi di mana:",cs:["Penyerang mencuri session cookie melalui XSS","Penyerang menebak password populer satu per satu","Pengguna menggunakan kembali pasangan email-password yang sama di berbagai layanan","Penyerang mengeksploitasi kelemahan algoritma enkripsi"],a:2},
+      {q:"Header X-Frame-Options: DENY pada respons HTTP berfungsi untuk mencegah serangan:",cs:["CSRF","SQL Injection melalui iframe","XSS","Clickjacking dengan melarang halaman web dimuat di dalam elemen frame atau iframe"],a:3},
+      {q:"HTTP Strict Transport Security (HSTS) melindungi aplikasi web dari:",cs:["Protocol downgrade attack dan man-in-the-middle attack dengan memaksa penggunaan HTTPS","CSRF dengan memvalidasi Origin header","SQL Injection dengan memvalidasi query","XSS dengan membatasi sumber skrip"],a:0},
+      {q:"Payload ' OR '1'='1 yang dimasukkan ke field email pada form login bertujuan untuk:",cs:["Mengekstrak hash password melalui error message","Membuat kondisi WHERE selalu bernilai TRUE sehingga autentikasi terlewati","Menghapus semua record pengguna","Mengubah password admin"],a:1},
+      {q:"Cross-Site Scripting (XSS) terjadi karena aplikasi web:",cs:["Tidak menerapkan anti-CSRF token","Menampilkan input pengguna di halaman tanpa melakukan output encoding atau escaping yang memadai","Menggunakan session ID yang dapat diprediksi","Tidak menggunakan enkripsi HTTPS"],a:1},
+    ]
+  }
+];
+
+// ════════════════════════════════════════════════
+// RENDER QUIZ BANK (Answer Key Section)
+// ════════════════════════════════════════════════
+let activeTab = 1;
+
+function renderTabs() {
+  const tabsEl = document.getElementById('quiz-tabs');
+  tabsEl.innerHTML = '';
+  quizBank.forEach(qz => {
+    const btn = document.createElement('button');
+    btn.className = `px-4 py-2 rounded-lg text-xs font-mono border border-[#222638] ${activeTab===qz.id ? 'text-[#0b0d12] font-bold' : 'text-[#5a6278] hover:text-[#dde4f0]'}`;
+    btn.style.background = activeTab===qz.id ? qz.color : 'transparent';
+    btn.style.borderColor = activeTab===qz.id ? qz.color : '';
+    btn.textContent = qz.label;
+    btn.onclick = () => { activeTab = qz.id; renderTabs(); renderQuizContent(); };
+    tabsEl.appendChild(btn);
+  });
+}
+
+function renderQuizContent() {
+  const el = document.getElementById('quiz-content');
+  const qz = quizBank.find(q => q.id === activeTab);
+  if (!qz) return;
+  el.innerHTML = `
+    <div class="bg-[#181c27] border border-[#222638] rounded-2xl p-6 fade-in">
+      <div class="flex items-center gap-2 mb-5">
+        <span class="tag px-2 py-0.5 rounded text-[#0b0d12] font-bold" style="background:${qz.color}">${qz.label}</span>
+        <span class="text-[#5a6278] text-sm">${qz.topic}</span>
+        <span class="ml-auto tag bg-[#222638] text-[#5a6278] px-2 py-0.5 rounded">${qz.qs.length} soal</span>
+      </div>
+      <div class="flex flex-col gap-5">
+        ${qz.qs.map((q, qi) => `
+          <div class="border border-[#222638] rounded-xl p-4 bg-[#0b0d12]">
+            <div class="flex items-start gap-3 mb-3">
+              <span class="tag bg-[#222638] text-[#5a6278] px-2 py-0.5 rounded shrink-0">${qi+1}</span>
+              <p class="text-sm font-semibold leading-snug">${q.q}</p>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              ${q.cs.map((c, ci) => `
+                <div class="flex items-start gap-2 px-3 py-2 rounded-lg ${ci===q.a ? 'answer-box' : 'bg-[#181c27]'}">
+                  <span class="font-mono text-xs shrink-0 mt-0.5 ${ci===q.a ? 'text-[#00f5a0]' : 'text-[#5a6278]'}">${String.fromCharCode(65+ci)}.</span>
+                  <span class="text-xs ${ci===q.a ? 'text-[#00f5a0] font-semibold' : 'text-[#5a6278]'}">${c}</span>
+                  ${ci===q.a ? '<span class="ml-auto shrink-0"><i data-lucide="check-circle" class="w-3.5 h-3.5 text-[#00f5a0]"></i></span>' : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  lucide.createIcons();
+}
+
+renderTabs();
+renderQuizContent();
+
+// ════════════════════════════════════════════════
+// PRACTICE SUITE DATA
+// ════════════════════════════════════════════════
+const practiceQs = [
+  // From Q1
+  {no:'Q1-1',q:"Ransomware mengenkripsi seluruh file. Aspek CIA yang terpengaruh terutama:",cs:["Confidentiality saja","Availability dan Integrity","Authentication saja","Repudiation"],a:1,quiz:'Quiz 1',exp:"Ransomware mengenkripsi file (Integrity — data dimodifikasi) dan membuat file tidak bisa diakses (Availability). Bukan Confidentiality karena file tidak dibocorkan, hanya dikunci."},
+  {no:'Q1-2',q:"Sistem gagal dan otomatis memberikan akses penuh kepada semua orang. Prinsip mana yang dilanggar?",cs:["Open Design","Separation of Privilege","Fail-safe Defaults","Economy of Mechanism"],a:2,quiz:'Quiz 1',exp:"Fail-safe Defaults: default sistem harus MENOLAK akses, bukan memberinya. Jika gagal, sistem harus gagal secara aman (deny by default). Memberikan akses penuh saat gagal = pelanggaran nyata prinsip ini."},
+  {no:'Q1-3',q:"Mengurangi jumlah endpoint API publik yang tidak digunakan bertujuan untuk:",cs:["Meningkatkan availability","Mengurangi exposure sistem","Meningkatkan kompleksitas","Menghilangkan autentikasi"],a:1,quiz:'Quiz 1',exp:"Setiap endpoint yang aktif adalah potential attack surface. Menonaktifkan endpoint yang tidak digunakan = mengurangi exposure sistem. Prinsip ini berkaitan dengan 'attack surface reduction'."},
+  // From Q2
+  {no:'Q2-1',q:"Audit trail berkaitan dengan security goal mana?",cs:["Availability","Integrity","Authentication","Accountability"],a:3,quiz:'Quiz 2',exp:"Audit trail adalah mekanisme mencatat siapa melakukan apa kapan — ini adalah Accountability. Sering dikira Integrity, tapi Integrity = data tidak bisa diubah tanpa izin. Audit trail ≠ proteksi dari perubahan."},
+  {no:'Q2-2',q:"Perbedaan Composition vs Aggregation dalam class diagram:",cs:["Composition lebih lemah dari Aggregation","Dalam Aggregation, bagian dapat eksis sendiri tanpa keseluruhan","Dalam Composition, bagian dapat eksis tanpa keseluruhan","Keduanya identik"],a:1,quiz:'Quiz 2',exp:"Composition = ketergantungan KUAT (bagian mati jika keseluruhan mati). Aggregation = ketergantungan LEMAH (bagian bisa eksis mandiri). Contoh: Rumah-Kamar = Composition. Universitas-Mahasiswa = Aggregation."},
+  {no:'Q2-3',q:"Stereotype UML tanpa constraint tambahan berarti:",cs:["Otomatis aman karena sudah ditandai","Menggantikan testing","Hanya label semantik","Menghapus kebutuhan OCL"],a:2,quiz:'Quiz 2',exp:"Stereotype dalam UML (<<sensitive>>, <<crypto>>) adalah HANYA label/anotasi semantik. Tidak ada enforcement otomatis. Programmer tetap harus mengimplementasikan keamanan secara manual. Stereotype bukan kode, bukan jaminan."},
+  // From Q3
+  {no:'Q3-1',q:"OCL: pre: password.size() >= 12. Sistem set isAuthenticated = true padahal password hanya 6 karakter. Yang terjadi:",cs:["Hanya pelanggaran precondition","Tidak ada pelanggaran","Hanya pelanggaran postcondition","Pelanggaran precondition DAN postcondition"],a:3,quiz:'Quiz 3',exp:"Precondition dilanggar: password.size()=6 < 12. KARENA precondition gagal, operasi seharusnya ditolak. Tapi sistem tetap mengubah isAuthenticated=true → postcondition juga dilanggar (sistem berjalan padahal tidak seharusnya). Jadi KEDUANYA dilanggar."},
+  {no:'Q3-2',q:"Fork node pada activity diagram menunjukkan:",cs:["Sinkronisasi thread","Akhir proses","Percabangan kondisi","Eksekusi paralel beberapa aktivitas"],a:3,quiz:'Quiz 3',exp:"Fork node = split menjadi beberapa aliran paralel (satu masuk, banyak keluar). Kebalikannya: Join node = banyak aliran masuk ke satu titik (sinkronisasi). Decision node = percabangan kondisi (if/else). Final node = lingkaran dengan titik."},
+  {no:'Q3-3',q:"Tidak adanya error handling dalam dynamic model menyebabkan:",cs:["Race condition","Weak encapsulation","Strong encapsulation","Silent failure dan inkonsistensi state"],a:3,quiz:'Quiz 3',exp:"Tanpa error handling, kegagalan terjadi tanpa diketahui (silent failure). State sistem bisa menjadi inkonsisten karena operasi setengah jalan. Ini juga mempersulit audit trail dan forensic analysis."},
+  // From Q4
+  {no:'Q4-1',q:"Proses 'Update Nilai Mahasiswa' menerima input dari Staff tanpa validasi akses. Ancaman STRIDE yang paling mungkin:",cs:["Repudiation","Denial of Service","Spoofing","Elevation of Privilege"],a:3,quiz:'Quiz 4',exp:"Tanpa validasi akses, staff yang tidak berwenang bisa mengubah nilai = Elevation of Privilege (mengakses fungsi di atas wewenangnya). Bukan Spoofing (memalsukan identitas) karena identitasnya mungkin valid, tapi wewenangnya tidak cukup."},
+  {no:'Q4-2',q:"Attack tree: Ambil alih akun via (1) tebak password, (2) phishing, (3) reset via email dikompromikan. Node yang tepat:",cs:["AND node — semua harus dilakukan","Sequential node","Leaf node","OR node — salah satu cukup"],a:3,quiz:'Quiz 4',exp:"OR node karena ketiga metode bersifat INDEPENDEN dan ALTERNATIF — penyerang cukup berhasil di SALAH SATU untuk mencapai tujuan. AND node digunakan jika semua langkah HARUS dilakukan secara bersamaan/berurutan."},
+  {no:'Q4-3',q:"API mengembalikan pesan error berisi struktur database dan query SQL. Ancaman STRIDE:",cs:["Spoofing","Repudiation","Elevation of Privilege","Information Disclosure"],a:3,quiz:'Quiz 4',exp:"Ketika sistem membocorkan informasi internal (struktur DB, query) melalui error message = Information Disclosure. Penyerang mendapat informasi yang tidak seharusnya terekspos, yang kemudian bisa digunakan untuk serangan lebih lanjut."},
+  // From Q5
+  {no:'Q5-1',q:"Google meminta memilih angka saat login dari komputer baru. Ini adalah mekanisme:",cs:["What you know (PIN/password)","What you are (biometrik)","What you have (smartphone/device)","Salah semua"],a:2,quiz:'Quiz 5',exp:"Memilih angka yang muncul di perangkat lain = membuktikan kamu PUNYA perangkat tersebut = What you have. Angka yang muncul dikirim ke smartphone kamu, dan kamu harus konfirmasi dari sana."},
+  {no:'Q5-2',q:"Contoh Multi-Factor Authentication yang BENAR adalah:",cs:["Kartu ATM + OTP (what you have + what you have)","PIN + Password (what you know + what you know)","Fingerprint + Face ID (what you are + what you are)","Salah semua dari A, B, C"],a:3,quiz:'Quiz 5',exp:"MFA yang benar = kombinasi FAKTOR BERBEDA (know+have, know+are, have+are). A: ATM+OTP = keduanya what you have → BUKAN MFA. B: PIN+Password = keduanya what you know → BUKAN MFA. C: Fingerprint+FaceID = keduanya what you are → BUKAN MFA. Jadi jawaban benar: Salah semua."},
+  {no:'Q5-3',q:"Cek KTM sebelum ujian adalah mekanisme autentikasi:",cs:["What you know","What you have","What you are","Tidak ada autentikasi"],a:2,quiz:'Quiz 5',exp:"KTM DIGUNAKAN untuk membuktikan identitas fisik mahasiswa = What you are (identitas yang melekat pada diri). Banyak yang mengira 'What you have' karena KTM adalah kartu fisik, tapi konteksnya adalah VERIFIKASI IDENTITAS FISIK mahasiswa tersebut."},
+  // From Q6
+  {no:'Q6-1',q:"Stack canaries dalam buffer overflow defense berfungsi sebagai:",cs:["Enkripsi stack memory","Nilai acak sebelum return address; jika berubah, program dihentikan","Membersihkan stack secara otomatis","Mempercepat akses ke stack"],a:1,quiz:'Quiz 6',exp:"Stack canary = nilai acak yang ditempatkan di antara variabel lokal dan return address di stack. Saat ada buffer overflow, nilai canary ikut tertimpa. Sebelum eksekusi kembali ke return address, sistem mengecek canary — jika berubah, program dihentikan (SIGABRT)."},
+  {no:'Q6-2',q:"'250 tahun' sebagai input umur akan gagal pada validasi jenis:",cs:["Syntactic validation","Authentication validation","Output encoding validation","Semantic validation"],a:3,quiz:'Quiz 6',exp:"250 tahun adalah angka valid secara format (syntactic OK: angka) tetapi tidak valid secara LOGIKA BISNIS (manusia tidak hidup 250 tahun). Ini adalah pelanggaran semantic validation — validasi makna/konteks, bukan sekadar format."},
+  {no:'Q6-3',q:"Mengapa client-side validation saja tidak cukup?",cs:["Terlalu lambat","Tidak support semua browser","Bisa di-bypass dengan memodifikasi request langsung ke server","Memerlukan JavaScript yang terlalu kompleks"],a:2,quiz:'Quiz 6',exp:"Client-side validation hanya ada di browser — penyerang bisa menggunakan tools seperti Burp Suite, Postman, atau curl untuk mengirim request langsung ke server TANPA melewati browser sama sekali. Selalu lakukan validasi di server-side."},
+  // From Q7
+  {no:'Q7-1',q:"CSRF bekerja karena:",cs:["Browser menonaktifkan validasi origin","Penyerang tahu password korban","Browser otomatis menambahkan session cookie korban pada request ke situs target","Server menolak semua POST request"],a:2,quiz:'Quiz 7',exp:"Browser secara otomatis menyertakan cookie dari situs tertentu pada SETIAP request ke situs itu, termasuk request yang dipicu dari situs lain. Jadi saat korban mengunjungi halaman penyerang, browser secara otomatis kirim cookie sesi bank korban ke server bank."},
+  {no:'Q7-2',q:"Session fixation berbeda dari session hijacking karena:",cs:["Session fixation lebih berbahaya dari hijacking","Session fixation: penyerang menetapkan session ID SEBELUM login korban; hijacking: mencuri session ID yang sudah aktif","Session fixation hanya terjadi di mobile app","Session fixation membutuhkan XSS"],a:1,quiz:'Quiz 7',exp:"Session Fixation: penyerang MENETAPKAN session ID ke korban → tunggu korban login → gunakan session ID yang sudah di-set. Session Hijacking: penyerang MENCURI session ID yang sudah aktif (via XSS, sniffing, dll). Keduanya berbeda di KAPAN penyerang mendapat session ID."},
+  {no:'Q7-3',q:"Payload ' OR '1'='1 dimasukkan ke field email login. Tujuannya adalah:",cs:["Mengekstrak hash password","Menghapus semua record","Mengubah password admin","Membuat kondisi WHERE selalu TRUE sehingga autentikasi terlewati"],a:3,quiz:'Quiz 7',exp:"Query menjadi: WHERE email='' OR '1'='1'. Karena '1'='1' selalu TRUE, kondisi WHERE menjadi selalu TRUE untuk semua baris — database mengembalikan semua user dan login dianggap berhasil. Mitigasi: parameterized queries."},
+  {no:'Q7-4',q:"X-Frame-Options: DENY mencegah serangan:",cs:["SQL Injection","XSS","CSRF","Clickjacking"],a:3,quiz:'Quiz 7',exp:"Clickjacking = penyerang menempatkan halaman target dalam iframe tersembunyi, lalu mengelabui korban untuk mengklik elemen di halaman target tanpa sadar. X-Frame-Options: DENY mencegah halaman dimuat dalam frame/iframe dari domain manapun."},
+  {no:'Q7-5',q:"HSTS (HTTP Strict Transport Security) melindungi dari:",cs:["XSS","SQL Injection","Protocol downgrade attack dan man-in-the-middle attack","CSRF"],a:2,quiz:'Quiz 7',exp:"HSTS memberitahu browser untuk SELALU gunakan HTTPS ke domain ini, bahkan jika user mengetik http://. Ini mencegah: (1) Protocol downgrade attack (memaksa HTTP), (2) MitM attack yang bergantung pada HTTP. Berbeda dari CSP yang mengatur konten, atau anti-CSRF token yang melindungi form."},
+];
+
+// ════════════════════════════════════════════════
+// RENDER PRACTICE
+// ════════════════════════════════════════════════
+let pScore = 0;
+
+function renderPractice() {
+  const container = document.getElementById('practice-container');
+  container.innerHTML = '';
+  practiceQs.forEach((q, idx) => {
+    const div = document.createElement('div');
+    div.className = 'bg-[#181c27] border border-[#222638] rounded-2xl p-6 fade-in';
+    div.id = `pq-${idx}`;
+    div.innerHTML = `
+      <div class="flex items-start gap-3 mb-4">
+        <span class="tag bg-[#222638] text-[#5a6278] px-2 py-0.5 rounded shrink-0 mt-0.5">${q.no}</span>
+        <span class="tag bg-[#222638] text-[#818cf8] px-2 py-0.5 rounded shrink-0 mt-0.5">${q.quiz}</span>
+        <span class="font-display font-semibold leading-snug text-[#dde4f0]">${q.q}</span>
+      </div>
+      <div class="flex flex-col gap-2 mb-4">
+        ${q.cs.map((c,ci) => `
+          <button class="btn-c w-full text-left px-4 py-3 rounded-xl bg-[#0b0d12] text-sm text-[#8b96b0] flex items-start gap-3"
+            onclick="checkPractice(${idx},${ci})" id="pb-${idx}-${ci}">
+            <span class="font-mono text-[#00f5a0] shrink-0 mt-0.5">${String.fromCharCode(65+ci)}</span>
+            <span>${c}</span>
+          </button>
+        `).join('')}
+      </div>
+      <div id="pfb-${idx}" class="hidden mb-3"></div>
+      <button id="prev-btn-${idx}" onclick="toggleReveal('prev-${idx}')" class="hidden flex items-center gap-2 text-xs font-mono text-[#5a6278] hover:text-[#00f5a0] transition-colors">
+        <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+        <span id="prev-lbl-${idx}">Tampilkan Penjelasan</span>
+      </button>
+      <div id="prev-${idx}" class="reveal mt-3 bg-[#0b0d12] border border-[#222638] rounded-xl p-4">
+        <div class="text-xs font-mono text-[#818cf8] mb-2">PENJELASAN MENDALAM</div>
+        <p class="text-[#8b96b0] text-sm leading-relaxed">${q.exp}</p>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+  lucide.createIcons();
+}
+
+function checkPractice(qIdx, ci) {
+  const q = practiceQs[qIdx];
+  const btns = q.cs.map((_,i) => document.getElementById(`pb-${qIdx}-${i}`));
+  if (btns[0].disabled) return;
+  btns.forEach(b => b.disabled = true);
+  const correct = ci === q.a;
+  btns[ci].classList.add(correct ? 'correct' : 'wrong');
+  if (!correct) btns[q.a].classList.add('show-correct');
+  if (correct) pScore++;
+  document.getElementById(`pfb-${qIdx}`).classList.remove('hidden');
+  document.getElementById(`pfb-${qIdx}`).innerHTML = correct
+    ? `<div class="flex items-center gap-2 text-[#00f5a0] text-sm"><i data-lucide="check-circle" class="w-4 h-4"></i>Benar ✅</div>`
+    : `<div class="flex items-center gap-2 text-[#ff6b6b] text-sm"><i data-lucide="x-circle" class="w-4 h-4"></i>Salah ❌ — Jawaban benar: <span class="font-mono text-[#00f5a0]">${String.fromCharCode(65+q.a)}</span></div>`;
+  const rb = document.getElementById(`prev-btn-${qIdx}`);
+  rb.classList.remove('hidden'); rb.style.display='flex';
+  document.getElementById('score-num').textContent = pScore;
+  document.getElementById('score-bar').style.width = `${(pScore/practiceQs.length)*100}%`;
+  lucide.createIcons();
+}
+
+function toggleReveal(id) {
+  const box = document.getElementById(id);
+  const idx = id.replace('prev-','');
+  const lbl = document.getElementById(`prev-lbl-${idx}`);
+  if (box.classList.contains('open')) { box.classList.remove('open'); lbl.textContent='Tampilkan Penjelasan'; }
+  else { box.classList.add('open'); lbl.textContent='Sembunyikan Penjelasan'; }
+}
+
+function resetPractice() {
+  pScore = 0;
+  document.getElementById('score-num').textContent = '0';
+  document.getElementById('score-bar').style.width = '0%';
+  renderPractice();
+}
+
+renderPractice();
+
+// ════════════════════════════════════════════════
+// REFERENCES
+// ════════════════════════════════════════════════
+const refs = [
+  {topic:"Security Principles (Saltzer & Schroeder)",quiz:"Quiz 1",color:"#00f5a0",
+   desc:"8 prinsip desain keamanan klasik: Least Privilege, Fail-safe Defaults, Economy of Mechanism, Open Design, Separation of Privilege, Least Common Mechanism, Psychological Acceptability, Defense in Depth.",
+   keywords:["Least Privilege","Fail-safe Defaults","Defense in Depth","CIA Triad","Threat Agent","Exposure vs Loss"]},
+  {topic:"UML & OCL — Secure Functional Model",quiz:"Quiz 2",color:"#818cf8",
+   desc:"Pemodelan keamanan menggunakan UML: use case relationships (include/extend), class diagram (composition vs aggregation), stereotypes keamanan (<<sensitive>>, <<crypto>>, <<audit>>), dan OCL untuk formal constraints.",
+   keywords:["<<include>>","<<extend>>","Composition","Aggregation","OCL","self","Misuse Case","Countermeasure","Non-functional Requirement"]},
+  {topic:"OCL Pre/Postcondition & Dynamic Model",quiz:"Quiz 3",color:"#ff6b6b",
+   desc:"Precondition harus terpenuhi sebelum operasi. Jika tidak → operasi ditolak. Postcondition menjamin state setelah operasi. Sequence diagram (activation bar, destroy, self-call). Activity diagram (fork, join, merge, final node).",
+   keywords:["Precondition","Postcondition","Sequence Diagram","Activity Diagram","Fork Node","Join Node","Race Condition","Silent Failure","Lock Mechanism"]},
+  {topic:"STRIDE, DFD & Attack Tree",quiz:"Quiz 4",color:"#ffd166",
+   desc:"STRIDE (6 kategori ancaman), DFD (Data Flow Diagram) dengan Trust Boundary, dan Attack Tree (OR node vs AND node). DREAD untuk scoring prioritas mitigasi.",
+   keywords:["Spoofing","Tampering","Repudiation","Information Disclosure","Denial of Service","Elevation of Privilege","Trust Boundary","OR node","AND node","DREAD"]},
+  {topic:"Authentication, Authorization & OAuth",quiz:"Quiz 5",color:"#f9a8d4",
+   desc:"3 faktor autentikasi: what you know, have, are. MFA harus kombinasi faktor BERBEDA. OAuth melakukan autentikasi DAN otorisasi. Security models: Bell-LaPadula (confidentiality), Biba (integrity), HRU.",
+   keywords:["What you Know","What you Have","What you Are","OAuth","MFA","Autentikasi","Otorisasi","Bell-LaPadula","Biba","Authentication Provider"]},
+  {topic:"Input Validation & Sanitization",quiz:"Quiz 6",color:"#4ade80",
+   desc:"Validation (memeriksa) vs Sanitization (mengubah). Syntactic (format) sebelum Semantic (logika bisnis). Whitelisting lebih aman dari blacklisting. Stack canaries untuk buffer overflow defense. Client-side validation harus selalu dikombinasi server-side.",
+   keywords:["Validation","Sanitization","Syntactic Validation","Semantic Validation","Whitelisting","Blacklisting","Stack Canaries","Buffer Overflow","Parameterized Queries","Least Privilege","Encryption at Rest"]},
+  {topic:"Web Application Vulnerabilities",quiz:"Quiz 7",color:"#fb923c",
+   desc:"XSS (output encoding), CSRF (anti-CSRF token, SameSite cookie), Session Fixation, Credential Stuffing, Clickjacking (X-Frame-Options), HSTS (protocol downgrade), CSP (content policy), SQL Injection (parameterized queries).",
+   keywords:["XSS","CSRF","Session Fixation","Credential Stuffing","Clickjacking","HSTS","CSP","X-Frame-Options","htmlspecialchars","Anti-CSRF Token","SQL Injection","LDAP Injection","XPath Injection"]},
+];
+
+function renderRefs() {
+  const el = document.getElementById('refs-container');
+  refs.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'bg-[#181c27] border border-[#222638] rounded-2xl p-5 card-h';
+    div.innerHTML = `
+      <div class="flex items-center gap-2 mb-1">
+        <div class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${r.color}"></div>
+        <h4 class="font-display font-bold text-sm">${r.topic}</h4>
+        <span class="ml-auto tag bg-[#222638] text-[#5a6278] px-2 py-0.5 rounded">${r.quiz}</span>
+      </div>
+      <p class="text-[#8b96b0] text-xs leading-relaxed mb-4">${r.desc}</p>
+      <div class="flex flex-wrap gap-1.5">
+        ${r.keywords.map(k => `<span class="tag px-2 py-0.5 rounded bg-[#222638] text-[#5a6278]">${k}</span>`).join('')}
+      </div>
+    `;
+    el.appendChild(div);
+  });
+}
+renderRefs();
+lucide.createIcons();
+</script>
+</body>
+</html>

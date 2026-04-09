@@ -22,7 +22,7 @@ def extract_content(file_path):
     return " ".join(text_content)
 
 def build_index():
-    # PKPL portal has two main learning files
+    # PKPL portal learning files
     chapters = [
         {
             "id": "soal-deep-dive",
@@ -33,6 +33,11 @@ def build_index():
             "id": "deep-dive-2",
             "title": "Conceptual Deep Dive 2 + Latihan Interaktif (15 Soal)",
             "file": "CONCEPTUALDEEPDIVE2.html"
+        },
+        {
+            "id": "quiz-1-7",
+            "title": "Quiz 1-7 Interactive Learning (Kunci Jawaban + 25 Soal Latihan)",
+            "file": "PKPL_Quiz_1-7_Interactive_Learning.html"
         },
     ]
 
@@ -66,6 +71,27 @@ def build_index():
             "static code analysis", "SAST", "DAST", "penetration testing",
             "MFA", "multi-factor authentication", "key terms", "vulnerability",
             "threat modeling", "secure coding", "key exchange", "HTTPS",
+        ],
+        "quiz-1-7": [
+            "quiz 1", "quiz 2", "quiz 3", "quiz 4", "quiz 5", "quiz 6", "quiz 7",
+            "Security Principles", "Saltzer", "Schroeder", "Least Privilege",
+            "Fail-safe Defaults", "Economy of Mechanism", "Separation of Privilege",
+            "Defense in Depth", "Open Design", "Psychological Acceptability",
+            "UML", "OCL", "stereotype", "include", "extend", "aggregation", "composition",
+            "precondition", "postcondition", "self", "sequence diagram", "activity diagram",
+            "fork node", "join node", "activation bar", "STRIDE", "DFD",
+            "Spoofing", "Tampering", "Repudiation", "Information Disclosure",
+            "Denial of Service", "Elevation of Privilege", "Trust Boundary",
+            "Attack Tree", "OR node", "AND node", "DREAD",
+            "authentication", "authorization", "OAuth", "MFA",
+            "what you know", "what you have", "what you are", "biometrik",
+            "input validation", "sanitization", "whitelisting", "blacklisting",
+            "syntactic validation", "semantic validation", "stack canaries", "buffer overflow",
+            "XSS", "CSRF", "clickjacking", "HSTS", "session fixation",
+            "credential stuffing", "SQL Injection", "parameterized query",
+            "X-Frame-Options", "Content-Security-Policy", "htmlspecialchars",
+            "session hijacking", "cookie", "HttpOnly", "Secure flag", "SameSite",
+            "kunci jawaban", "quiz bank", "interactive learning", "latihan soal",
         ],
     }
 
