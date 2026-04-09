@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>PKPL Quiz 1–3 – Interactive Learning</title>
+<title>PKPL Quiz 1–3 – Interactive Learning Hub</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
@@ -14,15 +14,14 @@
     --surface2: #1a1e27;
     --border: #252b38;
     --accent: #06b6d4;
-    --accent2: #8b5cf6;
-    --accent3: #f59e0b;
+    --accent-glow: rgba(6, 182, 212, 0.4);
     --correct: #10b981;
     --wrong: #ef4444;
     --text: #e2e8f0;
     --muted: #64748b;
   }
   * { box-sizing: border-box; }
-  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; }
+  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; overflow-x: hidden; }
   code, pre, .mono { font-family: 'Space Mono', monospace; }
   
   /* Scrollbar */
@@ -31,322 +30,468 @@
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
   /* Nav */
+  nav { position: sticky; top: 0; z-index: 50; background: rgba(10, 12, 16, 0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
   .nav-tab { transition: all 0.2s; border-bottom: 2px solid transparent; }
-  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: rgba(6, 182, 212, 0.05); }
   .nav-tab:not(.active) { color: var(--muted); }
   .nav-tab:hover:not(.active) { color: var(--text); }
 
   /* Cards */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
-  .card2 { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; transition: transform 0.2s, border-color 0.2s; }
+  .card:hover { border-color: var(--accent); }
+  .card2 { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
 
-  /* Soal boxes */
-  .q-correct { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.35); border-radius: 8px; }
-  .q-wrong { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; }
-  .q-neutral { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; }
+  /* Callouts */
+  .callout { padding: 16px; border-radius: 8px; border-left: 4px solid; margin: 16px 0; font-size: 14px; }
+  .cl-info { background: rgba(6, 182, 212, 0.06); border-color: var(--accent); }
+  .cl-warn { background: rgba(245, 158, 11, 0.07); border-color: #f59e0b; }
+  .cl-err { background: rgba(239, 68, 68, 0.07); border-color: var(--wrong); }
+
+  /* Sections */
+  .section { display: none; animation: fadeIn 0.4s ease; }
+  .section.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Quiz List Styles */
+  .q-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .ans-tag { background: rgba(16, 185, 129, 0.1); color: var(--correct); border: 1px solid rgba(16, 185, 129, 0.3); padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13px; margin-top: 8px; display: inline-block; }
 
   /* Practice */
-  .option-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.18s; text-align: left; width: 100%; padding: 10px 14px; color: var(--text); font-family: 'Syne', sans-serif; }
-  .option-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(6,182,212,0.07); }
-  .option-btn.correct-ans { background: rgba(16,185,129,0.15); border-color: var(--correct); color: #6ee7b7; }
-  .option-btn.wrong-ans { background: rgba(239,68,68,0.15); border-color: var(--wrong); color: #fca5a5; }
+  .popt { width: 100%; text-align: left; padding: 12px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; transition: all 0.2s; font-size: 14px; }
+  .popt:hover:not(:disabled) { border-color: var(--accent); background: rgba(6, 182, 212, 0.06); }
+  .popt.pc { background: rgba(16, 185, 129, 0.15); border-color: var(--correct); color: #6ee7b7; font-weight: 600; }
+  .popt.pw { background: rgba(239, 68, 68, 0.15); border-color: var(--wrong); color: #fca5a5; }
 
-  /* Badge */
-  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; }
-  .badge-correct { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
-  .badge-wrong { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
-  .badge-accent { background: rgba(6,182,212,0.1); color: var(--accent); border: 1px solid rgba(6,182,212,0.25); }
-  .badge-purple { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
-  .badge-amber { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+  /* Progress Bar */
+  .sbar { width: 100%; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; margin-top: 10px; }
+  .sfill { height: 100%; background: linear-gradient(90deg, var(--accent), #8b5cf6); transition: width 0.4s ease; }
 
-  /* Callout */
-  .callout-info { background: rgba(6,182,212,0.06); border-left: 3px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; }
-  .callout-warn { background: rgba(245,158,11,0.07); border-left: 3px solid var(--accent3); padding: 12px 16px; border-radius: 0 8px 8px 0; }
+  /* Code */
+  pre { background: #070d19; border: 1px solid var(--border); border-radius: 10px; padding: 16px; overflow-x: auto; font-size: 13px; line-height: 1.6; }
+  .kw { color: #f472b6; } .fn { color: #a78bfa; } .str { color: #5eead4; } .num { color: #f59e0b; } .cmt { color: #64748b; font-style: italic; }
 
-  /* Section */
-  .section { display: none; }
-  .section.active { display: block; }
-  .explanation { display: none; margin-top: 10px; }
-  .explanation.shown { display: block; }
-
-  .top-bar { height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3)); }
-  nav { position: sticky; top: 0; z-index: 50; background: rgba(10,12,16,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
-  pre { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; padding: 14px; overflow-x: auto; font-size: 13px; }
-  .kw { color: #ff7b72; } .fn { color: #d2a8ff; } .str { color: #a5d6ff; } .num { color: #79c0ff; }
-  .score-circle { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; }
+  .badge { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; }
+  .missed-badge { background: #ef4444; color: #fff; }
 </style>
 </head>
 <body>
-<div class="top-bar"></div>
 
-<header class="px-4 py-8 md:px-10 max-w-5xl mx-auto">
-  <p class="text-xs tracking-widest text-[#64748b] mb-1 mono uppercase">PKPL Interactive Portal</p>
-  <h1 class="text-3xl md:text-4xl font-extrabold leading-tight">Quiz 1–3 <span class="text-[#06b6d4]">Learning</span> Hub</h1>
-  <p class="text-muted mt-2 text-sm">Security Principles · UML & OCL · Secure Dynamic Modeling</p>
+<header class="pt-12 pb-8 px-6 max-w-5xl mx-auto text-center">
+  <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-[10px] font-bold tracking-widest uppercase mb-4">
+    <i data-lucide="shield" class="w-3 h-3"></i> Unified Learning Portal
+  </div>
+  <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">Quiz 1–3 <span class="text-cyan-500">Interactive</span></h1>
+  <p class="text-muted text-sm md:text-md">Lengkap dengan Conceptual Deep Dive, Visualisasi Logika, dan Practice Suite.</p>
 </header>
 
-<nav class="px-4 md:px-10 max-w-5xl mx-auto">
-  <div class="flex gap-2 overflow-x-auto">
-    <button onclick="showSection('q1')" class="nav-tab active px-4 py-3 text-sm font-semibold whitespace-nowrap" id="tab-q1">🛡 Quiz 1</button>
-    <button onclick="showSection('q2')" class="nav-tab px-4 py-3 text-sm font-semibold whitespace-nowrap" id="tab-q2">📐 Quiz 2</button>
-    <button onclick="showSection('q3')" class="nav-tab px-4 py-3 text-sm font-semibold whitespace-nowrap" id="tab-q3">⚙ Quiz 3</button>
-    <button onclick="showSection('practice')" class="nav-tab px-4 py-3 text-sm font-semibold whitespace-nowrap" id="tab-practice">🎯 Practice Suite</button>
+<nav class="max-w-5xl mx-auto px-4">
+  <div class="flex gap-1 overflow-x-auto no-scrollbar">
+    <button onclick="showS('q1')" class="nav-tab active px-5 py-3 text-sm font-bold flex items-center gap-2" id="t-q1"><i data-lucide="shield-check" class="w-4 h-4"></i> Quiz 1</button>
+    <button onclick="showS('q2')" class="nav-tab px-5 py-3 text-sm font-bold flex items-center gap-2" id="t-q2"><i data-lucide="layout" class="w-4 h-4"></i> Quiz 2</button>
+    <button onclick="showS('q3')" class="nav-tab px-5 py-3 text-sm font-bold flex items-center gap-2" id="t-q3"><i data-lucide="activity" class="w-4 h-4"></i> Quiz 3</button>
+    <button onclick="showS('practice')" class="nav-tab px-5 py-3 text-sm font-bold flex items-center gap-2" id="t-practice"><i data-lucide="target" class="w-4 h-4"></i> Practice</button>
   </div>
 </nav>
 
-<main class="px-4 md:px-10 max-w-5xl mx-auto pb-20 pt-6">
+<main class="max-w-5xl mx-auto px-4 py-8 pb-32">
 
-  <!-- ==================== QUIZ 1 ==================== -->
-  <div id="section-q1" class="section active">
-    <!-- Quiz 1 Content -->
-    <div class="mb-6">
-      <span class="badge badge-accent">Security Principles</span>
-      <h2 class="text-2xl font-extrabold mt-2">Prinsip Keamanan, CIA Triad & SSDLC</h2>
+  <!-- ==================== SECTION Q1 ==================== -->
+  <div id="s-q1" class="section active">
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold mb-2">🛡 Quiz 1: Security Principles & CIA Triad</h2>
+      <p class="text-muted text-sm">Fokus pada 8 prinsip Saltzer & Schroeder, SSDLC, dan dasar-dasar ancaman.</p>
     </div>
-    <div id="q1-list" class="space-y-4 mb-10"></div>
-    
-    <div class="card p-6 mb-10">
-      <h3 class="text-lg font-bold mb-4 text-[#06b6d4]">🧠 Conceptual Deep Dive Q1</h3>
-      <div id="q1-concepts" class="grid md:grid-cols-2 gap-4"></div>
+
+    <!-- Answers Q1 -->
+    <div class="grid gap-4 mb-16" id="q1-list"></div>
+
+    <!-- Concepts Q1 -->
+    <div class="space-y-6 mb-16">
+      <h3 class="text-xl font-bold flex items-center gap-2 text-cyan-500"><i data-lucide="brain"></i> Conceptual Deep Dive Q1</h3>
+      
+      <div class="card">
+        <h4 class="font-bold text-md mb-4" style="color:#a78bfa">Prinsip Keamanan Saltzer & Schroeder (8 Prinsip)</h4>
+        <div class="grid md:grid-cols-2 gap-4" id="q1-principles"></div>
+        <div class="callout cl-warn mt-6">
+          <div class="text-xs font-bold mb-1 text-amber-500 uppercase">Common Pitfall</div>
+          <p class="text-sm"><strong>Mengurangi endpoint API publik</strong> bukan "meningkatkan availability" — tujuannya adalah <strong>mengurangi exposure</strong> (attack surface). Semakin sedikit endpoint terbuka, semakin kecil permukaan serangan.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 class="font-bold text-md mb-4 text-emerald-500">Konsep Ancaman: Threat vs Vulnerability vs Risk</h4>
+        <div class="grid md:grid-cols-2 gap-4" id="q1-threats"></div>
+        <div class="callout cl-info mt-4">
+          <p class="text-sm"><strong>Threat Agent</strong> = entitas yang MEMILIKI kemampuan DAN NIAT untuk mengeksploitasi kerentanan.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 class="font-bold text-md mb-4 text-red-500">Ransomware vs CIA Triad</h4>
+        <p class="text-sm text-muted mb-4">Ransomware mengenkripsi file → menyerang <strong>Availability</strong> (file tidak bisa diakses) dan <strong>Integrity</strong> (file dimodifikasi tanpa izin). BUKAN hanya Confidentiality.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="card2 border-cyan-500/20"><div class="font-bold text-cyan-400 text-sm">Confidentiality</div><p class="text-xs text-muted">Data bocor. Ransomware biasanya TIDAK membocorkan (kecuali double extortion).</p></div>
+          <div class="card2 border-emerald-500/20"><div class="font-bold text-emerald-400 text-sm">Integrity ✓</div><p class="text-xs text-muted">File dienkripsi = diubah tanpa izin. Melanggar Integrity.</p></div>
+          <div class="card2 border-red-500/20"><div class="font-bold text-red-500 text-sm">Availability ✓</div><p class="text-xs text-muted">File tidak bisa dibuka. Melanggar Availability.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Q1 -->
+    <div class="space-y-6">
+      <h3 class="text-xl font-bold flex items-center gap-2 text-cyan-500"><i data-lucide="code"></i> Algorithm & Logic Visualization Q1</h3>
+      
+      <div class="card">
+        <h4 class="font-bold text-md mb-4 text-cyan-400">Fail-Safe Defaults Logic</h4>
+        <pre><code><span class="cmt">// ❌ MELANGGAR Fail-Safe Defaults</span>
+<span class="kw">function</span> <span class="fn">checkAccess</span>(user) {
+  <span class="kw">try</span> {
+    <span class="kw">if</span> (authService.<span class="fn">verify</span>(user)) <span class="kw">return</span> <span class="str">"GRANTED"</span>;
+  } <span class="kw">catch</span> (err) {
+    <span class="cmt">// Sistem crash → akses diberikan penuh! 🚨</span>
+    <span class="kw">return</span> <span class="str">"GRANTED"</span>;
+  }
+}
+
+<span class="cmt">// ✅ MENGIKUTI Fail-Safe Defaults</span>
+<span class="kw">function</span> <span class="fn">checkAccess</span>(user) {
+  <span class="kw">try</span> {
+    <span class="kw">if</span> (authService.<span class="fn">verify</span>(user)) <span class="kw">return</span> <span class="str">"GRANTED"</span>;
+    <span class="kw">return</span> <span class="str">"DENIED"</span>; <span class="cmt">// default = tolak</span>
+  } <span class="kw">catch</span> (err) {
+    <span class="kw">return</span> <span class="str">"DENIED"</span>; <span class="cmt">// Error → TETAP TOLAK</span>
+  }
+}</code></pre>
+      </div>
+
+      <div class="card">
+        <h4 class="font-bold text-md mb-4 text-purple-400">Defense in Depth — Segmentasi Jaringan</h4>
+        <pre><code><span class="cmt">// Tanpa Defense in Depth (satu lapis)</span>
+Internet ──→ [Firewall] ──→ Public Server ──→ Database
+                               <span class="cmt">↑ jika server jebol, DB langsung kena</span>
+
+<span class="cmt">// Dengan Defense in Depth (berlapis)</span>
+Internet ──→ [FW 1] ──→ [DMZ] ──→ Public Server
+                                     │
+                             [Firewall 2 (Internal)]
+                                     │
+                                 Database</code></pre>
+      </div>
     </div>
   </div>
 
-  <!-- ==================== QUIZ 2 ==================== -->
-  <div id="section-q2" class="section">
-    <div class="mb-6">
-      <span class="badge badge-purple">Secure Functional Model</span>
-      <h2 class="text-2xl font-extrabold mt-2">UML Security: Stereotypes, OCL & Relationships</h2>
+  <!-- ==================== SECTION Q2 ==================== -->
+  <div id="s-q2" class="section">
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold mb-2">📐 Quiz 2: Secure Functional Model (UML/OCL)</h2>
+      <p class="text-muted text-sm">Stereotypes, Use Case Relationships, Aggregation vs Composition.</p>
     </div>
-    <div id="q2-list" class="space-y-4 mb-10"></div>
 
-    <div class="card p-6 mb-10">
-      <h3 class="text-lg font-bold mb-4 text-[#8b5cf6]">🧠 Conceptual Deep Dive Q2</h3>
-      <div id="q2-concepts" class="grid md:grid-cols-2 gap-4"></div>
+    <div class="grid gap-4 mb-16" id="q2-list"></div>
+
+    <div class="space-y-6 mb-16">
+      <h3 class="text-xl font-bold flex items-center gap-2 text-cyan-500"><i data-lucide="brain"></i> Conceptual Deep Dive Q2</h3>
+      
+      <div class="card">
+        <h4 class="font-bold text-md mb-4 text-purple-400">Include vs Extend Relationship</h4>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="card2">
+            <div class="font-bold text-sm text-purple-300 mb-2">&lt;&lt;include&gt;&gt;</div>
+            <p class="text-xs text-muted">Use case SELALU menyertakan use case lain. Wajib, bukan opsional.</p>
+          </div>
+          <div class="card2">
+            <div class="font-bold text-sm text-pink-300 mb-2">&lt;&lt;extend&gt;&gt;</div>
+            <p class="text-xs text-muted">Use case bersifat TAMBAHAN dan KONDISIONAL. Hanya muncul pada kondisi tertentu.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 class="font-bold text-md mb-4 text-emerald-400">Aggregation vs Composition</h4>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="card2">
+            <div class="font-bold text-sm text-emerald-300 mb-2">Aggregation (◇ diamond kosong)</div>
+            <p class="text-xs text-muted">Hubungan LEMAH. Bagian DAPAT eksis tanpa keseluruhan. Siklus hidup independen.</p>
+          </div>
+          <div class="card2">
+            <div class="font-bold text-sm text-orange-400 mb-2">Composition (◆ diamond hitam)</div>
+            <p class="text-xs text-muted">Hubungan KUAT. Bagian MATI bersama keseluruhan. Bergantung penuh pada siklus hidup whole.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4 class="font-bold text-md mb-4 text-blue-400">UML Security Stereotypes</h4>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3" id="q2-stereotypes"></div>
+      </div>
     </div>
   </div>
 
-  <!-- ==================== QUIZ 3 ==================== -->
-  <div id="section-q3" class="section">
-    <div class="mb-6">
-      <span class="badge badge-amber">Secure Dynamic Model</span>
-      <h2 class="text-2xl font-extrabold mt-2">OCL Constraints & Dynamic Flow Analysis</h2>
+  <!-- ==================== SECTION Q3 ==================== -->
+  <div id="s-q3" class="section">
+    <div class="mb-8">
+      <h2 class="text-2xl font-bold mb-2">⚙ Quiz 3: Secure Dynamic Model</h2>
+      <p class="text-muted text-sm">Sequence & Activity Diagrams, OCL Analysis, Race Conditions.</p>
     </div>
-    <div id="q3-list" class="space-y-4 mb-10"></div>
 
-    <div class="card p-6 mb-10">
-      <h3 class="text-lg font-bold mb-4 text-[#f59e0b]">🧠 Conceptual Deep Dive Q3</h3>
-      <div id="q3-concepts" class="grid md:grid-cols-2 gap-4"></div>
+    <div class="grid gap-4 mb-16" id="q3-list"></div>
+
+    <div class="space-y-6">
+      <h3 class="text-xl font-bold flex items-center gap-2 text-cyan-500"><i data-lucide="brain"></i> Conceptual Deep Dive Q3</h3>
+      
+      <div class="card">
+        <h4 class="font-bold text-md mb-4 text-emerald-400">OCL analysis: Precondition vs Postcondition</h4>
+        <div class="callout cl-err">
+          <div class="font-bold text-red-400 mb-1 uppercase text-xs">Crucial Case: Pelanggaran Keduanya</div>
+          <p class="text-sm">Jika <span class="text-amber-400 font-bold">precondition gagal</span> tapi sistem tetap lanjut dan mengubah state (authenticated=true), maka <span class="text-red-400 font-bold">PRECONDITION dan POSTCONDITION dilanggar</span>. (Pre melarang jalan, Post tidak terpenuhi karena operasi tidak sah).</p>
+        </div>
+        <pre><code><span class="kw">context</span> <span class="fn">Person</span>::<span class="fn">createLogin</span>(pass : String)
+<span class="str">pre</span>:  pass.<span class="fn">size</span>() >= <span class="num">12</span>
+<span class="str">post</span>: <span class="fn">self</span>.isAuthenticated = <span class="kw">true</span>
+
+<span class="cmt">// Jika pass cuma 6 char tapi sistem set true:</span>
+<span class="cmt">// → PRE dilanggar (syarat masuk tidak dipenuhi)</span>
+<span class="cmt">// → POST dilanggar (janji state tidak sah)</span></code></pre>
+      </div>
+
+      <div class="card">
+        <h4 class="font-bold text-md mb-4 text-cyan-400">Sequence & Activity Diagram Elements</h4>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div class="card2">
+            <div class="text-cyan-400 font-bold text-xs mb-2 uppercase">Sequence Icons</div>
+            <ul class="text-[11px] space-y-1.5 text-muted">
+              <li>• <span class="text-cyan-300 font-bold">Activation Bar</span>: Durasi pengerjaan pesan</li>
+              <li>• <span class="text-red-400 font-bold">Simbol X</span>: Objek dihancurkan (Destroy)</li>
+              <li>• <span class="text-amber-400 font-bold">Loop Arrow</span>: Self-call / Rekursif</li>
+            </ul>
+          </div>
+          <div class="card2">
+            <div class="text-amber-400 font-bold text-xs mb-2 uppercase">Activity Icons</div>
+            <ul class="text-[11px] space-y-1.5 text-muted">
+              <li>• <span class="text-emerald-400 font-bold">◯ with point</span>: Final Node (End)</li>
+              <li>• <span class="text-cyan-400 font-bold">Fork (——)</span>: Mulai Parallelism</li>
+              <li>• <span class="text-purple-400 font-bold">Join (====)</span>: Sinkronisasi Parallelism</li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- ==================== PRACTICE ==================== -->
-  <div id="section-practice" class="section">
+  <div id="s-practice" class="section">
     <div class="mb-8">
-      <h2 class="text-2xl font-extrabold">🎯 Practice Suite (Q1–Q3)</h2>
-      <p class="text-muted text-sm mt-1">Uji pemahamanmu sebelum UTS dengan soal-soal interaktif ini.</p>
+      <h2 class="text-2xl font-bold mb-2">🎯 Practice Suite (Q1–Q3 Combined)</h2>
     </div>
 
-    <div id="practice-score" class="flex items-center gap-6 mb-10 card p-6" style="display:none">
-      <div id="score-circle" class="score-circle"></div>
+    <div class="card p-6 mb-8 flex items-center justify-between">
       <div>
-        <h4 class="font-bold">Hasil Latihan</h4>
-        <p id="score-text" class="text-sm text-muted"></p>
-        <button onclick="resetPractice()" class="mt-2 text-xs font-bold text-[#06b6d4] hover:underline">Ulangi Latihan</button>
+        <div class="text-xs text-muted uppercase font-bold tracking-widest mb-1">Live Score</div>
+        <div class="text-3xl font-black text-cyan-500" id="score-text">0 / 30</div>
       </div>
+      <div class="flex-1 max-w-xs ml-8">
+        <div class="sbar"><div class="sfill" id="score-bar" style="width:0%"></div></div>
+      </div>
+      <button onclick="resetPrac()" class="ml-4 p-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-all"><i data-lucide="rotate-ccw" class="w-5 h-5"></i></button>
     </div>
 
-    <div id="practice-list" class="space-y-6"></div>
+    <div id="prac-list" class="space-y-6"></div>
   </div>
 
 </main>
 
 <script>
-// Tab Logic
-function showSection(name) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('section-' + name).classList.add('active');
-  document.getElementById('tab-' + name).classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// Data
-const q1Data = [
+const L=['A','B','C','D'];
+const q1Soal=[
   {q:"Ransomware yang mengenkripsi seluruh file organisasi terutama mempengaruhi aspek:",a:"Availability dan Integrity"},
   {q:"Akar penyebab paling umum dari injection attack adalah kegagalan dalam:",a:"Validasi input dan sanitasi data"},
   {q:"Code review dalam Secure SDLC terutama bertujuan untuk:",a:"Mendeteksi kerentanan sebelum aplikasi diproduksi"},
   {q:"Tujuan utama threat modeling dalam SDLC adalah:",a:"Mengidentifikasi dan memitigasi ancaman sejak tahap desain"},
-  {q:"Security posture suatu organisasi paling tepat menggambarkan:",a:"Tingkat kesiapan dan efektivitas kontrol keamanan"},
-  {q:"Control atau safeguard dalam keamanan informasi bertujuan untuk:",a:"Mengurangi kemungkinan atau dampak risiko"},
-  {q:"Prinsip economy of mechanism menyarankan bahwa:",a:"Mekanisme keamanan harus sederhana dan sekecil mungkin"},
-  {q:"Mengurangi jumlah endpoint API publik yang tidak digunakan bertujuan untuk:",a:"Mengurangi exposure sistem"},
+  {q:"Security posture suatu organisasi menggambarkan:",a:"Tingkat kesiapan dan efektivitas kontrol keamanan"},
+  {q:"Mengurangi jumlah endpoint API publik yang tidak digunakan bertujuan untuk:",a:"Mengurangi exposure sistem (Attack Surface)",missed:true},
   {q:"Jika sistem gagal dan secara otomatis memberikan akses penuh, prinsip apa yang dilanggar?",a:"Fail-safe defaults"},
-  {q:"Prinsip separation of privilege menekankan bahwa:",a:"Akses kritis sebaiknya membutuhkan lebih dari satu kondisi atau otorisasi"},
-  {q:"Sistem keamanan yang terlalu kompleks cenderung:",a:"Lebih rentan terhadap kesalahan implementasi"},
-  {q:"Penggunaan TLS dalam komunikasi jaringan terutama bertujuan untuk:",a:"Menjamin kerahasiaan dan integritas data selama transmisi"},
   {q:"Penerapan prinsip least privilege berarti:",a:"Pengguna hanya diberikan hak akses minimum yang diperlukan"},
-  {q:"Enkripsi data yang disimpan di database bertujuan melindungi jika:",a:"Media penyimpanan dicuri atau diakses tanpa izin"},
   {q:"Prinsip psychological acceptability menyatakan bahwa kontrol keamanan harus:",a:"Mudah digunakan agar tidak mendorong pengguna menghindarinya"},
-  {q:"Manakah praktik terbaik dalam manajemen sesi?",a:"Menggunakan session ID acak yang panjang dan via HTTPS"},
-  {q:"Perbedaan paling tepat antara exposure dan loss adalah:",a:"Exposure = terpaparnya aset, loss = kerugian aktual"},
-  {q:"Jika serangan berhasil karena tidak ada segmentasi jaringan publik dan DB internal, prinsip yang gagal adalah:",a:"Defense in Depth"},
-  {q:"Dalam konteks keamanan informasi, threat agent adalah:",a:"Entitas yang memiliki kemampuan dan niat eksploitasi"}
+  {q:"Dalam konteks keamanan informasi, threat agent adalah:",a:"Entitas yang memiliki kemampuan dan niat untuk mengeksploitasi kerentanan"}
 ];
 
-const q2Data = [
-  {q:"Audit trail berkaitan dengan security goal:",a:"Accountability"},
+const q2Soal=[
+  {q:"Audit trail berkaitan dengan security goal:",a:"Accountability",missed:true},
   {q:"Relasi Aggregation berbeda dari Composition karena:",a:"Pada aggregation, bagian dapat eksis tanpa keseluruhan"},
   {q:"Dalam OCL, kata kunci 'self' merujuk pada:",a:"Objek dalam konteks saat ini"},
   {q:"Relasi <<include>> dalam use case diagram menunjukkan bahwa:",a:"Use case selalu menyertakan use case lain"},
-  {q:"Relasi Composition dalam class diagram menunjukkan bahwa:",a:"Bagian sangat bergantung pada keseluruhan (siklus hidup terikat)"},
+  {q:"Relasi Composition dalam class diagram menunjukkan bahwa:",a:"Bagian sangat bergantung pada keseluruhan"},
   {q:"Security goal Integrity berarti:",a:"Data tidak dapat diubah tanpa izin"},
-  {q:"Countermeasure dalam misuse case modeling berfungsi untuk:",a:"Mengurangi atau mencegah ancaman"},
-  {q:"Stereotype dalam UML ditulis dalam format:",a:"<<stereotype>>"},
-  {q:"Secure functional model bertujuan untuk:",a:"Mengintegrasikan keamanan ke dalam perilaku sistem sejak desain"},
-  {q:"Stereotype <<sensitive>> biasanya diberikan pada:",a:"Atribut yang menyimpan data sensitif"},
-  {q:"Threat-driven modeling berarti:",a:"Memulai dari ancaman dan tujuan penyerang"},
-  {q:"Stereotype tanpa constraint tambahan berarti:",a:"Hanya label semantik"},
+  {q:"Stereotype UML tanpa constraint tambahan berarti:",a:"Hanya label semantik"},
   {q:"Relasi <<extend>> digunakan ketika:",a:"Use case bersifat tambahan dan kondisional"},
   {q:"SQL Injection terutama mengancam:",a:"Integrity dan Confidentiality"},
-  {q:"SDLC secure functional model memiliki sifat:",a:"Preventif"},
-  {q:"Stereotype kelas pengelola kriptografi:",a:"<<crypto>>"},
-  {q:"Aktor pendukung non-human (contoh: Payment Gateway) adalah:",a:"Supporting non-human actor"},
-  {q:"Non-functional requirement berkaitan dengan kualitas/performa:",a:"Sistem mampu memproses 1000 transaksi per menit"}
+  {q:"Non-functional requirement berkaitan dengan performa adalah:",a:"Sistem mampu memproses 1000 transaksi per menit"}
 ];
 
-const q3Data = [
-  {q:"Jika addPayment dipanggil saat status Order = 'Confirmed' (pre: status = 'Pending'), maka:",a:"Operasi harus ditolak karena precondition tidak terpenuhi"},
-  {q:"Jika status Payment = 'Success' tapi Order tetap 'Pending' (post: Success implies Confirmed), maka:",a:"Postcondition dilanggar"},
-  {q:"Jika isAuthenticated = true padahal password 6 char (pre: >= 12), maka:",a:"Pelanggaran precondition dan postcondition"},
-  {q:"Jika confirm() dikirim async sebelum payment.process selesai, maka risiko desain:",a:"Precondition dapat gagal karena status payment belum berubah"},
-  {q:"Stereotype <<confidential>> pada message tanpa enkripsi berarti:",a:"Stereotype hanya anotasi desain dan tidak menjamin keamanan"},
-  {q:"Inkonsistensi antara stereotype <<authenticated>> dan OCL tanpa check auth:",a:"Terdapat inkonsistensi antara anotasi dan constraint formal"},
+const q3Soal=[
+  {q:"Jika method dipanggil saat status Order = 'Confirmed' (pre: status Pending), maka:",a:"Operasi harus ditolak karena precondition tidak terpenuhi"},
+  {q:"Jika sistem tetap mengatur isAuthenticated=true meskipun password 6 char (pre: >= 12), maka:",a:"Pelanggaran precondition dan postcondition",missed:true},
   {q:"Activation bar pada sequence diagram menunjukkan:",a:"Durasi objek sedang memproses pesan"},
-  {q:"Authentication dilakukan setelah payment diproses, kelemahan:",a:"Kontrol akses diterapkan setelah aksi kritis terjadi"},
-  {q:"Destroy message ditandai dengan:",a:"Simbol X pada lifeline"},
-  {q:"Dynamic model + unsur keamanan bertujuan:",a:"Identifikasi kontrol hilang dan ancaman saat interaksi"},
-  {q:"Encapsulation bertujuan:",a:"Menyembunyikan detail internal dan melindungi state objek"},
-  {q:"Final node activity diagram:",a:"Lingkaran dengan titik di dalamnya"},
-  {q:"Fork node menunjukkan:",a:"Eksekusi paralel beberapa aktivitas"},
-  {q:"Error branch tanpa logging berimplikasi:",a:"Sulit melakukan audit dan forensic analysis"},
-  {q:"Postcondition ticket.status = 'Sold' tapi tetap 'Available':",a:"Pelanggaran postcondition"},
+  {q:"Destroy message pada sequence diagram ditandai dengan:",a:"Simbol X pada lifeline"},
+  {q:"Fork node pada activity diagram menunjukkan:",a:"Eksekusi paralel beberapa aktivitas"},
   {q:"Sistem memiliki state diagram valid tapi sequence diagram melewatinya:",a:"Inkonsistensi antara model statis dan dinamis"},
-  {q:"Self-call rekursif sequence diagram:",a:"Loopback arrow dengan activation bar tambahan"},
-  {q:"Tidak adanya error handling menyebabkan:",a:"Silent failure dan inkonsistensi state"}
+  {q:"Self-call rekursif pada sequence diagram ditunjukkan dengan:",a:"Loopback arrow dengan activation bar tambahan"},
+  {q:"Tidak adanya error handling dalam dynamic model dapat menyebabkan:",a:"Silent failure dan inkonsistensi state"},
+  {q:"Proses lock ticket pada sistem ticketing terutama berfungsi untuk:",a:"Mencegah race condition dan double booking"},
+  {q:"Final node pada activity diagram ditunjukkan dengan:",a:"Lingkaran dengan titik di dalamnya"}
 ];
 
-const practiceData = [
-  {q:"Database server bisa diakses langsung dari internet karena tidak ada segmentasi jaringan. Prinsip apa yang gagal?",o:["Least Privilege","Economy of Mechanism","Fail-Safe Defaults","Defense in Depth"],a:3,exp:"Defense in Depth menekankan perlindungan berlapis. Segmentasi jaringan memisahkan area publik (Internet/Web) dari area internal (Database)."},
-  {id:"p2",q:"Dalam OCL, jika Precondition GAGAL tapi sistem tetap mengeksekusi method dan mengubah state. Apa pelanggarannya?",o:["Hanya Precondition","Hanya Postcondition","Precondition dan Postcondition","Bukan pelanggaran"],a:2,exp:"Jika PRE gagal, operasi harus ditolak. Jika dijalankan, PRE dilanggar. Karena state berubah dari operasi ilegal, POST juga dilanggar."},
-  {q:"Sistem auto-logout user setelah 5 menit idle. Mitigasi serangan apa ini?",o:["SQL Injection","Session Hijacking","Ransomware","XSS"],a:1,exp:"Auto-logout mencegah sesi yang dibiarkan terbuka (idle) digunakan oleh orang lain (hijacking/unauthorized access)."},
-  {q:"Google prompt 'Pilih angka ini di HP anda' untuk login komputer baru. Faktor autentikasi apa ini?",o:["What you Know","What you Have","What you Are","Salah semua"],a:1,exp:"Google prompt membuktikan kamu MENGUASAI perangkat tersebut. Ini adalah Possession factor (What you have)."},
-  {q:"'Setiap aksi user di sistem dicatat dengan IP, Waktu, dan Detail'. Goal keamanan apa ini?",o:["Integrity","Accountability","Availability","Confidentiality"],a:1,exp:"Kemampuan melacak siapa melakukan apa adalah Accountability (lewat Audit Trail)."},
-  {q:"User enroll ke kuliah di SCELE (setelah login). Mekanisme apa yang digunakan?",o:["Otorisasi saja","Autentikasi saja","Autentikasi dan Otorisasi","Whitelist"],a:1,exp:"Di SCELE, saat klik enroll biasanya hanya dicek apakah kamu sudah login (autentikasi), tanpa cek role khusus (otorisasi)."},
-  {q:"Composition (◆) pada UML Class Diagram berarti:",o:["Bagian bisa ada tanpa whole","Bagian bergantung pada whole (siklus mati bersama)","Inheritance","Satu arah saja"],a:1,exp:"Composition (diamond hitam) adalah hubungan kuat di mana lifetime part dikelola oleh whole."},
-  {q:"Library Book <<sensitive>> tanpa OCL atau enkripsi terimplementasi. Status keamanan?",o:["Otomatis terenkripsi","Anotasi dokumentasi saja","Tidak boleh diakses","Private"],a:1,exp:"Stereotype hanyalah label semantik untuk dokumentasi desain sebelum diimplementasikan secara kode."},
-  {q:"Fork node vs Decision node di Activity Diagram:",o:["Fork=paralel, Decision=percabangan if","Fork=percabangan, Decision=loop","Keduanya sama","Fork=start, Decision=end"],a:0,exp:"Fork memecah alur menjadi beberapa thread paralel. Decision memilih salah satu alur berdasarkan guard condition."},
-  {q:"Prinsip Secure SDLC yang melakukan validasi keamanan di tahap awal desain disebut:",o:["Test-driven","Shift-left security","Waterfall","Agile"],a:1,exp:"Shift-left berarti membawa aktivitas (seperti keamanan) ke tahap lebih awal agar lebih murah dan mudah diperbaiki."}
+const pData=[
+  // Mixed practice from all 3 quizzes
+  {q:"Seorang admin menghapus 15 endpoint API yang sudah tidak dipakai. Prinsip apa ini?",o:["Least Privilege","Fail-Safe Defaults","Mengurangi attack surface / exposure","Defense in Depth"],a:2,exp:"Menghapus endpoint API yang tidak perlu = mengurangi Attack Surface. Ini mengurangi Exposure sistem terhadap pencarian celah oleh penyerang."},
+  {q:"Database server bisa diakses langsung dari internet tanpa melewati firewall internal (tanpa segmentasi). Prinsip yang gagal?",o:["Least Privilege","Economy of Mechanism","Fail-Safe Defaults","Defense in Depth"],a:3,exp:"Defense in Depth menekankan strategi berlapis. Tanpa segmentasi, jika server publik tembus, database ikut tembus."},
+  {q:"Aplikasi memiliki fitur 2FA (OTP via SMS + password). Prinsip apa yang dianut?",o:["Economy of Mechanism","Separation of Privilege","Fail-Safe Defaults","Psikologis"],a:1,exp:"Separation of Privilege = butuh lebih dari satu kondisi untuk akses kritis (What you know + What you have)."},
+  {q:"OCL context Person pre: password.size() >=12. Sistem simpan password 6 char. Apa statusnya?",o:["Diterima","Hanya Precondition Dilanggar","Hanya Postcondition Dilanggar","Keduanya Dilanggar"],a:3,exp:"Karena Pre dilanggar (syarat masuk tidak cukup) tapi operasi tetap lanjut, Post juga dilanggar (state tidak sah)."},
+  {q:"Relasi antara 'Universitas' dan 'Mahasiswa' (Mahasiswa bisa ada tanpa Universitas). Apa relasi UML-nya?",o:["Composition (hitam)","Aggregation (kosong)","Inheritance","Dependency"],a:1,exp:"Aggregation (diamond kosong) = hubungan lemah, part bisa hidup mandiri tanpa whole."},
+  {q:"Audit trail sistem mencatat detail aksi user. Ini adalah goal:",o:["Integrity","Confidentiality","Accountability","Authenticity"],a:2,exp:"Accountability (Tanggung Jawab) dipenuhi melalui pencatatan aksi (Audit Trail) sehingga setiap aksi bisa ditarik balik ke pelakunya."},
+  {q:"Dalam Activity Diagram, horizontal bar dengan satu input dan banyak output disebut?",o:["Merge Node","Decision Node","Fork Node","Join Node"],a:2,exp:"Fork Node = Mulai paralel (split). Sebaliknya Join Node = Gabung paralel (sinkronisasi)."},
+  {q:"Security goal 'Data tidak bisa diubah tanpa izin' disebut?",o:["Confidentiality","Integrity","Availability","Accounting"],a:1,exp:"Integrity = Kesutuhan data. Memastikan data valid dan tidak termodifikasi secara tidak sah."},
+  {q:"Mengapa client-side validation tidak cukup?",o:["Lemah secara desain","Mudah di-bypass melalui request direct ke server","Terlalu lambat","Tidak bisa baca database"],a:1,exp:"User bisa memodifikasi request (misal lewat Burp Suite/Postman) langsung ke server, melewati validasi browser."},
+  {q:"Apa kegunaan Stack Canaries?",o:["Enkripsi data","Cegah Buffer Overflow (deteksi perubahan return address)","Cegah SQLi","Cegah XSS"],a:1,exp:"Stack canary adalah nilai acak sebelum return address. Jika canary berubah, artinya terjadi overflow, dan program dihentikan."}
 ];
 
-// Render Lists
-function renderQuiz(listId, data, colorClass) {
-  const container = document.getElementById(listId);
-  data.forEach((item, idx) => {
-    container.innerHTML += `
-      <div class="q-correct p-4 fade-in">
-        <div class="flex gap-3 items-start">
-          <span class="w-7 h-7 flex items-center justify-center rounded bg-surface2 border border-border text-xs font-bold text-muted">${idx+1}</span>
-          <div class="flex-1">
-            <p class="text-sm font-semibold mb-2">${item.q}</p>
-            <div class="q-neutral px-3 py-2 text-xs font-bold text-[#10b981]">✅ ${item.a}</div>
-          </div>
+// Content Renderers
+function renderAnswers(did, list, acolor) {
+  const el = document.getElementById(did);
+  el.innerHTML = list.map((item, idx) => `
+    <div class="q-item">
+      <div class="flex gap-3">
+        <span class="w-6 h-6 flex-shrink-0 flex items-center justify-center rounded bg-zinc-800 text-[10px] font-bold text-zinc-500 border border-zinc-700">${idx+1}</span>
+        <div>
+          <p class="text-sm font-semibold">${item.q} ${item.missed ? '<span class="badge missed-badge ml-1">Quiz Miss</span>' : ''}</p>
+          <div class="ans-tag">✓ ${item.a}</div>
         </div>
       </div>
-    `;
-  });
+    </div>
+  `).join('');
 }
 
-// Render Concepts
-function renderConcepts(containerId, list) {
-  const container = document.getElementById(containerId);
+function renderUMLConcepts() {
+  const stereos = [
+    {n:"<<sensitive>>",d:"Data rahasia (password, CC).",c:"#ef4444"},
+    {n:"<<crypto>>",d:"Urusan enkripsi & hashing.",c:"#a78bfa"},
+    {n:"<<audit>>",d:"Operasi yang dicatat log.",c:"#06b6d4"},
+    {n:"<<auth>>",d:"Cek login user.",c:"#10b981"},
+    {n:"<<confidential>>",d:"Data in-transit rahasia.",c:"#f59e0b"},
+    {n:"<<threat>>",d:"Simbol ancaman (Misuse).",c:"#f87171"}
+  ];
+  document.getElementById('q2-stereotypes').innerHTML = stereos.map(s => `
+    <div class="card2 flex flex-col gap-1 border-white/5">
+      <code class="text-xs font-bold" style="color:${s.c}">${s.n}</code>
+      <p class="text-[10px] text-muted">${s.d}</p>
+    </div>
+  `).join('');
 }
 
-// Practice Execution
-let practiceState = { answered: {} };
-function renderPractice() {
-  const list = document.getElementById('practice-list');
-  practiceData.forEach((p, idx) => {
-    const qId = `practice-${idx}`;
-    list.innerHTML += `
-      <div class="card p-6" id="${qId}">
-        <div class="flex gap-3 items-start mb-4">
-          <span class="badge badge-amber shrink-0">Latihan ${idx+1}</span>
-          <p class="font-bold text-lg">${p.q}</p>
-        </div>
-        <div class="space-y-2" id="${qId}-opts">
-          ${p.o.map((opt, oi) => `
-            <button onclick="checkAnswer('${qId}', ${oi}, ${p.a}, ${idx})" class="option-btn" id="${qId}-opt-${oi}">${String.fromCharCode(65+oi)}. ${opt}</button>
-          `).join('')}
-        </div>
-        <div id="${qId}-feedback" class="mt-4 p-4 rounded-lg hidden text-sm"></div>
+function renderSecurityPrinciples() {
+  const pr = [
+    {n:"Least Privilege", d:"Hak akses minimal sesuai tugas.", c:"#06b6d4"},
+    {n:"Fail-Safe Defaults", d:"Default = TOLAK. Jika crash, tetap aman.", c:"#ef4444"},
+    {n:"Economy Mechanism", d:"Mekanisme harus simpel (minimal bug).", c:"#10b981"},
+    {n:"Open Design", d:"Keamanan bukan dari rahasia desain.", c:"#a78bfa"},
+    {n:"Separation Privilege", d:"Akses kritis butuh dual-auth/OR.", c:"#fb923c"},
+    {n:"Defense in Depth", d:"Pertahanan berlapis (FW, DMZ, Auth).", c:"#38bdf8"}
+  ];
+  document.getElementById('q1-principles').innerHTML = pr.map(p => `
+    <div class="flex gap-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-800">
+      <div class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style="background:${p.c}"></div>
+      <div>
+        <div class="text-[11px] font-bold uppercase tracking-tight" style="color:${p.c}">${p.n}</div>
+        <p class="text-[10px] text-muted leading-tight">${p.d}</p>
       </div>
-    `;
-  });
+    </div>
+  `).join('');
 }
 
+function renderThreatConcepts() {
+  const tc = [
+    {n:"Threat", d:"Potensi bahaya (Ancaman).", c:"#ef4444"},
+    {n:"Vulnerability", d:"Kelemahan sistem (Loophole).", c:"#f59e0b"},
+    {n:"Risk", d:"Kemungkinan Threat x Dampak.", c:"#a78bfa"},
+    {n:"Exposure", d:"Kondisi terpapar (Terbuka).", c:"#38bdf8"}
+  ];
+  document.getElementById('q1-threats').innerHTML = tc.map(t => `
+    <div class="card2">
+      <div class="text-[11px] font-bold mb-1" style="color:${t.c}">${t.n}</div>
+      <p class="text-[10px] text-muted">${t.d}</p>
+    </div>
+  `).join('');
+}
+
+// Practice Suite Logic
 let score = 0;
-function checkAnswer(qId, selected, correct, idx) {
-  if (practiceState.answered[qId]) return;
-  practiceState.answered[qId] = true;
+let answered = {};
 
-  const buttons = document.querySelectorAll(`#${qId}-opts button`);
-  buttons.forEach(b => b.disabled = true);
-
-  const feedback = document.getElementById(qId + '-feedback');
-  feedback.classList.remove('hidden');
-
-  if (selected === correct) {
-    score++;
-    document.getElementById(`${qId}-opt-${selected}`).classList.add('correct-ans');
-    feedback.innerHTML = `<div class="font-bold text-[#34d399] mb-1">Benar! ✅</div><p class="text-muted leading-relaxed">${practiceData[idx].exp}</p>`;
-    feedback.classList.add('q-correct');
-  } else {
-    document.getElementById(`${qId}-opt-${selected}`).classList.add('wrong-ans');
-    document.getElementById(`${qId}-opt-${correct}`).classList.add('correct-ans');
-    feedback.innerHTML = `<div class="font-bold text-[#ef4444] mb-1">Salah ❌ — Jawaban benar: ${String.fromCharCode(65+correct)}</div><p class="text-muted leading-relaxed">${practiceData[idx].exp}</p>`;
-    feedback.classList.add('q-wrong');
-  }
-  updateScoreUI();
+function renderPrac() {
+  const el = document.getElementById('prac-list');
+  el.innerHTML = pData.map((p, idx) => `
+    <div class="card" id="pc-${idx}">
+      <p class="font-bold text-md mb-4">${idx+1}. ${p.q}</p>
+      <div class="space-y-2">
+        ${p.o.map((o, oi) => `
+          <button onclick="checkP(${idx}, ${oi}, ${p.a})" class="popt" id="po-${idx}-${oi}">${L[oi]}. ${o}</button>
+        `).join('')}
+      </div>
+      <div id="pf-${idx}" class="hidden mt-4 p-4 rounded-lg text-sm bg-zinc-900 border border-zinc-800"></div>
+    </div>
+  `).join('');
 }
 
-function updateScoreUI() {
-  const total = practiceData.length;
-  const panel = document.getElementById('practice-score');
-  panel.style.display = 'flex';
-  const circle = document.getElementById('score-circle');
-  circle.textContent = `${score}/${total}`;
-  const pct = (score / total) * 100;
-  circle.style.borderColor = pct >= 70 ? '#10b981' : '#ef4444';
-  circle.style.color = pct >= 70 ? '#10b981' : '#ef4444';
-  document.getElementById('score-text').textContent = `${score} dari ${total} soal benar. (${Math.round(pct)}%)`;
+function checkP(qi, ui, ai) {
+  if (answered[qi]) return;
+  answered[qi] = true;
+  const isCorrect = ui === ai;
+  if(isCorrect) score++;
+  
+  const fb = document.getElementById(`pf-${qi}`);
+  fb.classList.remove('hidden');
+  fb.innerHTML = `
+    <div class="font-bold mb-1 ${isCorrect ? 'text-emerald-400' : 'text-red-400'}">${isCorrect ? '✅ BENAR!' : '❌ SALAH! Jawaban: '+L[ai]}</div>
+    <p class="text-xs text-muted leading-relaxed">${pData[qi].exp}</p>
+  `;
+  
+  document.getElementById(`po-${qi}-${ui}`).classList.add(isCorrect ? 'pc' : 'pw');
+  if(!isCorrect) document.getElementById(`po-${qi}-${ai}`).classList.add('pc');
+  
+  updateScore();
 }
 
-function resetPractice() {
-  score = 0;
-  practiceState.answered = {};
-  document.getElementById('practice-list').innerHTML = '';
-  renderPractice();
-  document.getElementById('practice-score').style.display = 'none';
+function updateScore() {
+  const t = pData.length;
+  document.getElementById('score-text').textContent = `${score} / ${t}`;
+  document.getElementById('score-bar').style.width = (score/t*100)+'%';
+}
+
+function resetPrac() {
+  score = 0; answered = {};
+  renderPrac();
+  updateScore();
+}
+
+// Tab Handler
+function showS(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('s-'+id).classList.add('active');
+  document.getElementById('t-'+id).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
 // Init
-renderQuiz('q1-list', q1Data, 'badge-accent');
-renderQuiz('q2-list', q2Data, 'badge-purple');
-renderQuiz('q3-list', q3Data, 'badge-amber');
-renderPractice();
-
 document.addEventListener('DOMContentLoaded', () => {
-  if (window.lucide) lucide.createIcons();
+  renderAnswers('q1-list', q1Soal);
+  renderAnswers('q2-list', q2Soal);
+  renderAnswers('q3-list', q3Soal);
+  renderSecurityPrinciples();
+  renderThreatConcepts();
+  renderUMLConcepts();
+  renderPrac();
+  if(window.lucide) lucide.createIcons();
 });
 </script>
 </body>
