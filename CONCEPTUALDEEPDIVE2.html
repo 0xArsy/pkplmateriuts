@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>UTS PKPL — Interactive Learning Page</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          mono: ['Space Mono', 'monospace'],
+          display: ['Syne', 'sans-serif'],
+        },
+        colors: {
+          bg: '#0d0f14',
+          surface: '#151820',
+          card: '#1a1e28',
+          border: '#252a38',
+          accent: '#4fffb0',
+          accent2: '#ff6b6b',
+          accent3: '#ffd166',
+          muted: '#6b7280',
+          text: '#e2e8f0',
+        },
+        animation: {
+          'fade-in': 'fadeIn 0.4s ease forwards',
+          'slide-up': 'slideUp 0.4s ease forwards',
+        },
+        keyframes: {
+          fadeIn: { from: { opacity: 0 }, to: { opacity: 1 } },
+          slideUp: { from: { opacity: 0, transform: 'translateY(16px)' }, to: { opacity: 1, transform: 'translateY(0)' } },
+        },
+      },
+    },
+  };
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body { background: #0d0f14; color: #e2e8f0; font-family: 'Syne', sans-serif; }
+  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #0d0f14; } ::-webkit-scrollbar-thumb { background: #252a38; border-radius: 3px; }
+  .accent-glow { text-shadow: 0 0 20px rgba(79,255,176,0.4); }
+  .card-hover { transition: all 0.2s ease; } .card-hover:hover { border-color: #4fffb0; transform: translateY(-1px); }
+  .choice-btn { transition: all 0.2s ease; border: 1.5px solid #252a38; }
+  .choice-btn:hover:not(:disabled) { border-color: #4fffb0; background: rgba(79,255,176,0.05); }
+  .choice-btn.correct { border-color: #4fffb0 !important; background: rgba(79,255,176,0.1) !important; }
+  .choice-btn.incorrect { border-color: #ff6b6b !important; background: rgba(255,107,107,0.1) !important; }
+  .choice-btn.reveal-correct { border-color: #4fffb0 !important; background: rgba(79,255,176,0.05) !important; }
+  .reveal-box { display: none; } .reveal-box.open { display: block; animation: slideUp 0.3s ease forwards; }
+  pre code { font-family: 'Space Mono', monospace; font-size: 0.82rem; line-height: 1.6; }
+  .kw { color: #4fffb0; } .cm { color: #6b7280; font-style: italic; } .st { color: #ffd166; } .fn { color: #a78bfa; }
+  .nav-link { transition: color 0.2s; } .nav-link:hover { color: #4fffb0; }
+  .section-anchor { scroll-margin-top: 80px; }
+  .progress-bar { background: linear-gradient(90deg, #4fffb0, #a78bfa); }
+  .tag { font-family: 'Space Mono', monospace; font-size: 0.7rem; }
+  .noise { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E"); }
+  .step-item { border-left: 2px solid #252a38; } .step-item:last-child { border-left: 2px solid transparent; }
+  #score-bar { transition: width 0.5s ease; }
+  .pillar-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+</style>
+</head>
+<body class="min-h-screen noise">
+
+<!-- NAV -->
+<nav class="sticky top-0 z-50 border-b border-[#252a38] bg-[#0d0f14]/90 backdrop-blur-md">
+  <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-[#4fffb0]/10 border border-[#4fffb0]/30 flex items-center justify-center">
+        <i data-lucide="shield" class="w-4 h-4 text-[#4fffb0]"></i>
+      </div>
+      <span class="font-display font-800 text-sm tracking-wide text-[#e2e8f0]">PKPL <span class="text-[#4fffb0]">UTS</span></span>
+    </div>
+    <div class="hidden md:flex items-center gap-6 text-xs font-mono text-[#6b7280]">
+      <a href="#concepts" class="nav-link">Konsep</a>
+      <a href="#visual" class="nav-link">Visualisasi</a>
+      <a href="#practice" class="nav-link">Latihan</a>
+      <a href="#references" class="nav-link">Referensi</a>
+    </div>
+    <div class="tag bg-[#252a38] px-3 py-1 rounded-full text-[#6b7280]">50 soal · 90 mnt</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="max-w-5xl mx-auto px-4 pt-16 pb-12">
+  <div class="inline-flex items-center gap-2 bg-[#4fffb0]/5 border border-[#4fffb0]/20 rounded-full px-4 py-1.5 mb-6">
+    <i data-lucide="book-open" class="w-3.5 h-3.5 text-[#4fffb0]"></i>
+    <span class="text-[#4fffb0] text-xs font-mono">Pengantar Keamanan Perangkat Lunak</span>
+  </div>
+  <h1 class="font-display text-4xl md:text-5xl font-extrabold leading-tight mb-4 accent-glow">
+    Interactive<br/><span class="text-[#4fffb0]">Learning Page</span>
+  </h1>
+  <p class="text-[#6b7280] text-base max-w-xl leading-relaxed">
+    Halaman belajar interaktif berbasis soal UTS. Pelajari konsep, visualisasikan logika, dan uji pemahaman kamu dengan latihan soal + penjelasan mendalam.
+  </p>
+  <div class="mt-8 flex flex-wrap gap-3">
+    <div class="flex items-center gap-2 bg-[#1a1e28] border border-[#252a38] rounded-lg px-4 py-2">
+      <i data-lucide="layers" class="w-4 h-4 text-[#a78bfa]"></i><span class="text-sm">5 Topik Utama</span>
+    </div>
+    <div class="flex items-center gap-2 bg-[#1a1e28] border border-[#252a38] rounded-lg px-4 py-2">
+      <i data-lucide="zap" class="w-4 h-4 text-[#ffd166]"></i><span class="text-sm">15 Soal Interaktif</span>
+    </div>
+    <div class="flex items-center gap-2 bg-[#1a1e28] border border-[#252a38] rounded-lg px-4 py-2">
+      <i data-lucide="message-circle" class="w-4 h-4 text-[#4fffb0]"></i><span class="text-sm">Penjelasan Detail</span>
+    </div>
+  </div>
+</header>
+
+<!-- SECTION 1: CONCEPTUAL DEEP DIVE -->
+<section id="concepts" class="section-anchor max-w-5xl mx-auto px-4 mb-20">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="w-8 h-8 rounded-lg bg-[#a78bfa]/10 border border-[#a78bfa]/30 flex items-center justify-center">
+      <i data-lucide="brain" class="w-4 h-4 text-[#a78bfa]"></i>
+    </div>
+    <h2 class="font-display text-2xl font-bold">Conceptual Deep Dive</h2>
+  </div>
+  <p class="text-[#6b7280] mb-8 text-sm">Mental model komprehensif dari seluruh topik yang diuji dalam UTS ini.</p>
+
+  <!-- CIA Triad -->
+  <div class="bg-[#1a1e28] border border-[#252a38] rounded-2xl p-6 mb-6 card-hover">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="pillar-icon bg-[#4fffb0]/10 border border-[#4fffb0]/20"><i data-lucide="triangle" class="w-5 h-5 text-[#4fffb0]"></i></div>
+      <h3 class="font-display text-lg font-bold">CIA Triad — Fondasi Keamanan Informasi</h3>
+    </div>
+    <p class="text-[#9ca3af] text-sm mb-5 leading-relaxed">CIA Triad adalah tiga pilar utama yang menjadi dasar dari setiap sistem keamanan. Setiap keputusan desain keamanan harus mempertimbangkan ketiga aspek ini.</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-[#0d0f14] rounded-xl p-4 border border-[#252a38]">
+        <div class="text-[#4fffb0] font-mono font-bold text-sm mb-1">C — Confidentiality</div>
+        <p class="text-[#6b7280] text-xs leading-relaxed">Data hanya boleh diakses oleh pihak yang berwenang. Dicapai melalui enkripsi, access control, dan authentication.</p>
+      </div>
+      <div class="bg-[#0d0f14] rounded-xl p-4 border border-[#252a38]">
+        <div class="text-[#ffd166] font-mono font-bold text-sm mb-1">I — Integrity</div>
+        <p class="text-[#6b7280] text-xs leading-relaxed">Data tidak boleh dimodifikasi secara tidak sah. Dijaga dengan hashing, digital signature, dan checksums.</p>
+      </div>
+      <div class="bg-[#0d0f14] rounded-xl p-4 border border-[#252a38]">
+        <div class="text-[#a78bfa] font-mono font-bold text-sm mb-1">A — Availability</div>
+        <p class="text-[#6b7280] text-xs leading-relaxed">Sistem harus selalu tersedia saat dibutuhkan. Ancaman: DoS/DDoS attacks, hardware failure.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SSDLC -->
+  <div class="bg-[#1a1e28] border border-[#252a38] rounded-2xl p-6 mb-6 card-hover">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="pillar-icon bg-[#ffd166]/10 border border-[#ffd166]/20"><i data-lucide="refresh-cw" class="w-5 h-5 text-[#ffd166]"></i></div>
+      <h3 class="font-display text-lg font-bold">Secure SDLC — Keamanan di Setiap Fase</h3>
+    </div>
+    <p class="text-[#9ca3af] text-sm mb-5 leading-relaxed">Keamanan bukan ditambahkan di akhir, tapi diintegrasikan sejak fase pertama. Inilah inti dari Secure Software Development Life Cycle (SSDLC).</p>
+    <div class="flex flex-col gap-2">
+      <div class="flex items-start gap-3">
+        <div class="mt-0.5 w-6 h-6 rounded-full bg-[#4fffb0]/10 border border-[#4fffb0]/30 flex items-center justify-center text-[#4fffb0] text-xs font-mono shrink-0">1</div>
+        <div><span class="text-[#4fffb0] text-sm font-semibold">Requirements</span><span class="text-[#6b7280] text-sm"> — Tentukan security requirements sejak awal</span></div>
+      </div>
+      <div class="flex items-start gap-3">
+        <div class="mt-0.5 w-6 h-6 rounded-full bg-[#ffd166]/10 border border-[#ffd166]/30 flex items-center justify-center text-[#ffd166] text-xs font-mono shrink-0">2</div>
+        <div><span class="text-[#ffd166] text-sm font-semibold">Design</span><span class="text-[#6b7280] text-sm"> — Threat modeling & secure architecture (TAHAP PALING PENTING)</span></div>
+      </div>
+      <div class="flex items-start gap-3">
+        <div class="mt-0.5 w-6 h-6 rounded-full bg-[#a78bfa]/10 border border-[#a78bfa]/30 flex items-center justify-center text-[#a78bfa] text-xs font-mono shrink-0">3</div>
+        <div><span class="text-[#a78bfa] text-sm font-semibold">Implementation</span><span class="text-[#6b7280] text-sm"> — Secure coding practices, input validation</span></div>
+      </div>
+      <div class="flex items-start gap-3">
+        <div class="mt-0.5 w-6 h-6 rounded-full bg-[#ff6b6b]/10 border border-[#ff6b6b]/30 flex items-center justify-center text-[#ff6b6b] text-xs font-mono shrink-0">4</div>
+        <div><span class="text-[#ff6b6b] text-sm font-semibold">Testing</span><span class="text-[#6b7280] text-sm"> — Penetration testing, SAST/DAST, code review</span></div>
+      </div>
+      <div class="flex items-start gap-3">
+        <div class="mt-0.5 w-6 h-6 rounded-full bg-[#6b7280]/30 border border-[#6b7280]/30 flex items-center justify-center text-[#9ca3af] text-xs font-mono shrink-0">5</div>
+        <div><span class="text-[#9ca3af] text-sm font-semibold">Deployment & Maintenance</span><span class="text-[#6b7280] text-sm"> — Security patching, monitoring, audit</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Attack Types -->
+  <div class="bg-[#1a1e28] border border-[#252a38] rounded-2xl p-6 mb-6 card-hover">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="pillar-icon bg-[#ff6b6b]/10 border border-[#ff6b6b]/20"><i data-lucide="zap" class="w-5 h-5 text-[#ff6b6b]"></i></div>
+      <h3 class="font-display text-lg font-bold">Jenis-Jenis Serangan yang Wajib Diketahui</h3>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-[#0d0f14] rounded-xl p-4 border border-[#252a38]">
+        <div class="flex items-center gap-2 mb-2"><span class="tag bg-[#ff6b6b]/20 text-[#ff6b6b] px-2 py-0.5 rounded">Injection</span><span class="font-semibold text-sm">SQL Injection</span></div>
+        <p class="text-[#6b7280] text-xs leading-relaxed">Input pengguna tidak divalidasi dan langsung dimasukkan ke query database. Contoh: <code class="text-[#4fffb0]">' OR 1=1 --</code></p>
+      </div>
+      <div class="bg-[#0d0f14] rounded-xl p-4 border border-[#252a38]">
+        <div class="flex items-center gap-2 mb-2"><span class="tag bg-[#ffd166]/20 text-[#ffd166] px-2 py-0.5 rounded">Script</span><span class="font-semibold text-sm">XSS (Cross-Site Scripting)</span></div>
+        <p class="text-[#6b7280] text-xs leading-relaxed">Penyerang menyisipkan skrip berbahaya di halaman web yang kemudian dieksekusi di browser korban.</p>
+      </div>
+      <div class="bg-[#0d0f14] rounded-xl p-4 border border-[#252a38]">
+        <div class="flex items-center gap-2 mb-2"><span class="tag bg-[#a78bfa]/20 text-[#a78bfa] px-2 py-0.5 rounded">Network</span><span class="font-semibold text-sm">Man-in-the-Middle</span></div>
+        <p class="text-[#6b7280] text-xs leading-relaxed">Penyerang mencegat komunikasi antara dua pihak tanpa sepengetahuan mereka untuk mengintip atau memanipulasi data.</p>
+      </div>
+      <div class="bg-[#0d0f14] rounded-xl p-4 border border-[#252a38]">
+        <div class="flex items-center gap-2 mb-2"><span class="tag bg-[#4fffb0]/20 text-[#4fffb0] px-2 py-0.5 rounded">Auth</span><span class="font-semibold text-sm">Brute Force</span></div>
+        <p class="text-[#6b7280] text-xs leading-relaxed">Menebak password secara otomatis dengan mencoba semua kemungkinan kombinasi hingga menemukan yang benar.</p>
+      </div>
+      <div class="bg-[#0d0f14] rounded-xl p-4 border border-[#252a38]">
+        <div class="flex items-center gap-2 mb-2"><span class="tag bg-[#ff6b6b]/20 text-[#ff6b6b] px-2 py-0.5 rounded">Session</span><span class="font-semibold text-sm">Session Hijacking</span></div>
+        <p class="text-[#6b7280] text-xs leading-relaxed">Penyerang mencuri session token yang valid untuk mengambil alih sesi login pengguna yang sedang aktif.</p>
+      </div>
+      <div class="bg-[#0d0f14] rounded-xl p-4 border border-[#252a38]">
+        <div class="flex items-center gap-2 mb-2"><span class="tag bg-[#ffd166]/20 text-[#ffd166] px-2 py-0.5 rounded">Human</span><span class="font-semibold text-sm">Social Engineering</span></div>
+        <p class="text-[#6b7280] text-xs leading-relaxed">Memanfaatkan kelemahan manusia melalui manipulasi psikologis, bukan kelemahan teknis sistem.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Terms Callout -->
+  <div class="bg-[#4fffb0]/5 border border-[#4fffb0]/20 rounded-2xl p-6 mb-6">
+    <div class="flex items-center gap-2 mb-4">
+      <i data-lucide="bookmark" class="w-4 h-4 text-[#4fffb0]"></i>
+      <span class="text-[#4fffb0] font-semibold text-sm">Key Terms</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+      <div><span class="font-mono text-[#4fffb0]">Vulnerability</span><span class="text-[#6b7280]"> — Kerentanan/celah keamanan dalam sistem</span></div>
+      <div><span class="font-mono text-[#4fffb0]">Threat Modeling</span><span class="text-[#6b7280]"> — Pemetaan ancaman dan kerentanan potensial</span></div>
+      <div><span class="font-mono text-[#4fffb0]">Zero-day</span><span class="text-[#6b7280]"> — Kerentanan yang belum diketahui vendor</span></div>
+      <div><span class="font-mono text-[#4fffb0]">Least Privilege</span><span class="text-[#6b7280]"> — Beri akses minimum sesuai kebutuhan tugas</span></div>
+      <div><span class="font-mono text-[#4fffb0]">Defense in Depth</span><span class="text-[#6b7280]"> — Berlapis-lapis pertahanan keamanan</span></div>
+      <div><span class="font-mono text-[#4fffb0]">Hashing</span><span class="text-[#6b7280]"> — Transformasi satu arah, tidak bisa dibalik</span></div>
+      <div><span class="font-mono text-[#4fffb0]">Salting</span><span class="text-[#6b7280]"> — Tambah data acak sebelum hash password</span></div>
+      <div><span class="font-mono text-[#4fffb0]">MFA</span><span class="text-[#6b7280]"> — Multi-factor Authentication, lebih dari satu faktor</span></div>
+      <div><span class="font-mono text-[#4fffb0]">OWASP Top 10</span><span class="text-[#6b7280]"> — Daftar 10 kerentanan web paling kritis</span></div>
+      <div><span class="font-mono text-[#4fffb0]">Data Breach</span><span class="text-[#6b7280]"> — Data sensitif diakses pihak tidak berwenang</span></div>
+    </div>
+  </div>
+
+  <!-- Common Pitfalls -->
+  <div class="bg-[#ff6b6b]/5 border border-[#ff6b6b]/20 rounded-2xl p-6">
+    <div class="flex items-center gap-2 mb-4">
+      <i data-lucide="alert-triangle" class="w-4 h-4 text-[#ff6b6b]"></i>
+      <span class="text-[#ff6b6b] font-semibold text-sm">Common Pitfalls — Kesalahan Umum Mahasiswa</span>
+    </div>
+    <div class="flex flex-col gap-3 text-sm">
+      <div class="flex items-start gap-3">
+        <i data-lucide="x-circle" class="w-4 h-4 text-[#ff6b6b] shrink-0 mt-0.5"></i>
+        <p class="text-[#9ca3af]"><strong class="text-[#e2e8f0]">Hashing ≠ Enkripsi.</strong> Hashing adalah transformasi SATU ARAH (tidak bisa dikembalikan). Enkripsi adalah dua arah (bisa didekripsi dengan kunci).</p>
+      </div>
+      <div class="flex items-start gap-3">
+        <i data-lucide="x-circle" class="w-4 h-4 text-[#ff6b6b] shrink-0 mt-0.5"></i>
+        <p class="text-[#9ca3af]"><strong class="text-[#e2e8f0]">SSDLC dimulai dari fase Desain</strong>, bukan Testing atau Deployment. Keamanan harus dipikirkan SEBELUM menulis kode.</p>
+      </div>
+      <div class="flex items-start gap-3">
+        <i data-lucide="x-circle" class="w-4 h-4 text-[#ff6b6b] shrink-0 mt-0.5"></i>
+        <p class="text-[#9ca3af]"><strong class="text-[#e2e8f0]">Enkripsi Simetris</strong> = 1 kunci untuk enkripsi DAN dekripsi. <strong class="text-[#e2e8f0]">Asimetris</strong> = pasangan kunci publik + privat.</p>
+      </div>
+      <div class="flex items-start gap-3">
+        <i data-lucide="x-circle" class="w-4 h-4 text-[#ff6b6b] shrink-0 mt-0.5"></i>
+        <p class="text-[#9ca3af]"><strong class="text-[#e2e8f0]">Social Engineering</strong> menyerang manusianya, bukan sistemnya — inilah yang membedakannya dari serangan teknis lain.</p>
+      </div>
+      <div class="flex items-start gap-3">
+        <i data-lucide="x-circle" class="w-4 h-4 text-[#ff6b6b] shrink-0 mt-0.5"></i>
+        <p class="text-[#9ca3af]"><strong class="text-[#e2e8f0]">Visual Studio Code</strong> adalah code editor biasa, BUKAN security testing tool seperti SonarQube, Fortify, atau OWASP ZAP.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2: ALGORITHM & LOGIC VISUALIZATION -->
+<section id="visual" class="section-anchor max-w-5xl mx-auto px-4 mb-20">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="w-8 h-8 rounded-lg bg-[#ffd166]/10 border border-[#ffd166]/30 flex items-center justify-center">
+      <i data-lucide="code-2" class="w-4 h-4 text-[#ffd166]"></i>
+    </div>
+    <h2 class="font-display text-2xl font-bold">Algorithm & Logic Visualization</h2>
+  </div>
+
+  <!-- Password Hashing with Salting -->
+  <div class="bg-[#1a1e28] border border-[#252a38] rounded-2xl p-6 mb-6">
+    <h3 class="font-display font-bold text-lg mb-2">Password Hashing + Salting</h3>
+    <p class="text-[#6b7280] text-sm mb-5 leading-relaxed">Proses penyimpanan password yang aman. Tanpa salting, dua pengguna dengan password sama akan memiliki hash yang sama — berbahaya!</p>
+    <div class="bg-[#0d0f14] rounded-xl p-5 border border-[#252a38] mb-5 overflow-x-auto">
+<pre><code><span class="cm">// BURUK — menyimpan password plaintext ❌</span>
+<span class="kw">function</span> <span class="fn">savePasswordUnsafe</span>(password) {
+    database.save(password);  <span class="cm">// JANGAN PERNAH!</span>
+}
+
+<span class="cm">// BURUK — hashing tanpa salt ❌</span>
+<span class="kw">function</span> <span class="fn">savePasswordNoSalt</span>(password) {
+    <span class="kw">const</span> hash = sha256(password);
+    database.save(hash);  <span class="cm">// rentan rainbow table attack</span>
+}
+
+<span class="cm">// BENAR — hashing dengan salt ✅</span>
+<span class="kw">function</span> <span class="fn">savePasswordSafe</span>(password) {
+    <span class="kw">const</span> salt = generateRandomString(<span class="st">16</span>);  <span class="cm">// salt acak per-user</span>
+    <span class="kw">const</span> saltedPassword = password + salt;
+    <span class="kw">const</span> hash = bcrypt(saltedPassword);        <span class="cm">// hash yang kuat</span>
+    database.save({ hash, salt });              <span class="cm">// simpan keduanya</span>
+}
+
+<span class="cm">// Verifikasi password saat login</span>
+<span class="kw">function</span> <span class="fn">verifyPassword</span>(inputPassword, storedHash, storedSalt) {
+    <span class="kw">const</span> hash = bcrypt(inputPassword + storedSalt);
+    <span class="kw">return</span> hash === storedHash;  <span class="cm">// compare hash, bukan password</span>
+}</code></pre>
+    </div>
+    <!-- Step walkthrough -->
+    <div class="flex flex-col gap-3">
+      <div class="step-item pl-4 pb-3">
+        <div class="text-xs font-mono text-[#4fffb0] mb-1">STEP 1 — Generate Salt</div>
+        <p class="text-[#6b7280] text-sm">Salt adalah string acak yang unik untuk setiap pengguna. Ini memastikan dua user dengan password yang sama pun memiliki hash berbeda.</p>
+      </div>
+      <div class="step-item pl-4 pb-3">
+        <div class="text-xs font-mono text-[#ffd166] mb-1">STEP 2 — Gabungkan Password + Salt</div>
+        <p class="text-[#6b7280] text-sm">Password asli digabungkan dengan salt sebelum di-hash, sehingga hasil akhirnya unik per pengguna.</p>
+      </div>
+      <div class="step-item pl-4 pb-3">
+        <div class="text-xs font-mono text-[#a78bfa] mb-1">STEP 3 — Hashing (One-Way)</div>
+        <p class="text-[#6b7280] text-sm">Fungsi hash (bcrypt, sha256) mengubah data menjadi bentuk tetap yang TIDAK BISA dikembalikan. Inilah yang membedakan hash dari enkripsi.</p>
+      </div>
+      <div class="pl-4">
+        <div class="text-xs font-mono text-[#ff6b6b] mb-1">STEP 4 — Simpan Hash + Salt</div>
+        <p class="text-[#6b7280] text-sm">Simpan keduanya di database. Saat login, proses diulang: input + salt → hash, lalu bandingkan hasilnya.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SQL Injection -->
+  <div class="bg-[#1a1e28] border border-[#252a38] rounded-2xl p-6 mb-6">
+    <h3 class="font-display font-bold text-lg mb-2">SQL Injection — Serangan & Mitigasi</h3>
+    <p class="text-[#6b7280] text-sm mb-5 leading-relaxed">Terjadi ketika input pengguna tidak divalidasi dan langsung disisipkan ke query SQL, memungkinkan penyerang memanipulasi query database.</p>
+    <div class="bg-[#0d0f14] rounded-xl p-5 border border-[#252a38] mb-5 overflow-x-auto">
+<pre><code><span class="cm">// VULNERABLE — rentan SQL Injection ❌</span>
+<span class="kw">function</span> <span class="fn">loginVulnerable</span>(username, password) {
+    <span class="kw">const</span> query = <span class="st">`SELECT * FROM users 
+                   WHERE username='${username}' 
+                   AND password='${password}'`</span>;
+    <span class="cm">// Jika username = "admin' --"</span>
+    <span class="cm">// Query jadi: WHERE username='admin' --' AND password='...'</span>
+    <span class="cm">// Bagian password di-comment, login berhasil tanpa password!</span>
+    <span class="kw">return</span> database.execute(query);
+}
+
+<span class="cm">// AMAN — menggunakan Prepared Statement ✅</span>
+<span class="kw">function</span> <span class="fn">loginSafe</span>(username, password) {
+    <span class="kw">const</span> query = <span class="st">"SELECT * FROM users WHERE username=? AND password=?"</span>;
+    <span class="kw">return</span> database.prepare(query).execute(username, password);
+    <span class="cm">// Input diperlakukan sebagai DATA, bukan bagian dari query</span>
+}</code></pre>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-[#ff6b6b]/5 border border-[#ff6b6b]/20 rounded-xl p-4">
+        <div class="text-xs font-mono text-[#ff6b6b] mb-2">PENYEBAB</div>
+        <p class="text-[#9ca3af] text-xs leading-relaxed">Input pengguna tidak divalidasi dan langsung digunakan dalam query database tanpa sanitasi.</p>
+      </div>
+      <div class="bg-[#4fffb0]/5 border border-[#4fffb0]/20 rounded-xl p-4">
+        <div class="text-xs font-mono text-[#4fffb0] mb-2">SOLUSI</div>
+        <p class="text-[#9ca3af] text-xs leading-relaxed">Gunakan Prepared Statements / Parameterized Queries. Selalu validasi dan sanitasi input pengguna.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Encryption Comparison -->
+  <div class="bg-[#1a1e28] border border-[#252a38] rounded-2xl p-6">
+    <h3 class="font-display font-bold text-lg mb-4">Simetris vs Asimetris Encryption</h3>
+    <div class="bg-[#0d0f14] rounded-xl p-5 border border-[#252a38] mb-5 overflow-x-auto">
+<pre><code><span class="cm">// ENKRIPSI SIMETRIS — 1 kunci untuk enkripsi & dekripsi</span>
+<span class="kw">const</span> secretKey = <span class="st">"kunci-rahasia-sama"</span>;
+
+<span class="kw">const</span> encrypted = AES.encrypt(data, secretKey);   <span class="cm">// enkripsi</span>
+<span class="kw">const</span> decrypted = AES.decrypt(encrypted, secretKey); <span class="cm">// dekripsi, kunci SAMA</span>
+<span class="cm">// Contoh: AES, DES, 3DES — cepat, bagus untuk data besar</span>
+
+<span class="cm">// ─────────────────────────────────────────────────────────</span>
+
+<span class="cm">// ENKRIPSI ASIMETRIS — 2 kunci: public + private</span>
+<span class="kw">const</span> { publicKey, privateKey } = RSA.generateKeyPair();
+
+<span class="kw">const</span> encrypted = RSA.encrypt(data, publicKey);     <span class="cm">// enkripsi dgn public key</span>
+<span class="kw">const</span> decrypted = RSA.decrypt(encrypted, privateKey); <span class="cm">// dekripsi dgn private key</span>
+<span class="cm">// Contoh: RSA, ECC — lambat, bagus untuk key exchange</span></code></pre>
+    </div>
+    <div class="flex flex-col gap-2 text-sm text-[#6b7280]">
+      <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-[#4fffb0] shrink-0"></i>Simetris: 1 kunci yang sama digunakan untuk enkripsi dan dekripsi (lebih cepat)</div>
+      <div class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-[#4fffb0] shrink-0"></i>Asimetris: pasangan kunci publik (untuk enkripsi) dan privat (untuk dekripsi)</div>
+      <div class="flex items-center gap-2"><i data-lucide="info" class="w-4 h-4 text-[#ffd166] shrink-0"></i>HTTPS menggunakan keduanya: asimetris untuk key exchange, simetris untuk data transfer</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: INTERACTIVE PRACTICE SUITE -->
+<section id="practice" class="section-anchor max-w-5xl mx-auto px-4 mb-20">
+  <div class="flex items-center gap-3 mb-4">
+    <div class="w-8 h-8 rounded-lg bg-[#4fffb0]/10 border border-[#4fffb0]/30 flex items-center justify-center">
+      <i data-lucide="target" class="w-4 h-4 text-[#4fffb0]"></i>
+    </div>
+    <h2 class="font-display text-2xl font-bold">Interactive Practice Suite</h2>
+  </div>
+  <p class="text-[#6b7280] text-sm mb-4">15 soal pilihan dari UTS. Klik jawaban, lalu buka penjelasan untuk memahami metodologi berpikirnya.</p>
+
+  <!-- Score tracker -->
+  <div class="bg-[#1a1e28] border border-[#252a38] rounded-xl p-4 mb-8 flex items-center gap-4">
+    <div class="flex flex-col">
+      <span class="text-xs text-[#6b7280] font-mono">SKOR KAMU</span>
+      <span class="text-2xl font-display font-bold"><span id="score-num">0</span><span class="text-[#6b7280] text-base">/15</span></span>
+    </div>
+    <div class="flex-1 bg-[#252a38] rounded-full h-3">
+      <div id="score-bar" class="progress-bar h-3 rounded-full" style="width:0%"></div>
+    </div>
+    <button onclick="resetAll()" class="flex items-center gap-1.5 text-xs font-mono text-[#6b7280] hover:text-[#ff6b6b] transition-colors">
+      <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>Reset
+    </button>
+  </div>
+
+  <div id="quiz-container" class="flex flex-col gap-6"></div>
+</section>
+
+<!-- SECTION 4: REFERENCES -->
+<section id="references" class="section-anchor max-w-5xl mx-auto px-4 mb-24">
+  <div class="flex items-center gap-3 mb-8">
+    <div class="w-8 h-8 rounded-lg bg-[#ff6b6b]/10 border border-[#ff6b6b]/30 flex items-center justify-center">
+      <i data-lucide="library" class="w-4 h-4 text-[#ff6b6b]"></i>
+    </div>
+    <h2 class="font-display text-2xl font-bold">📚 References — Belajar dari Nol</h2>
+  </div>
+  <p class="text-[#6b7280] text-sm mb-8">Untuk setiap topik dalam UTS, berikut materi dasar yang harus dipahami beserta hubungannya dengan soal.</p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5" id="ref-container"></div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t border-[#252a38] py-8 text-center text-[#6b7280] text-xs font-mono">
+  PKPL UTS Interactive Learning Page · Genap 2025 · Dibuat untuk belajar
+</footer>
+
+<script>
+// ─── QUIZ DATA ───────────────────────────────────────────────────────────────
+const questions = [
+  {
+    no: 1,
+    q: "Apa yang dimaksud dengan software security?",
+    choices: [
+      "Proses mempercepat kinerja perangkat lunak",
+      "Proses melindungi perangkat lunak dari kerusakan fisik",
+      "Proses memastikan perangkat lunak aman dari ancaman dan kerentanan",
+      "Proses pembuatan perangkat lunak tanpa bug",
+      "Proses menyembunyikan kode sumber dari pengguna"
+    ],
+    answer: 2,
+    explanation: "Software security adalah disiplin ilmu yang fokus pada memastikan perangkat lunak terlindungi dari ancaman, serangan, dan kerentanan — bukan sekadar bebas bug atau cepat. Ini mencakup proses desain, implementasi, dan pengujian untuk mencegah eksploitasi.",
+    topic: "Definisi Software Security"
+  },
+  {
+    no: 2,
+    q: "Berikut ini adalah jenis serangan yang umum pada perangkat lunak, KECUALI:",
+    choices: [
+      "SQL Injection",
+      "Cross-site scripting (XSS)",
+      "Denial of Service (DoS)",
+      "Debugging",
+      "Buffer Overflow"
+    ],
+    answer: 3,
+    explanation: "Debugging adalah proses yang dilakukan DEVELOPER untuk menemukan dan memperbaiki bug dalam kode. Ini bukan serangan — melainkan bagian dari siklus pengembangan. Semua pilihan lain (SQL Injection, XSS, DoS, Buffer Overflow) adalah teknik serangan nyata yang digunakan oleh penyerang.",
+    topic: "Jenis Serangan Software"
+  },
+  {
+    no: 5,
+    q: "Secure Software Development Life Cycle (SSDLC) adalah:",
+    choices: [
+      "Model pengembangan yang fokus pada tampilan antarmuka",
+      "Model pengembangan perangkat lunak yang mengabaikan aspek keamanan",
+      "Siklus pengembangan perangkat lunak dengan integrasi keamanan di setiap tahap",
+      "Metode uji coba performa perangkat lunak",
+      "Siklus hidup perangkat keras"
+    ],
+    answer: 2,
+    explanation: "SSDLC (Secure Software Development Life Cycle) mengintegrasikan praktik keamanan di SETIAP fase pengembangan — mulai dari requirements, desain, coding, testing, hingga deployment. Filosofi utamanya adalah 'shift-left security': pindahkan pertimbangan keamanan ke fase paling awal agar biaya perbaikan lebih murah.",
+    topic: "Secure SDLC"
+  },
+  {
+    no: 10,
+    q: "Istilah 'CIA Triad' dalam keamanan perangkat lunak merujuk pada:",
+    choices: [
+      "Confidentiality, Integrity, Availability",
+      "Control, Isolation, Authentication",
+      "Code, Information, Access",
+      "Compliance, Integration, Assurance",
+      "Confidentiality, Identity, Access"
+    ],
+    answer: 0,
+    explanation: "CIA Triad adalah tiga pilar fundamental keamanan informasi: (C) Confidentiality — data hanya untuk yang berwenang; (I) Integrity — data tidak dimodifikasi secara tidak sah; (A) Availability — sistem tersedia saat dibutuhkan. Setiap kontrol keamanan dirancang untuk melindungi satu atau lebih aspek ini.",
+    topic: "CIA Triad"
+  },
+  {
+    no: 16,
+    q: "SQL Injection terjadi karena:",
+    choices: [
+      "Penggunaan software bajakan",
+      "Kode yang gagal di-compile",
+      "Input pengguna tidak divalidasi dan langsung digunakan dalam query database",
+      "Terlalu banyak komentar di dalam kode",
+      "Kekurangan RAM saat proses dijalankan"
+    ],
+    answer: 2,
+    explanation: "SQL Injection terjadi ketika input dari pengguna (form, URL parameter) langsung digabungkan ke query SQL tanpa sanitasi. Penyerang bisa menyuntikkan karakter seperti ' OR 1=1 -- untuk memanipulasi logika query dan mendapatkan akses tidak sah. Solusi: gunakan Prepared Statements.",
+    topic: "SQL Injection"
+  },
+  {
+    no: 17,
+    q: "Manakah yang merupakan teknik pengujian keamanan berbasis kode sumber?",
+    choices: [
+      "Penetration Testing",
+      "Dynamic Analysis",
+      "Static Code Analysis",
+      "Black-box Testing",
+      "Load Testing"
+    ],
+    answer: 2,
+    explanation: "Static Code Analysis (SAST — Static Application Security Testing) menganalisis kode sumber TANPA menjalankan program. Tool seperti SonarQube dan Fortify membaca kode dan mendeteksi pola berbahaya. Berbeda dengan Dynamic Analysis yang menguji saat program berjalan, atau Black-box Testing yang tidak melihat kode sama sekali.",
+    topic: "Security Testing — SAST"
+  },
+  {
+    no: 24,
+    q: "Prinsip least privilege mengacu pada:",
+    choices: [
+      "Memberikan semua akses kepada pengguna agar pekerjaan cepat selesai",
+      "Memberikan akses minimal sesuai kebutuhan tugas pengguna",
+      "Menyembunyikan semua fitur aplikasi dari pengguna",
+      "Menonaktifkan semua fitur keamanan",
+      "Menyimpan semua data secara publik"
+    ],
+    answer: 1,
+    explanation: "Least Privilege (Hak Akses Minimal) adalah prinsip bahwa setiap pengguna atau proses hanya boleh memiliki akses yang diperlukan untuk menjalankan tugasnya — tidak lebih. Ini membatasi dampak jika akun tersebut diretas. Contoh: staf marketing tidak perlu akses ke database keuangan.",
+    topic: "Prinsip Keamanan — Least Privilege"
+  },
+  {
+    no: 25,
+    q: "Apa yang dimaksud dengan zero-day vulnerability?",
+    choices: [
+      "Kerentanan yang sudah ditambal oleh pengembang",
+      "Bug yang menyebabkan sistem tidak bisa menyala",
+      "Kerentanan yang belum diketahui oleh vendor dan belum ada solusinya",
+      "Kegagalan sistem akibat pemadaman listrik",
+      "Kesalahan pengaturan tanggal pada sistem operasi"
+    ],
+    answer: 2,
+    explanation: "Zero-day vulnerability adalah celah keamanan yang belum diketahui oleh vendor/pengembang sehingga belum ada patch atau fix-nya. Nama 'zero-day' berarti pengembang punya '0 hari' untuk memperbaikinya sebelum dieksploitasi. Ini sangat berbahaya karena tidak ada pertahanan resmi yang tersedia.",
+    topic: "Vulnerability — Zero-Day"
+  },
+  {
+    no: 27,
+    q: "Apa fungsi utama dari hashing dalam konteks keamanan?",
+    choices: [
+      "Menyembunyikan struktur database",
+      "Mengurangi ukuran file gambar",
+      "Mengubah data menjadi bentuk tetap yang tidak dapat dikembalikan ke bentuk aslinya",
+      "Mengurutkan data berdasarkan abjad",
+      "Mengganti format file menjadi PDF"
+    ],
+    answer: 2,
+    explanation: "Hashing adalah fungsi ONE-WAY: mengubah data input menjadi output dengan panjang tetap (hash/digest) yang TIDAK BISA dibalik. Berbeda dengan enkripsi yang bisa didekripsi. Digunakan untuk: menyimpan password, verifikasi integritas file, digital signatures. Contoh: bcrypt, SHA-256, MD5.",
+    topic: "Hashing vs Enkripsi"
+  },
+  {
+    no: 37,
+    q: "Teknik salting digunakan dalam proses:",
+    choices: [
+      "Validasi data input",
+      "Penyimpanan password yang aman",
+      "Penghapusan data sensitif",
+      "Penambahan fitur enkripsi",
+      "Deteksi malware"
+    ],
+    answer: 1,
+    explanation: "Salting adalah teknik menambahkan string acak (salt) ke password SEBELUM di-hash. Tujuannya: (1) mencegah dua user dengan password sama punya hash yang sama, (2) mencegah rainbow table attacks — serangan yang menggunakan database pre-computed hashes. Salt disimpan bersama hash di database.",
+    topic: "Password Security — Salting"
+  },
+  {
+    no: 41,
+    q: "Apa perbedaan utama antara enkripsi simetris dan asimetris?",
+    choices: [
+      "Simetris menggunakan dua kunci, asimetris hanya satu",
+      "Simetris lebih lambat dari asimetris",
+      "Simetris menggunakan satu kunci untuk enkripsi dan dekripsi, asimetris menggunakan pasangan kunci publik dan privat",
+      "Enkripsi simetris hanya digunakan dalam database",
+      "Asimetris tidak dapat digunakan dalam jaringan"
+    ],
+    answer: 2,
+    explanation: "Perbedaan mendasar: (1) Simetris = 1 kunci rahasia yang SAMA untuk enkripsi & dekripsi (lebih cepat, cocok untuk data besar). Contoh: AES, DES. (2) Asimetris = pasangan kunci: Public Key untuk enkripsi, Private Key untuk dekripsi (lebih aman untuk pertukaran kunci, lebih lambat). Contoh: RSA, ECC. HTTPS menggunakan keduanya.",
+    topic: "Kriptografi — Simetris vs Asimetris"
+  },
+  {
+    no: 44,
+    q: "Apa yang dimaksud dengan session hijacking?",
+    choices: [
+      "Pengguna lupa logout",
+      "Penyerang mengambil alih sesi login pengguna yang sedang aktif",
+      "Pengguna mengganti kata sandi",
+      "Server kehilangan koneksi",
+      "Aplikasi berhenti tiba-tiba"
+    ],
+    answer: 1,
+    explanation: "Session Hijacking adalah serangan di mana penyerang mencuri session token (cookie) pengguna yang sedang login untuk mengambil alih sesinya — tanpa perlu tahu username/password. Cara pencurian token: XSS, sniffing jaringan tidak aman (HTTP). Pencegahan: gunakan HTTPS, set cookie flag Secure+HttpOnly, batas waktu sesi.",
+    topic: "Session Security"
+  },
+  {
+    no: 47,
+    q: "Social engineering adalah jenis serangan yang memanfaatkan:",
+    choices: [
+      "Bug dalam sistem",
+      "Kelemahan manusia melalui manipulasi psikologis",
+      "Kesalahan konfigurasi jaringan",
+      "Serangan malware langsung",
+      "Kompresi file yang buruk"
+    ],
+    answer: 1,
+    explanation: "Social Engineering menyerang 'wetware' (manusia), bukan software atau hardware. Penyerang memanipulasi psikologi korban — rasa takut, urgensi, kepercayaan — untuk mendapatkan informasi atau akses. Contoh: phishing email, pretexting (pura-pura jadi IT support), baiting. Ini sering lebih efektif daripada serangan teknis.",
+    topic: "Social Engineering"
+  },
+  {
+    no: 8,
+    q: "Tools berikut digunakan untuk mendeteksi kerentanan pada kode, KECUALI:",
+    choices: [
+      "SonarQube",
+      "Fortify",
+      "Static Application Security Testing (SAST)",
+      "Visual Studio Code",
+      "OWASP ZAP"
+    ],
+    answer: 3,
+    explanation: "Visual Studio Code adalah code editor / IDE (Integrated Development Environment) biasa untuk menulis kode — bukan security testing tool. SonarQube, Fortify, dan SAST adalah alat analisis keamanan statis. OWASP ZAP (Zed Attack Proxy) adalah DAST tool untuk pengujian keamanan dinamis pada aplikasi web.",
+    topic: "Security Testing Tools"
+  },
+  {
+    no: 19,
+    q: "Manakah dari berikut ini yang merupakan prinsip defense in depth?",
+    choices: [
+      "Mengandalkan satu lapisan perlindungan utama",
+      "Menghindari pengujian berlapis",
+      "Menyediakan banyak lapisan keamanan untuk mengurangi risiko",
+      "Fokus pada kecepatan respons pengguna",
+      "Mengurangi penggunaan log aktivitas"
+    ],
+    answer: 2,
+    explanation: "Defense in Depth (pertahanan berlapis) adalah strategi keamanan yang menggunakan BANYAK lapisan kontrol keamanan. Analoginya: kastil dengan parit + tembok luar + tembok dalam + penjaga. Jika satu lapisan tembus, masih ada lapisan lain. Contoh: firewall + IDS + enkripsi + MFA + logging — bukan hanya satu kontrol.",
+    topic: "Prinsip Keamanan — Defense in Depth"
+  },
+];
+
+// ─── REFERENCES DATA ─────────────────────────────────────────────────────────
+const references = [
+  {
+    topic: "Software Security & CIA Triad",
+    soal: "Soal 1, 10, 11",
+    materi: "Keamanan perangkat lunak adalah disiplin yang bertujuan melindungi software dari eksploitasi. CIA Triad (Confidentiality, Integrity, Availability) adalah kerangka kerja fundamental yang digunakan untuk mengevaluasi dan merancang sistem keamanan.",
+    keywords: ["Information Security", "Risk Management", "Security Principles"],
+    color: "#4fffb0"
+  },
+  {
+    topic: "Secure SDLC & Threat Modeling",
+    soal: "Soal 3, 5, 18, 31",
+    materi: "SSDLC mengintegrasikan keamanan di setiap fase pengembangan. Threat Modeling adalah proses identifikasi potensi ancaman SEBELUM sistem dibangun — dilakukan di fase desain. Framework populer: STRIDE (Spoofing, Tampering, Repudiation, Information Disclosure, DoS, Elevation of Privilege).",
+    keywords: ["SSDLC", "Threat Modeling", "STRIDE Framework", "Security Design"],
+    color: "#ffd166"
+  },
+  {
+    topic: "Common Attack Types",
+    soal: "Soal 2, 7, 16, 22, 33, 44, 47",
+    materi: "Serangan software diklasifikasikan: Injection Attacks (SQL Injection, XSS), Authentication Attacks (Brute Force, Session Hijacking), Network Attacks (MitM, DoS/DDoS), Social Engineering (Phishing, Pretexting). Setiap jenis memiliki vektor serangan dan mitigasi yang berbeda.",
+    keywords: ["OWASP Top 10", "Attack Vectors", "Injection Attacks", "Authentication Bypass"],
+    color: "#ff6b6b"
+  },
+  {
+    topic: "Kriptografi — Enkripsi & Hashing",
+    soal: "Soal 12, 27, 37, 41",
+    materi: "Enkripsi (dua arah): Simetris (AES, DES) = 1 kunci; Asimetris (RSA, ECC) = pasangan kunci. Hashing (satu arah): MD5, SHA-256, bcrypt. Salting menambah string acak ke password sebelum di-hash untuk mencegah rainbow table attack.",
+    keywords: ["AES", "RSA", "bcrypt", "SHA-256", "Rainbow Table", "Cryptography"],
+    color: "#a78bfa"
+  },
+  {
+    topic: "Authentication & Access Control",
+    soal: "Soal 13, 24, 26, 29, 40, 45",
+    materi: "Authentication memverifikasi identitas (siapa kamu?). Authorization mengontrol akses (apa yang boleh kamu lakukan?). MFA menggabungkan beberapa faktor: something you know (password), something you have (OTP), something you are (biometrik). Least Privilege membatasi akses ke minimum yang dibutuhkan.",
+    keywords: ["Authentication", "Authorization", "MFA", "RBAC", "Least Privilege"],
+    color: "#4fffb0"
+  },
+  {
+    topic: "Security Testing — SAST & Penetration Testing",
+    soal: "Soal 8, 9, 17, 23",
+    materi: "SAST (Static Application Security Testing): menganalisis kode tanpa menjalankan program. DAST (Dynamic): menguji saat program berjalan. Penetration Testing: mensimulasikan serangan nyata untuk menemukan kelemahan. Black-box: tanpa pengetahuan kode. White-box: dengan akses penuh ke kode.",
+    keywords: ["SAST", "DAST", "Penetration Testing", "Black-box", "White-box", "SonarQube", "OWASP ZAP"],
+    color: "#ffd166"
+  },
+  {
+    topic: "OWASP & Best Practices",
+    soal: "Soal 14, 15, 28, 34, 42, 46",
+    materi: "OWASP (Open Web Application Security Project) menerbitkan OWASP Top 10 — daftar 10 kerentanan web paling kritis. Best practices: input validation, prepared statements, update library secara berkala, tidak menyimpan password plaintext, tidak menggunakan default credentials.",
+    keywords: ["OWASP Top 10", "Insecure Design", "Misconfiguration", "Secure Coding"],
+    color: "#ff6b6b"
+  },
+  {
+    topic: "Defense in Depth & Security Principles",
+    soal: "Soal 6, 19, 20, 30, 32, 35, 50",
+    materi: "Prinsip keamanan kunci: Defense in Depth (lapisan berlapis), Least Privilege (akses minimal), Fail Secure (gagal dengan aman), Separation of Duties (pemisahan tugas). Firewall menyaring traffic berdasarkan aturan. Security Audit mengevaluasi kepatuhan terhadap kebijakan keamanan.",
+    keywords: ["Defense in Depth", "Security Policy", "Firewall", "Security Audit", "Code Obfuscation"],
+    color: "#a78bfa"
+  },
+];
+
+// ─── RENDER QUIZ ─────────────────────────────────────────────────────────────
+let score = 0;
+let answered = 0;
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  questions.forEach((q, idx) => {
+    const div = document.createElement('div');
+    div.className = 'bg-[#1a1e28] border border-[#252a38] rounded-2xl p-6 card-hover animate-fade-in';
+    div.id = `q-${idx}`;
+
+    const choicesHtml = q.choices.map((c, ci) => `
+      <button
+        class="choice-btn w-full text-left px-4 py-3 rounded-xl bg-[#0d0f14] text-sm text-[#9ca3af] flex items-start gap-3"
+        onclick="checkAnswer(${idx}, ${ci})"
+        id="btn-${idx}-${ci}"
+      >
+        <span class="font-mono text-[#4fffb0] shrink-0 mt-0.5">${String.fromCharCode(65+ci)}</span>
+        <span>${c}</span>
+      </button>
+    `).join('');
+
+    div.innerHTML = `
+      <div class="flex items-start gap-3 mb-4">
+        <span class="tag bg-[#252a38] text-[#6b7280] px-2 py-0.5 rounded shrink-0 mt-0.5">No. ${q.no}</span>
+        <span class="font-display font-semibold text-[#e2e8f0] leading-snug">${q.q}</span>
+      </div>
+      <div class="flex flex-col gap-2 mb-4">${choicesHtml}</div>
+      <div id="feedback-${idx}" class="hidden mb-3"></div>
+      <button
+        onclick="toggleReveal(${idx})"
+        id="reveal-btn-${idx}"
+        class="hidden flex items-center gap-2 text-xs font-mono text-[#6b7280] hover:text-[#4fffb0] transition-colors"
+      >
+        <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+        <span id="reveal-label-${idx}">Tampilkan Penjelasan</span>
+      </button>
+      <div id="reveal-${idx}" class="reveal-box mt-3 bg-[#0d0f14] border border-[#252a38] rounded-xl p-4">
+        <div class="text-xs font-mono text-[#a78bfa] mb-2">PENJELASAN LENGKAP</div>
+        <p class="text-[#9ca3af] text-sm leading-relaxed">${q.explanation}</p>
+        <div class="mt-3 flex items-center gap-2">
+          <i data-lucide="tag" class="w-3 h-3 text-[#6b7280]"></i>
+          <span class="text-xs font-mono text-[#6b7280]">Topik: ${q.topic}</span>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  });
+  lucide.createIcons();
+}
+
+function checkAnswer(qIdx, choiceIdx) {
+  const q = questions[qIdx];
+  // Already answered?
+  const btns = q.choices.map((_, ci) => document.getElementById(`btn-${qIdx}-${ci}`));
+  if (btns[0].disabled) return;
+
+  btns.forEach(b => b.disabled = true);
+
+  const isCorrect = choiceIdx === q.answer;
+  if (isCorrect) {
+    btns[choiceIdx].classList.add('correct');
+    score++;
+    answered++;
+  } else {
+    btns[choiceIdx].classList.add('incorrect');
+    btns[q.answer].classList.add('reveal-correct');
+    answered++;
+  }
+
+  // Feedback
+  const fb = document.getElementById(`feedback-${qIdx}`);
+  fb.classList.remove('hidden');
+  fb.innerHTML = isCorrect
+    ? `<div class="flex items-center gap-2 text-[#4fffb0] text-sm"><i data-lucide="check-circle" class="w-4 h-4"></i><span>Jawaban kamu <strong>Benar ✅</strong></span></div>`
+    : `<div class="flex items-center gap-2 text-[#ff6b6b] text-sm"><i data-lucide="x-circle" class="w-4 h-4"></i><span>Jawaban kamu <strong>Salah ❌</strong> — Jawaban yang benar: <span class="font-mono text-[#4fffb0]">${String.fromCharCode(65+q.answer)}</span></span></div>`;
+
+  // Reveal button
+  const revBtn = document.getElementById(`reveal-btn-${qIdx}`);
+  revBtn.classList.remove('hidden');
+  revBtn.style.display = 'flex';
+
+  // Update score
+  document.getElementById('score-num').textContent = score;
+  document.getElementById('score-bar').style.width = `${(score/15)*100}%`;
+
+  lucide.createIcons();
+}
+
+function toggleReveal(qIdx) {
+  const box = document.getElementById(`reveal-${qIdx}`);
+  const label = document.getElementById(`reveal-label-${qIdx}`);
+  if (box.classList.contains('open')) {
+    box.classList.remove('open');
+    label.textContent = 'Tampilkan Penjelasan';
+  } else {
+    box.classList.add('open');
+    label.textContent = 'Sembunyikan Penjelasan';
+  }
+}
+
+function resetAll() {
+  score = 0; answered = 0;
+  document.getElementById('score-num').textContent = '0';
+  document.getElementById('score-bar').style.width = '0%';
+  document.getElementById('quiz-container').innerHTML = '';
+  renderQuiz();
+}
+
+// ─── RENDER REFERENCES ───────────────────────────────────────────────────────
+function renderReferences() {
+  const container = document.getElementById('ref-container');
+  references.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'bg-[#1a1e28] border border-[#252a38] rounded-2xl p-5 card-hover';
+    div.innerHTML = `
+      <div class="flex items-center gap-2 mb-1">
+        <div class="w-2 h-2 rounded-full" style="background:${r.color}"></div>
+        <h4 class="font-display font-bold text-sm">${r.topic}</h4>
+      </div>
+      <div class="text-xs font-mono text-[#6b7280] mb-3">${r.soal}</div>
+      <p class="text-[#9ca3af] text-sm leading-relaxed mb-4">${r.materi}</p>
+      <div class="flex flex-wrap gap-2">
+        ${r.keywords.map(k => `<span class="tag px-2 py-0.5 rounded bg-[#252a38] text-[#6b7280]">${k}</span>`).join('')}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+// INIT
+renderQuiz();
+renderReferences();
+lucide.createIcons();
+</script>
+</body>
+</html>
