@@ -59,8 +59,8 @@
   /* Practice */
   .popt { width: 100%; text-align: left; padding: 12px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; transition: all 0.2s; font-size: 14px; }
   .popt:hover:not(:disabled) { border-color: var(--accent); background: rgba(6, 182, 212, 0.06); }
-  .popt.pc { background: rgba(16, 185, 129, 0.15); border-color: var(--correct); color: #6ee7b7; font-weight: 600; }
-  .popt.pw { background: rgba(239, 68, 68, 0.15); border-color: var(--wrong); color: #fca5a5; }
+  .popt.pc { background: rgba(16, 185, 129, 0.15); border-color: var(--correct); color: #6ee7b7 !important; font-weight: 600; }
+  .popt.pw { background: rgba(239, 68, 68, 0.15); border-color: var(--wrong); color: #fca5a5 !important; }
 
   /* Progress Bar */
   .sbar { width: 100%; height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; margin-top: 10px; }
@@ -81,7 +81,7 @@
     <i data-lucide="shield" class="w-3 h-3"></i> Unified Learning Portal
   </div>
   <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">Quiz 1–3 <span class="text-cyan-500">Interactive</span></h1>
-  <p class="text-muted text-sm md:text-md">Lengkap dengan Conceptual Deep Dive, Visualisasi Logika, dan Practice Suite.</p>
+  <p class="text-muted text-sm md:text-md font-bold">Lengkap dengan 65+ Soal Real (Escaped & Verified), Conceptual Deep Dive, dan Practice Hub.</p>
 </header>
 
 <nav class="max-w-5xl mx-auto px-4">
@@ -89,7 +89,7 @@
     <button onclick="showS('q1')" class="nav-tab active px-5 py-3 text-sm font-bold flex items-center gap-2" id="t-q1"><i data-lucide="shield-check" class="w-4 h-4"></i> Quiz 1</button>
     <button onclick="showS('q2')" class="nav-tab px-5 py-3 text-sm font-bold flex items-center gap-2" id="t-q2"><i data-lucide="layout" class="w-4 h-4"></i> Quiz 2</button>
     <button onclick="showS('q3')" class="nav-tab px-5 py-3 text-sm font-bold flex items-center gap-2" id="t-q3"><i data-lucide="activity" class="w-4 h-4"></i> Quiz 3</button>
-    <button onclick="showS('practice')" class="nav-tab px-5 py-3 text-sm font-bold flex items-center gap-2" id="t-practice"><i data-lucide="target" class="w-4 h-4"></i> Practice</button>
+    <button onclick="showS('practice')" class="nav-tab px-5 py-3 text-sm font-bold flex items-center gap-2" id="t-practice"><i data-lucide="target" class="w-4 h-4"></i> Practice Hub</button>
   </div>
 </nav>
 
@@ -98,84 +98,20 @@
   <!-- ==================== SECTION Q1 ==================== -->
   <div id="s-q1" class="section active">
     <div class="mb-8">
-      <h2 class="text-2xl font-bold mb-2">🛡 Quiz 1: Security Principles & CIA Triad</h2>
-      <p class="text-muted text-sm">Fokus pada 8 prinsip Saltzer & Schroeder, SSDLC, dan dasar-dasar ancaman.</p>
+      <h2 class="text-2xl font-bold mb-2">🛡 Quiz 1: Security Principles</h2>
+      <p class="text-muted text-sm">Prinsip Saltzer & Schroeder, CIA Triad, SSDLC.</p>
     </div>
-
-    <!-- Answers Q1 -->
     <div class="grid gap-4 mb-16" id="q1-list"></div>
 
-    <!-- Concepts Q1 -->
     <div class="space-y-6 mb-16">
       <h3 class="text-xl font-bold flex items-center gap-2 text-cyan-500"><i data-lucide="brain"></i> Conceptual Deep Dive Q1</h3>
-      
       <div class="card">
         <h4 class="font-bold text-md mb-4" style="color:#a78bfa">Prinsip Keamanan Saltzer & Schroeder (8 Prinsip)</h4>
         <div class="grid md:grid-cols-2 gap-4" id="q1-principles"></div>
-        <div class="callout cl-warn mt-6">
-          <div class="text-xs font-bold mb-1 text-amber-500 uppercase">Common Pitfall</div>
-          <p class="text-sm"><strong>Mengurangi endpoint API publik</strong> bukan "meningkatkan availability" — tujuannya adalah <strong>mengurangi exposure</strong> (attack surface). Semakin sedikit endpoint terbuka, semakin kecil permukaan serangan.</p>
-        </div>
       </div>
-
       <div class="card">
-        <h4 class="font-bold text-md mb-4 text-emerald-500">Konsep Ancaman: Threat vs Vulnerability vs Risk</h4>
+        <h4 class="font-bold text-md mb-4 text-emerald-500">Konsep Ancaman</h4>
         <div class="grid md:grid-cols-2 gap-4" id="q1-threats"></div>
-        <div class="callout cl-info mt-4">
-          <p class="text-sm"><strong>Threat Agent</strong> = entitas yang MEMILIKI kemampuan DAN NIAT untuk mengeksploitasi kerentanan.</p>
-        </div>
-      </div>
-
-      <div class="card">
-        <h4 class="font-bold text-md mb-4 text-red-500">Ransomware vs CIA Triad</h4>
-        <p class="text-sm text-muted mb-4">Ransomware mengenkripsi file → menyerang <strong>Availability</strong> (file tidak bisa diakses) dan <strong>Integrity</strong> (file dimodifikasi tanpa izin). BUKAN hanya Confidentiality.</p>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="card2 border-cyan-500/20"><div class="font-bold text-cyan-400 text-sm">Confidentiality</div><p class="text-xs text-muted">Data bocor. Ransomware biasanya TIDAK membocorkan (kecuali double extortion).</p></div>
-          <div class="card2 border-emerald-500/20"><div class="font-bold text-emerald-400 text-sm">Integrity ✓</div><p class="text-xs text-muted">File dienkripsi = diubah tanpa izin. Melanggar Integrity.</p></div>
-          <div class="card2 border-red-500/20"><div class="font-bold text-red-500 text-sm">Availability ✓</div><p class="text-xs text-muted">File tidak bisa dibuka. Melanggar Availability.</p></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Visual Q1 -->
-    <div class="space-y-6">
-      <h3 class="text-xl font-bold flex items-center gap-2 text-cyan-500"><i data-lucide="code"></i> Algorithm & Logic Visualization Q1</h3>
-      
-      <div class="card">
-        <h4 class="font-bold text-md mb-4 text-cyan-400">Fail-Safe Defaults Logic</h4>
-        <pre><code><span class="cmt">// ❌ MELANGGAR Fail-Safe Defaults</span>
-<span class="kw">function</span> <span class="fn">checkAccess</span>(user) {
-  <span class="kw">try</span> {
-    <span class="kw">if</span> (authService.<span class="fn">verify</span>(user)) <span class="kw">return</span> <span class="str">"GRANTED"</span>;
-  } <span class="kw">catch</span> (err) {
-    <span class="cmt">// Sistem crash → akses diberikan penuh! 🚨</span>
-    <span class="kw">return</span> <span class="str">"GRANTED"</span>;
-  }
-}
-
-<span class="cmt">// ✅ MENGIKUTI Fail-Safe Defaults</span>
-<span class="kw">function</span> <span class="fn">checkAccess</span>(user) {
-  <span class="kw">try</span> {
-    <span class="kw">if</span> (authService.<span class="fn">verify</span>(user)) <span class="kw">return</span> <span class="str">"GRANTED"</span>;
-    <span class="kw">return</span> <span class="str">"DENIED"</span>; <span class="cmt">// default = tolak</span>
-  } <span class="kw">catch</span> (err) {
-    <span class="kw">return</span> <span class="str">"DENIED"</span>; <span class="cmt">// Error → TETAP TOLAK</span>
-  }
-}</code></pre>
-      </div>
-
-      <div class="card">
-        <h4 class="font-bold text-md mb-4 text-purple-400">Defense in Depth — Segmentasi Jaringan</h4>
-        <pre><code><span class="cmt">// Tanpa Defense in Depth (satu lapis)</span>
-Internet ──→ [Firewall] ──→ Public Server ──→ Database
-                               <span class="cmt">↑ jika server jebol, DB langsung kena</span>
-
-<span class="cmt">// Dengan Defense in Depth (berlapis)</span>
-Internet ──→ [FW 1] ──→ [DMZ] ──→ Public Server
-                                     │
-                             [Firewall 2 (Internal)]
-                                     │
-                                 Database</code></pre>
       </div>
     </div>
   </div>
@@ -183,43 +119,20 @@ Internet ──→ [FW 1] ──→ [DMZ] ──→ Public Server
   <!-- ==================== SECTION Q2 ==================== -->
   <div id="s-q2" class="section">
     <div class="mb-8">
-      <h2 class="text-2xl font-bold mb-2">📐 Quiz 2: Secure Functional Model (UML/OCL)</h2>
-      <p class="text-muted text-sm">Stereotypes, Use Case Relationships, Aggregation vs Composition.</p>
+      <h2 class="text-2xl font-bold mb-2">📐 Quiz 2: Secure Functional Model</h2>
+      <p class="text-muted text-sm">UML Stereotypes, OCL Pre/Post, Aggregation vs Composition.</p>
     </div>
-
     <div class="grid gap-4 mb-16" id="q2-list"></div>
 
     <div class="space-y-6 mb-16">
       <h3 class="text-xl font-bold flex items-center gap-2 text-cyan-500"><i data-lucide="brain"></i> Conceptual Deep Dive Q2</h3>
-      
       <div class="card">
         <h4 class="font-bold text-md mb-4 text-purple-400">Include vs Extend Relationship</h4>
         <div class="grid md:grid-cols-2 gap-4">
-          <div class="card2">
-            <div class="font-bold text-sm text-purple-300 mb-2">&lt;&lt;include&gt;&gt;</div>
-            <p class="text-xs text-muted">Use case SELALU menyertakan use case lain. Wajib, bukan opsional.</p>
-          </div>
-          <div class="card2">
-            <div class="font-bold text-sm text-pink-300 mb-2">&lt;&lt;extend&gt;&gt;</div>
-            <p class="text-xs text-muted">Use case bersifat TAMBAHAN dan KONDISIONAL. Hanya muncul pada kondisi tertentu.</p>
-          </div>
+          <div class="card2"><div class="font-bold text-sm text-purple-300 mb-2">&lt;&lt;include&gt;&gt;</div><p class="text-xs text-muted">Mandatory / Wajib. Selalu dijalankan.</p></div>
+          <div class="card2"><div class="font-bold text-sm text-pink-300 mb-2">&lt;&lt;extend&gt;&gt;</div><p class="text-xs text-muted">Conditional / Opsional. Hanya jika ada kondisi khusus.</p></div>
         </div>
       </div>
-
-      <div class="card">
-        <h4 class="font-bold text-md mb-4 text-emerald-400">Aggregation vs Composition</h4>
-        <div class="grid md:grid-cols-2 gap-4">
-          <div class="card2">
-            <div class="font-bold text-sm text-emerald-300 mb-2">Aggregation (◇ diamond kosong)</div>
-            <p class="text-xs text-muted">Hubungan LEMAH. Bagian DAPAT eksis tanpa keseluruhan. Siklus hidup independen.</p>
-          </div>
-          <div class="card2">
-            <div class="font-bold text-sm text-orange-400 mb-2">Composition (◆ diamond hitam)</div>
-            <p class="text-xs text-muted">Hubungan KUAT. Bagian MATI bersama keseluruhan. Bergantung penuh pada siklus hidup whole.</p>
-          </div>
-        </div>
-      </div>
-
       <div class="card">
         <h4 class="font-bold text-md mb-4 text-blue-400">UML Security Stereotypes</h4>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3" id="q2-stereotypes"></div>
@@ -231,49 +144,20 @@ Internet ──→ [FW 1] ──→ [DMZ] ──→ Public Server
   <div id="s-q3" class="section">
     <div class="mb-8">
       <h2 class="text-2xl font-bold mb-2">⚙ Quiz 3: Secure Dynamic Model</h2>
-      <p class="text-muted text-sm">Sequence & Activity Diagrams, OCL Analysis, Race Conditions.</p>
+      <p class="text-muted text-sm">Sequence Diagrams, Activity Diagrams, OCL analysis.</p>
     </div>
-
     <div class="grid gap-4 mb-16" id="q3-list"></div>
 
     <div class="space-y-6">
       <h3 class="text-xl font-bold flex items-center gap-2 text-cyan-500"><i data-lucide="brain"></i> Conceptual Deep Dive Q3</h3>
-      
       <div class="card">
-        <h4 class="font-bold text-md mb-4 text-emerald-400">OCL analysis: Precondition vs Postcondition</h4>
+        <h4 class="font-bold text-md mb-4 text-emerald-400">OCL Analysis Patterns</h4>
         <div class="callout cl-err">
-          <div class="font-bold text-red-400 mb-1 uppercase text-xs">Crucial Case: Pelanggaran Keduanya</div>
-          <p class="text-sm">Jika <span class="text-amber-400 font-bold">precondition gagal</span> tapi sistem tetap lanjut dan mengubah state (authenticated=true), maka <span class="text-red-400 font-bold">PRECONDITION dan POSTCONDITION dilanggar</span>. (Pre melarang jalan, Post tidak terpenuhi karena operasi tidak sah).</p>
+          <p class="text-sm">Jika <strong>precondition gagal</strong> tapi sistem tetap lanjut dan mengubah state, maka <strong>PRECONDITION dan POSTCONDITION dilanggar</strong>.</p>
         </div>
-        <pre><code><span class="kw">context</span> <span class="fn">Person</span>::<span class="fn">createLogin</span>(pass : String)
-<span class="str">pre</span>:  pass.<span class="fn">size</span>() >= <span class="num">12</span>
-<span class="str">post</span>: <span class="fn">self</span>.isAuthenticated = <span class="kw">true</span>
-
-<span class="cmt">// Jika pass cuma 6 char tapi sistem set true:</span>
-<span class="cmt">// → PRE dilanggar (syarat masuk tidak dipenuhi)</span>
-<span class="cmt">// → POST dilanggar (janji state tidak sah)</span></code></pre>
-      </div>
-
-      <div class="card">
-        <h4 class="font-bold text-md mb-4 text-cyan-400">Sequence & Activity Diagram Elements</h4>
-        <div class="grid md:grid-cols-2 gap-4">
-          <div class="card2">
-            <div class="text-cyan-400 font-bold text-xs mb-2 uppercase">Sequence Icons</div>
-            <ul class="text-[11px] space-y-1.5 text-muted">
-              <li>• <span class="text-cyan-300 font-bold">Activation Bar</span>: Durasi pengerjaan pesan</li>
-              <li>• <span class="text-red-400 font-bold">Simbol X</span>: Objek dihancurkan (Destroy)</li>
-              <li>• <span class="text-amber-400 font-bold">Loop Arrow</span>: Self-call / Rekursif</li>
-            </ul>
-          </div>
-          <div class="card2">
-            <div class="text-amber-400 font-bold text-xs mb-2 uppercase">Activity Icons</div>
-            <ul class="text-[11px] space-y-1.5 text-muted">
-              <li>• <span class="text-emerald-400 font-bold">◯ with point</span>: Final Node (End)</li>
-              <li>• <span class="text-cyan-400 font-bold">Fork (——)</span>: Mulai Parallelism</li>
-              <li>• <span class="text-purple-400 font-bold">Join (====)</span>: Sinkronisasi Parallelism</li>
-            </ul>
-          </div>
-        </div>
+        <pre><code><span class="kw">context</span> <span class="fn">Person</span>::<span class="fn">createLogin</span>(pass: String)
+<span class="str">pre</span>:  pass.len >= <span class="num">12</span>
+<span class="str">post</span>: isAuthenticated = <span class="kw">true</span></code></pre>
       </div>
     </div>
   </div>
@@ -281,13 +165,20 @@ Internet ──→ [FW 1] ──→ [DMZ] ──→ Public Server
   <!-- ==================== PRACTICE ==================== -->
   <div id="s-practice" class="section">
     <div class="mb-8">
-      <h2 class="text-2xl font-bold mb-2">🎯 Practice Suite (Q1–Q3 Combined)</h2>
+      <h2 class="text-2xl font-bold mb-2">🎯 Interactive Practice Hub</h2>
+      <p class="text-muted text-sm">Pilih topik kuiz untuk mulai latihan mandiri dengan feedback riil.</p>
     </div>
 
-    <div class="card p-6 mb-8 flex items-center justify-between">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <button onclick="startPrac(1)" class="card hover:bg-cyan-500/5 border-cyan-500/20 text-center font-bold">Quiz 1 Practice</button>
+      <button onclick="startPrac(2)" class="card hover:bg-purple-500/5 border-purple-500/20 text-center font-bold">Quiz 2 Practice</button>
+      <button onclick="startPrac(3)" class="card hover:bg-emerald-500/5 border-emerald-500/20 text-center font-bold">Quiz 3 Practice</button>
+    </div>
+
+    <div id="score-card" class="card p-6 mb-8 hidden items-center justify-between">
       <div>
-        <div class="text-xs text-muted uppercase font-bold tracking-widest mb-1">Live Score</div>
-        <div class="text-3xl font-black text-cyan-500" id="score-text">0 / 30</div>
+        <div class="text-xs text-muted uppercase font-bold tracking-widest mb-1">Practice Score</div>
+        <div class="text-3xl font-black text-cyan-500" id="score-text">0 / 0</div>
       </div>
       <div class="flex-1 max-w-xs ml-8">
         <div class="sbar"><div class="sfill" id="score-bar" style="width:0%"></div></div>
@@ -301,150 +192,127 @@ Internet ──→ [FW 1] ──→ [DMZ] ──→ Public Server
 </main>
 
 <script>
-const L=['A','B','C','D'];
-const q1Soal=[
-  {q:"Ransomware yang mengenkripsi seluruh file organisasi terutama mempengaruhi aspek:",a:"Availability dan Integrity"},
-  {q:"Akar penyebab paling umum dari injection attack adalah kegagalan dalam:",a:"Validasi input dan sanitasi data"},
-  {q:"Code review dalam Secure SDLC terutama bertujuan untuk:",a:"Mendeteksi kerentanan sebelum aplikasi diproduksi"},
-  {q:"Tujuan utama threat modeling dalam SDLC adalah:",a:"Mengidentifikasi dan memitigasi ancaman sejak tahap desain"},
-  {q:"Security posture suatu organisasi menggambarkan:",a:"Tingkat kesiapan dan efektivitas kontrol keamanan"},
-  {q:"Mengurangi jumlah endpoint API publik yang tidak digunakan bertujuan untuk:",a:"Mengurangi exposure sistem (Attack Surface)",missed:true},
-  {q:"Jika sistem gagal dan secara otomatis memberikan akses penuh, prinsip apa yang dilanggar?",a:"Fail-safe defaults"},
-  {q:"Penerapan prinsip least privilege berarti:",a:"Pengguna hanya diberikan hak akses minimum yang diperlukan"},
-  {q:"Prinsip psychological acceptability menyatakan bahwa kontrol keamanan harus:",a:"Mudah digunakan agar tidak mendorong pengguna menghindarinya"},
-  {q:"Dalam konteks keamanan informasi, threat agent adalah:",a:"Entitas yang memiliki kemampuan dan niat untuk mengeksploitasi kerentanan"}
+const L=['A','B','C','D','E'];
+function h(t) { return t.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+const soal1 = [
+  {no:1,soal:"Ransomware yang mengenkripsi seluruh file organisasi terutama mempengaruhi aspek:",opsi:["Authenticity saja","Non-repudiation saja","Open Design","Availability dan Integrity"],jawaban:3},
+  {no:2,soal:"Akar penyebab paling umum dari injection attack adalah kegagalan dalam:",opsi:["Redundansi jaringan","Validasi input dan sanitasi data","Pengaturan timeout sesi","Enkripsi disk"],jawaban:1},
+  {no:3,soal:"Code review dalam Secure SDLC terutama bertujuan untuk:",opsi:["Menghapus kebutuhan patch","Mengurangi dokumentasi","Mendeteksi kerentanan sebelum aplikasi diproduksi","Menggantikan pengujian keamanan"],jawaban:2},
+  {no:4,soal:"Tujuan utama threat modeling dalam SDLC adalah:",opsi:["Menghapus kebutuhan dokumentasi","Menguji sistem setelah produksi","Mengidentifikasi dan memitigasi ancaman sejak tahap desain","Meningkatkan kompleksitas sistem"],jawaban:2},
+  {no:5,soal:"Security posture suatu organisasi paling tepat menggambarkan:",opsi:["Tingkat kesiapan dan efektivitas kontrol keamanan dalam menghadapi ancaman","Jumlah perangkat keamanan yang dimiliki","Nilai total aset organisasi","Jumlah karyawan dalam tim IT"],jawaban:0},
+  {no:6,soal:"Ransomware terutama memengaruhi aspek apa dalam CIA triad?",opsi:["Ketersediaan dan integritas data","Hanya autentikasi","Hanya kerahasiaan","Tidak memengaruhi CIA triad"],jawaban:0},
+  {no:7,soal:"Control atau safeguard dalam keamanan informasi bertujuan untuk:",opsi:["Mengurangi kemungkinan atau dampak risiko","Menghilangkan semua ancaman","Menggantikan manajemen risiko","Meningkatkan kompleksitas sistem"],jawaban:0},
+  {no:8,soal:"Prinsip economy of mechanism menyarankan bahwa:",opsi:["Kode harus dirahasiakan seluruhnya","Semua fitur keamanan harus ditambahkan tanpa mempertimbangkan kompleksitas","Mekanisme keamanan harus sederhana dan sekecil mungkin untuk meminimalkan kesalahan","Sistem keamanan harus kompleks agar sulit dipahami penyerang"],jawaban:2},
+  {no:9,soal:"Mengurangi jumlah endpoint API publik yang tidak digunakan bertujuan untuk:",opsi:["Meningkatkan availability","Mengurangi exposure sistem","Meningkatkan kompleksitas sistem","Menghilangkan kebutuhan autentikasi"],jawaban:1,missed:true},
+  {no:10,soal:"Jika sistem gagal dan secara otomatis memberikan akses penuh, prinsip apa yang dilanggar?",opsi:["Open design","Least common mechanism","Fail-safe defaults","Psychological acceptability"],jawaban:2},
+  {no:11,soal:"Prinsip separation of privilege menekankan bahwa:",opsi:["Akses kritis sebaiknya membutuhkan lebih dari satu kondisi atau otorisasi","Satu administrator harus memiliki semua hak akses","Sistem hanya memiliki satu mekanisme keamanan","Hak akses diberikan permanen"],jawaban:0},
+  {no:12,soal:"Sistem keamanan yang terlalu kompleks cenderung:",opsi:["Menghilangkan ancaman eksternal","Selalu lebih aman","Mengurangi kebutuhan audit","Lebih rentan terhadap kesalahan implementasi"],jawaban:3},
+  {no:13,soal:"Penggunaan TLS dalam komunikasi jaringan terutama bertujuan untuk:",opsi:["Menjamin kerahasiaan dan integritas data selama transmisi","Meningkatkan kecepatan jaringan","Mengganti kebutuhan autentikasi","Mencegah semua jenis malware"],jawaban:0},
+  {no:14,soal:"Penerapan prinsip least privilege berarti:",opsi:["Akses diberikan secara permanen tanpa evaluasi","Hak akses dibagi rata untuk semua pengguna","Pengguna hanya diberikan hak akses minimum yang diperlukan untuk menjalankan tugasnya","Semua pengguna memiliki hak administrator"],jawaban:2},
+  {no:15,soal:"Enkripsi data yang disimpan di database bertujuan melindungi jika:",opsi:["Server overload","Jaringan lambat","Media penyimpanan dicuri atau diakses tanpa izin","Password lemah"],jawaban:2},
+  {no:16,soal:"Prinsip psychological acceptability menyatakan bahwa kontrol keamanan harus:",opsi:["Mudah digunakan agar tidak mendorong pengguna mencari cara untuk menghindarinya","Sangat kompleks agar terlihat aman","Mengandalkan dokumentasi panjang","Disembunyikan sepenuhnya dari pengguna"],jawaban:0},
+  {no:17,soal:"Manakah praktik terbaik dalam manajemen sesi untuk mencegah session hijacking?",opsi:["Menggunakan session ID acak yang panjang dan dikirim melalui koneksi terenkripsi","Menyimpan session ID dalam URL","Tidak membatasi masa berlaku sesi","Menggunakan ID yang mudah ditebak"],jawaban:0},
+  {no:18,soal:"Perbedaan paling tepat antara exposure dan loss adalah:",opsi:["Keduanya memiliki arti yang sama","Exposure adalah kondisi terpaparnya aset terhadap ancaman, sedangkan loss adalah kerugian aktual yang terjadi","Loss selalu lebih kecil daripada exposure","Exposure adalah kerugian finansial langsung"],jawaban:1},
+  {no:19,soal:"Jika serangan berhasil karena tidak ada segmentasi jaringan antara server publik dan database internal, prinsip yang gagal diterapkan adalah:",opsi:["Economy of Mechanism","Open Design","Psychological Acceptability","Defense in Depth"],jawaban:3},
+  {no:20,soal:"Dalam konteks keamanan informasi, threat agent adalah:",opsi:["Dampak kerugian setelah insiden terjadi","Mekanisme pengendalian keamanan","Entitas yang memiliki kemampuan dan niat untuk mengeksploitasi kerentanan","Sistem yang mengandung kerentanan"],jawaban:2}
 ];
 
-const q2Soal=[
-  {q:"Audit trail berkaitan dengan security goal:",a:"Accountability",missed:true},
-  {q:"Relasi Aggregation berbeda dari Composition karena:",a:"Pada aggregation, bagian dapat eksis tanpa keseluruhan"},
-  {q:"Dalam OCL, kata kunci 'self' merujuk pada:",a:"Objek dalam konteks saat ini"},
-  {q:"Relasi <<include>> dalam use case diagram menunjukkan bahwa:",a:"Use case selalu menyertakan use case lain"},
-  {q:"Relasi Composition dalam class diagram menunjukkan bahwa:",a:"Bagian sangat bergantung pada keseluruhan"},
-  {q:"Security goal Integrity berarti:",a:"Data tidak dapat diubah tanpa izin"},
-  {q:"Stereotype UML tanpa constraint tambahan berarti:",a:"Hanya label semantik"},
-  {q:"Relasi <<extend>> digunakan ketika:",a:"Use case bersifat tambahan dan kondisional"},
-  {q:"SQL Injection terutama mengancam:",a:"Integrity dan Confidentiality"},
-  {q:"Non-functional requirement berkaitan dengan performa adalah:",a:"Sistem mampu memproses 1000 transaksi per menit"}
+const soal2 = [
+  {no:1,soal:"Audit trail berkaitan dengan security goal:",opsi:["Accountability","Availability","Integrity","Authentication","Confidentiality"],jawaban:0,missed:true},
+  {no:2,soal:"Relasi Aggregation berbeda dari Composition karena:",opsi:["Aggregation selalu berarti inheritance","Aggregation tidak boleh memiliki multiplicity","Aggregation identik dengan dependency","Aggregation menyatakan ketergantungan kuat siklus hidup","Pada aggregation, bagian dapat eksis tanpa keseluruhan"],jawaban:4},
+  {no:3,soal:'Dalam OCL, kata kunci "self" merujuk pada:',opsi:["Semua class","Database","Server","Objek dalam konteks saat ini","Semua aktor"],jawaban:3},
+  {no:4,soal:"Relasi <<include>> dalam use case diagram menunjukkan bahwa:",opsi:["Use case selalu menyertakan use case lain","Use case hanya berjalan saat error","Use case saling menggantikan","Use case bersifat opsional","Use case tidak memiliki hubungan"],jawaban:0},
+  {no:5,soal:"Relasi Composition dalam class diagram menunjukkan bahwa:",opsi:["Relasi bersifat opsional","Relasi adalah inheritance","Bagian sangat bergantung pada keseluruhan","Bagian dapat hidup tanpa keseluruhan","Bagian tidak bergantung pada keseluruhan"],jawaban:2},
+  {no:6,soal:"Security goal Integrity berarti:",opsi:["Sistem memiliki autentikasi","Sistem memiliki audit trail","Sistem selalu tersedia","Data hanya dapat diakses oleh pihak berwenang","Data tidak dapat diubah tanpa izin"],jawaban:4},
+  {no:7,soal:"Countermeasure dalam misuse case modeling berfungsi untuk:",opsi:["Menghapus use case","Mengganti aktor","Mengganti database","Menghapus class","Mengurangi atau mencegah ancaman"],jawaban:4},
+  {no:8,soal:"Stereotype dalam UML ditulis dalam format:",opsi:["(stereotype)","<stereotype>","{stereotype}","//stereotype//","[stereotype]"],jawaban:1},
+  {no:9,soal:"Secure functional model bertujuan untuk:",opsi:["Menghilangkan ancaman","Menghapus non-functional requirement","Mengintegrasikan keamanan ke dalam perilaku sistem sejak tahap desain","Mengurangi jumlah use case","Mengganti class diagram"],jawaban:2},
+  {no:10,soal:"Stereotype <<sensitive>> biasanya diberikan pada:",opsi:["Package diagram","Class controller","Aktor manusia","Atribut yang menyimpan data sensitif","Use case umum"],jawaban:3},
+  {no:11,soal:"Threat-driven modeling berarti:",opsi:["Memulai dari coding","Memulai dari ancaman dan tujuan penyerang","Memulai dari deployment","Memulai dari fitur UI","Memulai dari database"],jawaban:1},
+  {no:12,soal:"Stereotype tanpa constraint tambahan berarti:",opsi:["Otomatis aman","Menggantikan testing","Hanya label semantik","Tidak perlu validasi","Menghapus kebutuhan OCL"],jawaban:2},
+  {no:13,soal:"Relasi <<extend>> digunakan ketika:",opsi:["Use case bersifat tambahan dan kondisional","Use case tidak memiliki aktor","Use case adalah dependency","Use case adalah inheritance","Use case selalu dijalankan"],jawaban:0},
+  {no:14,soal:"Relasi Aggregation berbeda dari Composition karena:",opsi:["Aggregation adalah inheritance","Aggregation lebih kuat dari Composition","Bagian dalam aggregation dapat eksis sendiri","Aggregation tidak memiliki multiplicity","Aggregation selalu one-to-one"],jawaban:2},
+  {no:15,soal:"SQL Injection terutama mengancam:",opsi:["Accountability","Integrity dan Confidentiality","Authentication saja","Authorization saja","Availability"],jawaban:1},
+  {no:16,soal:'Jika suatu use case "Login" memiliki relasi <<include>> ke "Verifikasi Kredensial", maka implikasi desain yang benar adalah:',opsi:["Verifikasi Kredensial menggantikan Login","Keduanya berdiri sendiri tanpa ketergantungan","Verifikasi Kredensial selalu dijalankan setiap kali Login dieksekusi","Verifikasi Kredensial hanya dijalankan jika terjadi error","Login adalah bagian opsional dari Verifikasi Kredensial"],jawaban:2},
+  {no:17,soal:"Dalam Secure SDLC, secure functional model memiliki sifat:",opsi:["forensik","preventif","reaktif","korektif","detektif"],jawaban:1},
+  {no:18,soal:"Stereotype yang paling tepat untuk menandai kelas yang bertanggung jawab terhadap pengelolaan kriptografi adalah:",opsi:["<<threat>>","<<audit>>","<<secure>>","<<crypto>>","<<sensitive>>"],jawaban:3},
+  {no:19,soal:"Dalam sistem ticketing, Payment Gateway paling tepat dikategorikan sebagai:",opsi:["Aktor internal organisasi","Aktor utama human","Aktor pendukung non-human","Aktor utama non-human","Aktor pendukung human"],jawaban:2},
+  {no:20,soal:"Non-functional requirement yang berkaitan dengan performa adalah:",opsi:["Sistem mampu memproses 1000 transaksi per menit","Sistem menyediakan fitur login","Sistem memiliki dashboard admin","Sistem dapat mengirim email","Sistem memiliki fitur pencarian"],jawaban:0}
 ];
 
-const q3Soal=[
-  {q:"Jika method dipanggil saat status Order = 'Confirmed' (pre: status Pending), maka:",a:"Operasi harus ditolak karena precondition tidak terpenuhi"},
-  {q:"Jika sistem tetap mengatur isAuthenticated=true meskipun password 6 char (pre: >= 12), maka:",a:"Pelanggaran precondition dan postcondition",missed:true},
-  {q:"Activation bar pada sequence diagram menunjukkan:",a:"Durasi objek sedang memproses pesan"},
-  {q:"Destroy message pada sequence diagram ditandai dengan:",a:"Simbol X pada lifeline"},
-  {q:"Fork node pada activity diagram menunjukkan:",a:"Eksekusi paralel beberapa aktivitas"},
-  {q:"Sistem memiliki state diagram valid tapi sequence diagram melewatinya:",a:"Inkonsistensi antara model statis dan dinamis"},
-  {q:"Self-call rekursif pada sequence diagram ditunjukkan dengan:",a:"Loopback arrow dengan activation bar tambahan"},
-  {q:"Tidak adanya error handling dalam dynamic model dapat menyebabkan:",a:"Silent failure dan inkonsistensi state"},
-  {q:"Proses lock ticket pada sistem ticketing terutama berfungsi untuk:",a:"Mencegah race condition dan double booking"},
-  {q:"Final node pada activity diagram ditunjukkan dengan:",a:"Lingkaran dengan titik di dalamnya"}
+const soal3 = [
+  {no:1,soal:`OCL: context Order::addPayment(amount : Real)\npre: amount > 0 and self.status = 'Pending'\npost: self.totalPaid = self.totalPaid@pre + amount\nJika method addPayment dipanggil saat status Order = 'Confirmed', maka:`,opsi:["Operasi berjalan tetapi totalPaid tidak berubah","Operasi tetap berjalan karena amount > 0","Postcondition tetap bisa dievaluasi","Operasi harus ditolak karena precondition tidak terpenuhi"],jawaban:3},
+  {no:2,soal:`OCL: context Payment::process()\npre: self.order.totalAmount > 0 and self.order.tickets->size() > 0\npost: self.status = 'Success' implies self.order.status = 'Confirmed'\nJika setelah process() status Payment = 'Success' tetapi Order tetap 'Pending', maka:`,opsi:["OCL tidak relevan","Postcondition dilanggar","Precondition dilanggar","Tidak ada pelanggaran"],jawaban:1},
+  {no:3,soal:`OCL: context Person::createLogin(username : String, password : String)\npre: username.size() >= 8 and password.size() >= 12\npost: self.isAuthenticated = true\nJika sistem tetap mengatur isAuthenticated = true meskipun password hanya 6 karakter, maka:`,opsi:["Hanya pelanggaran postcondition","Tidak ada pelanggaran","Hanya pelanggaran precondition","Pelanggaran precondition dan postcondition"],jawaban:3,missed:true},
+  {no:4,soal:`OCL: context Order::confirm()\npre: self.payment.status = 'Success'\npost: self.status = 'Confirmed'\nPada sequence diagram, pesan confirm() dikirim sebelum payment.process() selesai (asynchronous). Risiko desain:`,opsi:["Sequence diagram tidak berpengaruh pada OCL","Precondition dapat gagal karena status payment belum berubah","Tidak ada masalah karena postcondition akan memperbaiki state","Asynchronous selalu lebih aman"],jawaban:1},
+  {no:5,soal:"Sebuah message pada sequence diagram diberi stereotype <<confidential>>, tetapi tidak ada mekanisme enkripsi atau pembatasan akses yang dimodelkan. Interpretasi yang paling tepat adalah:",opsi:["Visibility method otomatis menjadi private","Sistem otomatis terenkripsi karena stereotype bersifat eksekutabel","Message tidak bisa dipanggil oleh objek lain","Stereotype hanya bersifat anotasi desain dan tidak menjamin implementasi keamanan"],jawaban:3},
+  {no:6,soal:"Dalam secure dynamic model, sebuah operasi diberi stereotype <<authenticated>>, tetapi precondition OCL tidak memeriksa status autentikasi pengguna. Kelemahan desain tersebut:",opsi:["Terdapat inkonsistensi antara anotasi keamanan dan constraint formal","Sequence diagram akan menolak eksekusi","OCL akan otomatis mengikuti stereotype","Tidak ada kelemahan karena stereotype sudah cukup"],jawaban:0},
+  {no:7,soal:"Activation bar pada sequence diagram menunjukkan:",opsi:["Hubungan inheritance","Visibility atribut","Masa hidup objek","Durasi objek sedang memproses pesan"],jawaban:3},
+  {no:8,soal:"Dalam sequence diagram, jika authentication dilakukan setelah payment diproses, maka kelemahan desain tersebut adalah:",opsi:["Menyebabkan race condition","Menyebabkan deadlock","Melanggar encapsulation","Kontrol akses diterapkan setelah aksi kritis terjadi"],jawaban:3},
+  {no:9,soal:"Destroy message pada sequence diagram ditandai dengan:",opsi:["Diamond","Panah putus-putus","Lingkaran hitam","Simbol X pada lifeline"],jawaban:3},
+  {no:10,soal:"Dynamic model yang ditambahkan unsur keamanan bertujuan untuk:",opsi:["Mengganti class dengan activity diagram","Mengurangi jumlah class dalam sistem","Mengidentifikasi kontrol keamanan yang hilang dan potensi ancaman saat interaksi objek","Menghilangkan kebutuhan dokumentasi"],jawaban:2},
+  {no:11,soal:"Encapsulation dalam secure dynamic modeling bertujuan untuk:",opsi:["Mengurangi kebutuhan logging","Mengekspos seluruh atribut","Menghapus precondition","Menyembunyikan detail internal dan melindungi state objek"],jawaban:3},
+  {no:12,soal:"Final node pada activity diagram ditunjukkan dengan:",opsi:["Lingkaran dengan titik di dalamnya","Horizontal bar","Diamond","Panah putus-putus"],jawaban:0},
+  {no:13,soal:"Fork node pada activity diagram menunjukkan:",opsi:["Eksekusi paralel beberapa aktivitas","Sinkronisasi thread","Percabangan kondisi","Akhir proses"],jawaban:0},
+  {no:14,soal:"Jika error branch dimodelkan di activity diagram tetapi tidak ada mekanisme logging, maka implikasi keamanannya adalah:",opsi:["Sistem lebih cepat","Sulit melakukan audit dan forensic analysis","State menjadi lebih lambat","Error tidak terjadi"],jawaban:1},
+  {no:15,soal:"Jika postcondition menyatakan ticket.status = 'Sold' tetapi setelah eksekusi tetap 'Available', maka terjadi:",opsi:["Pelanggaran postcondition","Constraint terpenuhi","Error inheritance","Transisi state benar"],jawaban:0},
+  {no:16,soal:"Jika precondition menyatakan user.isAuthenticated = true tetapi tidak ada mekanisme yang memastikan perubahan state autentikasi sebelum method dipanggil, maka:",opsi:["Sistem aman karena OCL selalu dijalankan","State diagram tidak diperlukan","Precondition otomatis terpenuhi","Precondition hanya bersifat dokumentasi dan tidak dapat dieksekusi"],jawaban:3},
+  {no:17,soal:'Jika precondition OCL menyatakan "amount > 0" dan nilai yang dikirim adalah "-5", maka sistem akan melakukan:',opsi:["Mengubah nilai menjadi positif secara otomatis","Tetap mengeksekusi operasi lalu mencatat log","Mengabaikan constraint tersebut","Mencegah eksekusi operasi dan menghasilkan error"],jawaban:3},
+  {no:18,soal:"Jika suatu operasi memiliki precondition valid tetapi tidak memiliki postcondition, maka risiko desain yang muncul adalah:",opsi:["Objek tidak dapat dihancurkan","Operasi tidak bisa dipanggil","Tidak ada jaminan state sistem setelah eksekusi","Method menjadi private"],jawaban:2},
+  {no:19,soal:"Manfaat utama dynamic modeling terhadap class diagram adalah:",opsi:["Mengurangi operasi atau class yang mengancam keamanan","Menemukan operasi atau class yang belum teridentifikasi","Mengurangi jumlah class","Menghapus inheritance"],jawaban:1},
+  {no:20,soal:"Pada activity diagram, jika beberapa panah masuk ke horizontal bar, maka elemen tersebut adalah:",opsi:["Join node","Fork node","Decision node","Merge node"],jawaban:0},
+  {no:21,soal:"Precondition dan postcondition penting dalam secure dynamic modeling karena:",opsi:["Menggantikan testing","Mengurangi kompleksitas diagram","Memformalkan perilaku yang diharapkan dan membantu mendeteksi defect","Menghapus threat secara otomatis"],jawaban:2},
+  {no:22,soal:"Proses lock ticket pada sistem ticketing terutama berfungsi untuk:",opsi:["Mengurangi kompleksitas","Mencegah race condition dan double booking","Menghapus state Sold","Menghilangkan logging"],jawaban:1},
+  {no:23,soal:"Sebuah sistem memiliki state diagram valid, tetapi sequence diagram memungkinkan pemanggilan method yang melewati state tertentu. Ini menunjukkan:",opsi:["Redundansi diagram","Over-encapsulation","Pola desain yang benar","Inkonsistensi antara model statis dan dinamis"],jawaban:3},
+  {no:24,soal:"Self-call rekursif pada sequence diagram ditunjukkan dengan:",opsi:["Fork node","Destroy message","Loopback arrow dengan activation bar tambahan","Panah putus-putus"],jawaban:2},
+  {no:25,soal:"Tidak adanya error handling dalam dynamic model dapat menyebabkan:",opsi:["Race condition","Silent failure dan inkonsistensi state","Strong encapsulation","Weak encapsulation"],jawaban:1}
 ];
 
-const pData=[
-  // Mixed practice from all 3 quizzes
-  {q:"Seorang admin menghapus 15 endpoint API yang sudah tidak dipakai. Prinsip apa ini?",o:["Least Privilege","Fail-Safe Defaults","Mengurangi attack surface / exposure","Defense in Depth"],a:2,exp:"Menghapus endpoint API yang tidak perlu = mengurangi Attack Surface. Ini mengurangi Exposure sistem terhadap pencarian celah oleh penyerang."},
-  {q:"Database server bisa diakses langsung dari internet tanpa melewati firewall internal (tanpa segmentasi). Prinsip yang gagal?",o:["Least Privilege","Economy of Mechanism","Fail-Safe Defaults","Defense in Depth"],a:3,exp:"Defense in Depth menekankan strategi berlapis. Tanpa segmentasi, jika server publik tembus, database ikut tembus."},
-  {q:"Aplikasi memiliki fitur 2FA (OTP via SMS + password). Prinsip apa yang dianut?",o:["Economy of Mechanism","Separation of Privilege","Fail-Safe Defaults","Psikologis"],a:1,exp:"Separation of Privilege = butuh lebih dari satu kondisi untuk akses kritis (What you know + What you have)."},
-  {q:"OCL context Person pre: password.size() >=12. Sistem simpan password 6 char. Apa statusnya?",o:["Diterima","Hanya Precondition Dilanggar","Hanya Postcondition Dilanggar","Keduanya Dilanggar"],a:3,exp:"Karena Pre dilanggar (syarat masuk tidak cukup) tapi operasi tetap lanjut, Post juga dilanggar (state tidak sah)."},
-  {q:"Relasi antara 'Universitas' dan 'Mahasiswa' (Mahasiswa bisa ada tanpa Universitas). Apa relasi UML-nya?",o:["Composition (hitam)","Aggregation (kosong)","Inheritance","Dependency"],a:1,exp:"Aggregation (diamond kosong) = hubungan lemah, part bisa hidup mandiri tanpa whole."},
-  {q:"Audit trail sistem mencatat detail aksi user. Ini adalah goal:",o:["Integrity","Confidentiality","Accountability","Authenticity"],a:2,exp:"Accountability (Tanggung Jawab) dipenuhi melalui pencatatan aksi (Audit Trail) sehingga setiap aksi bisa ditarik balik ke pelakunya."},
-  {q:"Dalam Activity Diagram, horizontal bar dengan satu input dan banyak output disebut?",o:["Merge Node","Decision Node","Fork Node","Join Node"],a:2,exp:"Fork Node = Mulai paralel (split). Sebaliknya Join Node = Gabung paralel (sinkronisasi)."},
-  {q:"Security goal 'Data tidak bisa diubah tanpa izin' disebut?",o:["Confidentiality","Integrity","Availability","Accounting"],a:1,exp:"Integrity = Kesutuhan data. Memastikan data valid dan tidak termodifikasi secara tidak sah."},
-  {q:"Mengapa client-side validation tidak cukup?",o:["Lemah secara desain","Mudah di-bypass melalui request direct ke server","Terlalu lambat","Tidak bisa baca database"],a:1,exp:"User bisa memodifikasi request (misal lewat Burp Suite/Postman) langsung ke server, melewati validasi browser."},
-  {q:"Apa kegunaan Stack Canaries?",o:["Enkripsi data","Cegah Buffer Overflow (deteksi perubahan return address)","Cegah SQLi","Cegah XSS"],a:1,exp:"Stack canary adalah nilai acak sebelum return address. Jika canary berubah, artinya terjadi overflow, dan program dihentikan."}
-];
-
-// Content Renderers
-function renderAnswers(did, list, acolor) {
+function renderAnswers(did, list) {
   const el = document.getElementById(did);
   el.innerHTML = list.map((item, idx) => `
     <div class="q-item">
       <div class="flex gap-3">
-        <span class="w-6 h-6 flex-shrink-0 flex items-center justify-center rounded bg-zinc-800 text-[10px] font-bold text-zinc-500 border border-zinc-700">${idx+1}</span>
+        <span class="w-6 h-6 flex-shrink-0 flex items-center justify-center rounded bg-zinc-800 text-[10px] font-bold text-zinc-500 border border-zinc-700">${item.no}</span>
         <div>
-          <p class="text-sm font-semibold">${item.q} ${item.missed ? '<span class="badge missed-badge ml-1">Quiz Miss</span>' : ''}</p>
-          <div class="ans-tag">✓ ${item.a}</div>
+          <p class="text-sm font-semibold">${h(item.soal)} ${item.missed ? '<span class="badge missed-badge ml-1">Missed</span>' : ''}</p>
+          <div class="ans-tag">✓ ${h(item.opsi[item.jawaban])}</div>
         </div>
       </div>
     </div>
   `).join('');
 }
 
-function renderUMLConcepts() {
-  const stereos = [
-    {n:"<<sensitive>>",d:"Data rahasia (password, CC).",c:"#ef4444"},
-    {n:"<<crypto>>",d:"Urusan enkripsi & hashing.",c:"#a78bfa"},
-    {n:"<<audit>>",d:"Operasi yang dicatat log.",c:"#06b6d4"},
-    {n:"<<auth>>",d:"Cek login user.",c:"#10b981"},
-    {n:"<<confidential>>",d:"Data in-transit rahasia.",c:"#f59e0b"},
-    {n:"<<threat>>",d:"Simbol ancaman (Misuse).",c:"#f87171"}
-  ];
-  document.getElementById('q2-stereotypes').innerHTML = stereos.map(s => `
-    <div class="card2 flex flex-col gap-1 border-white/5">
-      <code class="text-xs font-bold" style="color:${s.c}">${s.n}</code>
-      <p class="text-[10px] text-muted">${s.d}</p>
-    </div>
-  `).join('');
+let score = 0; let answered = {}; let activeSection = 0;
+function startPrac(qnum) {
+  activeSection = qnum;
+  document.getElementById('score-card').classList.remove('hidden');
+  resetPrac();
+  window.scrollTo({top: document.getElementById('score-card').offsetTop - 100, behavior:'smooth'});
 }
-
-function renderSecurityPrinciples() {
-  const pr = [
-    {n:"Least Privilege", d:"Hak akses minimal sesuai tugas.", c:"#06b6d4"},
-    {n:"Fail-Safe Defaults", d:"Default = TOLAK. Jika crash, tetap aman.", c:"#ef4444"},
-    {n:"Economy Mechanism", d:"Mekanisme harus simpel (minimal bug).", c:"#10b981"},
-    {n:"Open Design", d:"Keamanan bukan dari rahasia desain.", c:"#a78bfa"},
-    {n:"Separation Privilege", d:"Akses kritis butuh dual-auth/OR.", c:"#fb923c"},
-    {n:"Defense in Depth", d:"Pertahanan berlapis (FW, DMZ, Auth).", c:"#38bdf8"}
-  ];
-  document.getElementById('q1-principles').innerHTML = pr.map(p => `
-    <div class="flex gap-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-800">
-      <div class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style="background:${p.c}"></div>
-      <div>
-        <div class="text-[11px] font-bold uppercase tracking-tight" style="color:${p.c}">${p.n}</div>
-        <p class="text-[10px] text-muted leading-tight">${p.d}</p>
-      </div>
-    </div>
-  `).join('');
-}
-
-function renderThreatConcepts() {
-  const tc = [
-    {n:"Threat", d:"Potensi bahaya (Ancaman).", c:"#ef4444"},
-    {n:"Vulnerability", d:"Kelemahan sistem (Loophole).", c:"#f59e0b"},
-    {n:"Risk", d:"Kemungkinan Threat x Dampak.", c:"#a78bfa"},
-    {n:"Exposure", d:"Kondisi terpapar (Terbuka).", c:"#38bdf8"}
-  ];
-  document.getElementById('q1-threats').innerHTML = tc.map(t => `
-    <div class="card2">
-      <div class="text-[11px] font-bold mb-1" style="color:${t.c}">${t.n}</div>
-      <p class="text-[10px] text-muted">${t.d}</p>
-    </div>
-  `).join('');
-}
-
-// Practice Suite Logic
-let score = 0;
-let answered = {};
 
 function renderPrac() {
+  const list = activeSection === 1 ? soal1 : activeSection === 2 ? soal2 : soal3;
   const el = document.getElementById('prac-list');
-  el.innerHTML = pData.map((p, idx) => `
+  el.innerHTML = list.map((p, idx) => `
     <div class="card" id="pc-${idx}">
-      <p class="font-bold text-md mb-4">${idx+1}. ${p.q}</p>
+      <p class="font-bold text-md mb-4">${idx+1}. ${h(p.soal)}</p>
       <div class="space-y-2">
-        ${p.o.map((o, oi) => `
-          <button onclick="checkP(${idx}, ${oi}, ${p.a})" class="popt" id="po-${idx}-${oi}">${L[oi]}. ${o}</button>
+        ${p.opsi.map((o, oi) => `
+          <button onclick="checkP(${idx}, ${oi}, ${p.jawaban})" class="popt" id="po-${idx}-${oi}">${L[oi]}. ${h(o)}</button>
         `).join('')}
       </div>
       <div id="pf-${idx}" class="hidden mt-4 p-4 rounded-lg text-sm bg-zinc-900 border border-zinc-800"></div>
     </div>
   `).join('');
+  updateScore(list.length);
 }
 
 function checkP(qi, ui, ai) {
   if (answered[qi]) return;
   answered[qi] = true;
+  const list = activeSection === 1 ? soal1 : activeSection === 2 ? soal2 : soal3;
   const isCorrect = ui === ai;
   if(isCorrect) score++;
   
@@ -452,28 +320,18 @@ function checkP(qi, ui, ai) {
   fb.classList.remove('hidden');
   fb.innerHTML = `
     <div class="font-bold mb-1 ${isCorrect ? 'text-emerald-400' : 'text-red-400'}">${isCorrect ? '✅ BENAR!' : '❌ SALAH! Jawaban: '+L[ai]}</div>
-    <p class="text-xs text-muted leading-relaxed">${pData[qi].exp}</p>
+    <p class="text-xs text-muted">Jawaban Riil: <b>${h(list[qi].opsi[ai])}</b></p>
   `;
-  
   document.getElementById(`po-${qi}-${ui}`).classList.add(isCorrect ? 'pc' : 'pw');
   if(!isCorrect) document.getElementById(`po-${qi}-${ai}`).classList.add('pc');
-  
-  updateScore();
+  updateScore(list.length);
 }
 
-function updateScore() {
-  const t = pData.length;
+function updateScore(t) {
   document.getElementById('score-text').textContent = `${score} / ${t}`;
   document.getElementById('score-bar').style.width = (score/t*100)+'%';
 }
-
-function resetPrac() {
-  score = 0; answered = {};
-  renderPrac();
-  updateScore();
-}
-
-// Tab Handler
+function resetPrac() { score = 0; answered = {}; renderPrac(); updateScore(0); }
 function showS(id) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -482,15 +340,30 @@ function showS(id) {
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
-// Init
+// Fixed UI Constants
+const stereos = [
+  {n:"<<sensitive>>",d:"Data rahasia (password, CC).",c:"#ef4444"},
+  {n:"<<crypto>>",d:"Urusan enkripsi & hashing.",c:"#a78bfa"},
+  {n:"<<audit>>",d:"Operasi yang dicatat log.",c:"#06b6d4"},
+  {n:"<<auth>>",d:"Cek login user.",c:"#10b981"},
+  {n:"<<confidential>>",d:"Data in-transit rahasia.",c:"#f59e0b"},
+  {n:"<<threat>>",d:"Simbol ancaman (Misuse).",c:"#f87171"}
+];
+const pr = [
+  {n:"Least Privilege", d:"Hak akses minimal sesuai tugas.", c:"#06b6d4"},
+  {n:"Fail-Safe Defaults", d:"Default = TOLAK. Jika crash, tetap aman.", c:"#ef4444"},
+  {n:"Economy Mechanism", d:"Mekanisme harus simpel (minimal bug).", c:"#10b981"},
+  {n:"Open Design", d:"Keamanan bukan dari rahasia desain.", c:"#a78bfa"},
+  {n:"Separation Privilege", d:"Akses kritis butuh dual-auth/OR.", c:"#fb923c"},
+  {n:"Defense in Depth", d:"Pertahanan berlapis (FW, DMZ, Auth).", c:"#38bdf8"}
+];
+
 document.addEventListener('DOMContentLoaded', () => {
-  renderAnswers('q1-list', q1Soal);
-  renderAnswers('q2-list', q2Soal);
-  renderAnswers('q3-list', q3Soal);
-  renderSecurityPrinciples();
-  renderThreatConcepts();
-  renderUMLConcepts();
-  renderPrac();
+  renderAnswers('q1-list', soal1);
+  renderAnswers('q2-list', soal2);
+  renderAnswers('q3-list', soal3);
+  document.getElementById('q1-principles').innerHTML = pr.map(p => `<div class="flex gap-3 p-3 rounded-lg bg-zinc-900/50 border border-zinc-800"><div class="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style="background:${p.c}"></div><div><div class="text-[11px] font-bold uppercase" style="color:${p.c}">${p.n}</div><p class="text-[10px] text-muted">${p.d}</p></div></div>`).join('');
+  document.getElementById('q2-stereotypes').innerHTML = stereos.map(s => `<div class="card2 flex flex-col gap-1 border-white/5"><code class="text-xs font-bold" style="color:${s.c}">${h(s.n)}</code><p class="text-[10px] text-muted">${s.d}</p></div>`).join('');
   if(window.lucide) lucide.createIcons();
 });
 </script>
