@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pengantar Keamanan Perangkat Lunak – Interactive Learning</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #1a1e27;
+    --border: #252b38;
+    --accent: #00e5ff;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --correct: #10b981;
+    --wrong: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; }
+  code, pre, .mono { font-family: 'Space Mono', monospace; }
+  .accent-line { border-left: 3px solid var(--accent); }
+  .accent2-line { border-left: 3px solid var(--accent2); }
+  .accent3-line { border-left: 3px solid var(--accent3); }
+  .correct-line { border-left: 3px solid var(--correct); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Nav */
+  .nav-tab { transition: all 0.2s; }
+  .nav-tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+  .nav-tab:not(.active) { color: var(--muted); border-bottom: 2px solid transparent; }
+  .nav-tab:hover:not(.active) { color: var(--text); }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  .card2 { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; }
+
+  /* Soal dengan jawaban benar */
+  .q-correct { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.35); border-radius: 8px; }
+  .q-wrong { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; }
+  .q-neutral { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; }
+
+  /* Practice */
+  .option-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.18s; text-align: left; width: 100%; padding: 10px 14px; color: var(--text); font-family: 'Syne', sans-serif; }
+  .option-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(0,229,255,0.07); }
+  .option-btn.correct-ans { background: rgba(16,185,129,0.15); border-color: var(--correct); color: #6ee7b7; }
+  .option-btn.wrong-ans { background: rgba(239,68,68,0.15); border-color: var(--wrong); color: #fca5a5; }
+  .option-btn:disabled { cursor: default; }
+
+  /* Badge */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: 0.05em; }
+  .badge-correct { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+  .badge-wrong { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+  .badge-accent { background: rgba(0,229,255,0.1); color: var(--accent); border: 1px solid rgba(0,229,255,0.25); }
+  .badge-purple { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+  .badge-amber { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+
+  /* Callout */
+  .callout-info { background: rgba(0,229,255,0.06); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 12px 16px; }
+  .callout-warn { background: rgba(245,158,11,0.07); border-left: 3px solid var(--accent3); border-radius: 0 8px 8px 0; padding: 12px 16px; }
+  .callout-success { background: rgba(16,185,129,0.07); border-left: 3px solid var(--correct); border-radius: 0 8px 8px 0; padding: 12px 16px; }
+  .callout-purple { background: rgba(124,58,237,0.07); border-left: 3px solid var(--accent2); border-radius: 0 8px 8px 0; padding: 12px 16px; }
+
+  /* Section */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* Explanation reveal */
+  .explanation { display: none; margin-top: 10px; }
+  .explanation.shown { display: block; }
+
+  /* Top gradient bar */
+  .top-bar { height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3)); }
+
+  /* Heading decorations */
+  h1 span.hl { color: var(--accent); }
+  
+  /* Code block */
+  pre { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; padding: 14px; overflow-x: auto; font-size: 13px; line-height: 1.7; }
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .str { color: #a5d6ff; }
+  .cm { color: #8b949e; }
+  .num { color: #79c0ff; }
+
+  /* Score display */
+  .score-circle { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; }
+  
+  /* Animated underline */
+  @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+  .shimmer-text { background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3), var(--accent)); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 3s linear infinite; }
+
+  /* Sticky nav */
+  nav { position: sticky; top: 0; z-index: 50; background: rgba(10,12,16,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+
+  .q-number { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 6px; background: var(--surface2); border: 1px solid var(--border); font-size: 12px; font-weight: 700; color: var(--muted); flex-shrink: 0; }
+</style>
+</head>
+<body>
+<div class="top-bar"></div>
+
+<!-- HEADER -->
+<header class="px-4 py-8 md:px-10 max-w-5xl mx-auto">
+  <div class="flex items-start justify-between flex-wrap gap-4">
+    <div>
+      <p class="text-xs tracking-widest text-muted mb-1 mono uppercase">Pengantar Keamanan Perangkat Lunak</p>
+      <h1 class="text-3xl md:text-4xl font-extrabold leading-tight">
+        Interactive <span class="hl">Learning</span> Page
+      </h1>
+      <p class="text-muted mt-2 text-sm">Quiz 4 – 7 · Threat Modeling, Auth, Input Validation, Web Vulnerabilities</p>
+    </div>
+    <div class="flex gap-3 flex-wrap">
+      <div class="card2 px-4 py-2 text-center">
+        <div class="text-2xl font-extrabold text-green-400">90%</div>
+        <div class="text-xs text-muted">Quiz 4</div>
+      </div>
+      <div class="card2 px-4 py-2 text-center">
+        <div class="text-2xl font-extrabold text-red-400">30%</div>
+        <div class="text-xs text-muted">Quiz 5</div>
+      </div>
+      <div class="card2 px-4 py-2 text-center">
+        <div class="text-2xl font-extrabold text-green-400">100%</div>
+        <div class="text-xs text-muted">Quiz 6</div>
+      </div>
+      <div class="card2 px-4 py-2 text-center">
+        <div class="text-2xl font-extrabold text-green-400">100%</div>
+        <div class="text-xs text-muted">Quiz 7</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- NAV TABS -->
+<nav class="px-4 md:px-10 max-w-5xl mx-auto">
+  <div class="flex gap-0 overflow-x-auto">
+    <button onclick="showSection('q4')" class="nav-tab active px-4 py-3 text-sm font-semibold whitespace-nowrap" id="tab-q4">📐 Quiz 4 – Threat Modeling</button>
+    <button onclick="showSection('q5')" class="nav-tab px-4 py-3 text-sm font-semibold whitespace-nowrap" id="tab-q5">🔐 Quiz 5 – Authentication</button>
+    <button onclick="showSection('q6')" class="nav-tab px-4 py-3 text-sm font-semibold whitespace-nowrap" id="tab-q6">🧹 Quiz 6 – Input Validation</button>
+    <button onclick="showSection('q7')" class="nav-tab px-4 py-3 text-sm font-semibold whitespace-nowrap" id="tab-q7">🌐 Quiz 7 – Web Vulnerabilities</button>
+    <button onclick="showSection('practice')" class="nav-tab px-4 py-3 text-sm font-semibold whitespace-nowrap" id="tab-practice">🎯 Practice Suite</button>
+  </div>
+</nav>
+
+<main class="px-4 md:px-10 max-w-5xl mx-auto pb-20 pt-6">
+
+<!-- ==================== QUIZ 4 ==================== -->
+<div id="section-q4" class="section active">
+  <div class="mb-6">
+    <span class="badge badge-amber">Quiz 4 · 7 Maret 2026</span>
+    <span class="badge badge-correct ml-2">18/20 · 90%</span>
+    <h2 class="text-2xl font-extrabold mt-3">Threat Modeling: STRIDE, DFD & Attack Tree</h2>
+    <p class="text-muted text-sm mt-1">Data Flow Diagram, Trust Boundary, STRIDE Framework, DREAD Scoring, Attack Tree</p>
+  </div>
+
+  <!-- SOAL REVIEW -->
+  <div class="space-y-3 mb-8">
+    <h3 class="text-lg font-bold text-accent">📋 Daftar Soal & Jawaban Benar</h3>
+
+    <!-- Q1 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">1</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Proses "Update Nilai Mahasiswa" menerima input dari Staff. Jika tidak ada validasi akses, ancaman STRIDE apa yang paling mungkin?</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div class="q-neutral px-3 py-2 opacity-50">a. Repudiation</div>
+            <div class="q-neutral px-3 py-2 opacity-50">b. Denial of Service</div>
+            <div class="q-neutral px-3 py-2 opacity-50">c. Spoofing</div>
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ d. Elevation of Privilege</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">2</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Penyerang dapat membaca file tanpa izin di cloud storage. Prinsip keamanan apa yang dilanggar?</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ a. Confidentiality</div>
+            <div class="q-neutral px-3 py-2 opacity-50">b. Integrity</div>
+            <div class="q-neutral px-3 py-2 opacity-50">c. Availability</div>
+            <div class="q-neutral px-3 py-2 opacity-50">d. Authentication</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">3</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Penyerang mengubah parameter request sebelum mencapai server. Ancaman STRIDE apa?</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ a. Tampering</div>
+            <div class="q-neutral px-3 py-2 opacity-50">b. Repudiation</div>
+            <div class="q-neutral px-3 py-2 opacity-50">c. Spoofing</div>
+            <div class="q-neutral px-3 py-2 opacity-50">d. Denial of Service</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">4</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Komponen yang menunjukkan perubahan trust level dalam DFD aplikasi pembayaran?</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ a. Trust Boundary</div>
+            <div class="q-neutral px-3 py-2 opacity-50">b. External Entity</div>
+            <div class="q-neutral px-3 py-2 opacity-50">c. Data Store</div>
+            <div class="q-neutral px-3 py-2 opacity-50">d. Process</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">5</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Mengapa penting menggambar trust boundary antara sistem internal dan gateway eksternal?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ Karena sistem eksternal tidak sepenuhnya dapat dipercaya</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">6</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Proses menerima input dari pengguna internal dan API pihak ketiga. Mengapa perlu trust boundary?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ Karena tingkat kepercayaan terhadap sumber data berbeda</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">7</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Token sesi mudah ditebak. Jenis kerentanan apa?</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ a. Spoofing</div>
+            <div class="q-neutral px-3 py-2 opacity-50">b. Logging failure</div>
+            <div class="q-neutral px-3 py-2 opacity-50">c. Repudiation</div>
+            <div class="q-neutral px-3 py-2 opacity-50">d. Denial of Service</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">8</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">API Service tidak memverifikasi identitas saat menerima callback dari gateway. Ancaman utama?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Spoofing</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q9 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">9</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Penyerang memodifikasi nilai transaksi selama transmisi. Ancaman STRIDE?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ d. Tampering</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q10 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">10</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Attack tree: Menebak password / Phishing / Reset via email. Struktur node jika salah satu cukup?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. OR node</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q11 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">11</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">API mengembalikan error yang berisi struktur database dan query SQL. Ancaman STRIDE?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Information Disclosure</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q12 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">12</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">3 metode akses database SaaS secara independen. Struktur node?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ a. OR node</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q13 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">13</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Attacker memalsukan identitas dan login sebagai pengguna lain. Ancaman STRIDE?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Spoofing</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q14 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">14</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Penyerang modifikasi nilai transaksi sebelum disimpan di database bank online. STRIDE?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ d. Tampering</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q15 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">15</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Jutaan request membanjiri server. Ancaman STRIDE?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Denial of Service</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q16 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">16</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Threat A DREAD: 8,8,7,9,7 vs Threat B: 4,4,3,5,4. Keputusan risk prioritization?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ d. Threat A harus diprioritaskan untuk mitigasi</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q17 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">17</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">3 metode akses database transaksi bank secara independen. Node?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. OR node</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q18 SALAH -->
+    <div class="q-wrong p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number" style="border-color:#ef4444;color:#f87171">18</span>
+        <div class="flex-1">
+          <span class="badge badge-wrong mb-2">❌ Salah</span>
+          <p class="text-sm font-semibold mb-2">Salah satu cabang cukup untuk mencapai root goal "ambil alih akun mobile banking". Node?</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ Benar: a. OR node</div>
+            <div class="q-wrong px-3 py-2 font-bold text-red-300">❌ Dijawab: c. Leaf node</div>
+          </div>
+          <div class="callout-warn mt-2 text-xs">
+            <strong>💡 Ingat:</strong> OR node = salah satu cabang cukup. AND node = semua cabang diperlukan. Leaf node = simpul paling bawah (tidak punya anak). Jangan tertukar!
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q19 -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">19</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Dua langkah WAJIB: 1) Dapat kredensial admin, 2) Login panel admin. Hubungan node?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. AND node</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q20 tidak dijawab -->
+    <div class="q-wrong p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number" style="color:#f87171;border-color:#ef4444">20</span>
+        <div class="flex-1">
+          <span class="badge badge-wrong mb-2">⚠️ Tidak Dijawab</span>
+          <p class="text-sm font-semibold mb-2">Threat A DREAD: 8,8,7,9,8 vs Threat B: 3,4,3,4,3. Keputusan terbaik?</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ Jawaban benar: b. Mitigasi Threat A terlebih dahulu</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPTUAL DEEP DIVE Q4 -->
+  <div class="card p-5 mb-6">
+    <h3 class="text-lg font-bold mb-4 text-accent">🧠 Conceptual Deep Dive – Threat Modeling</h3>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-4">
+      <div class="callout-info">
+        <p class="text-xs font-bold text-accent mb-2">🔑 STRIDE Framework</p>
+        <div class="space-y-1 text-xs">
+          <div><span class="text-amber-300 font-bold">S</span> – <strong>Spoofing</strong>: memalsukan identitas</div>
+          <div><span class="text-amber-300 font-bold">T</span> – <strong>Tampering</strong>: memodifikasi data</div>
+          <div><span class="text-amber-300 font-bold">R</span> – <strong>Repudiation</strong>: menyangkal tindakan</div>
+          <div><span class="text-amber-300 font-bold">I</span> – <strong>Information Disclosure</strong>: bocornya info</div>
+          <div><span class="text-amber-300 font-bold">D</span> – <strong>Denial of Service</strong>: ganggu ketersediaan</div>
+          <div><span class="text-amber-300 font-bold">E</span> – <strong>Elevation of Privilege</strong>: naikkan hak akses</div>
+        </div>
+      </div>
+
+      <div class="callout-purple">
+        <p class="text-xs font-bold text-purple-300 mb-2">🌳 Attack Tree Nodes</p>
+        <div class="space-y-1 text-xs">
+          <div><strong class="text-green-300">OR node</strong>: salah satu cabang cukup untuk capai goal</div>
+          <div><strong class="text-blue-300">AND node</strong>: SEMUA cabang harus terpenuhi</div>
+          <div><strong class="text-yellow-300">Root node</strong>: goal utama penyerang (paling atas)</div>
+          <div><strong class="text-red-300">Leaf node</strong>: aksi primitif terbawah (tidak punya anak)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout-warn mb-4">
+      <p class="text-xs font-bold text-amber-300 mb-1">⚠️ Common Pitfalls</p>
+      <ul class="text-xs space-y-1 list-disc list-inside text-muted">
+        <li><strong class="text-text">Leaf vs OR node</strong>: "Leaf" = simpul daun (tidak punya cabang lagi), bukan berarti "satu cabang cukup"</li>
+        <li><strong class="text-text">Spoofing vs EoP</strong>: Spoofing = memalsukan IDENTITAS. EoP = mendapat hak lebih tinggi dari seharusnya</li>
+        <li><strong class="text-text">Tampering vs Info Disclosure</strong>: Tampering = UBAH data, Info Disclosure = BOCOR/BACA data tanpa izin</li>
+        <li><strong class="text-text">DREAD</strong>: Damage, Reproducibility, Exploitability, Affected Users, Discoverability. Skor lebih tinggi = prioritas lebih tinggi</li>
+      </ul>
+    </div>
+
+    <div>
+      <p class="text-xs font-bold text-accent mb-2">📊 DREAD Scoring Mental Model</p>
+      <pre><code><span class="cm">// DREAD = rata-rata 5 dimensi (skala 1–10)</span>
+DREAD_score = (Damage + Reproducibility + Exploitability 
+             + Affected_users + Discoverability) / <span class="num">5</span>
+
+Threat A: (<span class="num">8+8+7+9+7</span>) / <span class="num">5</span> = <span class="num">7.8</span>  ← <span class="kw">Prioritas TINGGI</span>
+Threat B: (<span class="num">4+4+3+5+4</span>) / <span class="num">5</span> = <span class="num">4.0</span>  ← <span class="fn">Prioritas rendah</span></code></pre>
+    </div>
+  </div>
+
+  <!-- DFD Visualization -->
+  <div class="card p-5 mb-6">
+    <h3 class="text-lg font-bold mb-3 text-accent">🗺️ DFD Components & Trust Boundaries</h3>
+    <div class="overflow-x-auto">
+      <pre><code><span class="cm">// Komponen DFD dan fungsinya dalam Threat Modeling</span>
+
+[External Entity]  ──trust boundary──  [Process]  ──  [Data Store]
+  (Customer)                          (Web Server)    (Database)
+      │                                    │
+      │         <span class="kw">ANCAMAN DI SETIAP KOMPONEN:</span>
+      │
+  External Entity  →  Spoofing, Repudiation
+  Process          →  Tampering, EoP, Info Disclosure
+  Data Store       →  Tampering, Info Disclosure, Repudiation
+  Data Flow        →  Tampering, Info Disclosure
+  Trust Boundary   →  garis batas kepercayaan antar zona
+
+<span class="cm">// Trust Boundary WAJIB ada antara:</span>
+  - Internal system ↔ External API / Gateway
+  - User browser   ↔ Web Server
+  - Different privilege levels</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== QUIZ 5 ==================== -->
+<div id="section-q5" class="section">
+  <div class="mb-6">
+    <span class="badge badge-amber">Quiz 5 · 14 Maret 2026</span>
+    <span class="badge badge-wrong ml-2">3/10 · 30%</span>
+    <h2 class="text-2xl font-extrabold mt-3">Authentication & Authorization</h2>
+    <p class="text-muted text-sm mt-1">What you know/have/are, OAuth, MFA, Security Models, Authorization</p>
+  </div>
+
+  <div class="callout-warn mb-5 text-sm">
+    ⚠️ <strong>Quiz ini memiliki nilai terendah (30%).</strong> Perhatikan baik-baik perbedaan konsep Authentication vs Authorization, dan nuansa pertanyaan "Salah semua".
+  </div>
+
+  <div class="space-y-3 mb-8">
+    <h3 class="text-lg font-bold text-accent">📋 Daftar Soal & Jawaban Benar</h3>
+
+    <!-- Q1 BENAR -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">1</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Google meminta memilih sebuah angka saat login dari komputer lain. Mekanisme autentikasi?</p>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ a. What you have</div>
+            <div class="q-neutral px-3 py-2 opacity-50">b. What you know</div>
+            <div class="q-neutral px-3 py-2 opacity-50">c. What you are</div>
+            <div class="q-neutral px-3 py-2 opacity-50">d. Salah semua</div>
+          </div>
+          <div class="callout-info mt-2 text-xs">Memilih angka = akses ke perangkat/akun yang kamu miliki (HP yang menerima notifikasi) → <strong>What you have</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q2 SALAH -->
+    <div class="q-wrong p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number" style="color:#f87171;border-color:#ef4444">2</span>
+        <div class="flex-1">
+          <span class="badge badge-wrong mb-2">❌ Salah (dijawab: Otorisasi)</span>
+          <p class="text-sm font-semibold mb-2">OAuth melakukan fungsi:</p>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="q-neutral px-3 py-2 opacity-50">a. Autentikasi</div>
+            <div class="q-wrong px-3 py-2 text-red-300">❌ b. Otorisasi (dijawab)</div>
+            <div class="q-neutral px-3 py-2 opacity-50">c. Salah semua</div>
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ d. Autentikasi dan Otorisasi</div>
+          </div>
+          <div class="callout-warn mt-2 text-xs">
+            <strong>💡 OAuth 2.0</strong> = Authorization framework, tapi implementasi modern (OIDC di atas OAuth) juga melakukan autentikasi. Dalam konteks soal ini, jawaban resmi adalah <strong>keduanya</strong>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q3 SALAH -->
+    <div class="q-wrong p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number" style="color:#f87171;border-color:#ef4444">3</span>
+        <div class="flex-1">
+          <span class="badge badge-wrong mb-2">❌ Salah (dijawab: What you have)</span>
+          <p class="text-sm font-semibold mb-2">Asisten mengecek KTM sebelum ujian. Mekanisme ini termasuk:</p>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="q-neutral px-3 py-2 opacity-50">a. What you know</div>
+            <div class="q-neutral px-3 py-2 opacity-50">b. Salah semua</div>
+            <div class="q-wrong px-3 py-2 text-red-300">❌ c. What you have (dijawab)</div>
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ d. What you are</div>
+          </div>
+          <div class="callout-warn mt-2 text-xs">
+            <strong>💡 Kunci:</strong> KTM digunakan untuk membuktikan SIAPA kamu (identitas mahasiswa), bukan sesuatu yang kamu <em>pegang</em>. KTM = bukti keberadaan/identitas fisik → <strong>What you are</strong>. Kartu ATM = What you have karena bisa dipinjamkan/dicuri tanpa verifikasi identitas.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q4 BENAR -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">4</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Password yang paling baik adalah:</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. Yang paling panjang</div>
+          <div class="callout-info mt-2 text-xs">Panjang password >> kompleksitas. <code>correcthorsebatterystaple</code> jauh lebih kuat dari <code>P@ssw0rd!</code>. Setiap karakter tambahan mengalikan waktu brute-force secara eksponensial.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q5 SALAH -->
+    <div class="q-wrong p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number" style="color:#f87171;border-color:#ef4444">5</span>
+        <div class="flex-1">
+          <span class="badge badge-wrong mb-2">❌ Salah (dijawab: Kartu ATM + OTP)</span>
+          <p class="text-sm font-semibold mb-2">Contoh multi factor authentication:</p>
+          <div class="grid grid-cols-1 gap-2 text-xs">
+            <div class="q-wrong px-3 py-2 text-red-300">❌ a. Kartu ATM dan OTP (dijawab)</div>
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ b. Salah semua</div>
+            <div class="q-neutral px-3 py-2 opacity-50">c. PIN dan password</div>
+            <div class="q-neutral px-3 py-2 opacity-50">d. Fingerprint dan face ID</div>
+          </div>
+          <div class="callout-warn mt-2 text-xs">
+            <strong>💡 MFA sejati = faktor BERBEDA kategori.</strong><br>
+            • Kartu ATM (have) + OTP (have) = <em>dua faktor SAMA kategori</em> → bukan MFA sejati<br>
+            • PIN + password = keduanya "what you know" → bukan MFA<br>
+            • Fingerprint + face ID = keduanya "what you are" → bukan MFA<br>
+            MFA yang benar: kartu (have) + PIN (know) + fingerprint (are)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q6 SALAH -->
+    <div class="q-wrong p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number" style="color:#f87171;border-color:#ef4444">6</span>
+        <div class="flex-1">
+          <span class="badge badge-wrong mb-2">❌ Salah (dijawab: What you are)</span>
+          <p class="text-sm font-semibold mb-2">Mekanisme autentikasi absensi presentronik di Fasilkom:</p>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="q-neutral px-3 py-2 opacity-50">a. Salah semua</div>
+            <div class="q-wrong px-3 py-2 text-red-300">❌ b. What you are (dijawab)</div>
+            <div class="q-neutral px-3 py-2 opacity-50">c. What you know</div>
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ d. What you have</div>
+          </div>
+          <div class="callout-warn mt-2 text-xs">
+            Presentronik Fasilkom UI menggunakan NFC tap kartu mahasiswa / token fisik → <strong>What you have</strong>. Bukan biometrik (what you are).
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q7 SALAH -->
+    <div class="q-wrong p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number" style="color:#f87171;border-color:#ef4444">7</span>
+        <div class="flex-1">
+          <span class="badge badge-wrong mb-2">❌ Salah</span>
+          <p class="text-sm font-semibold mb-2">Aplikasi yang aman adalah:</p>
+          <div class="grid grid-cols-1 gap-2 text-xs">
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ a. Salah semua</div>
+            <div class="q-wrong px-3 py-2 text-red-300">❌ b. Mengimplementasikan autentikasi dan otorisasi (dijawab)</div>
+            <div class="q-neutral px-3 py-2 opacity-50">c. Mengimplementasikan otorisasi</div>
+            <div class="q-neutral px-3 py-2 opacity-50">d. Mengimplementasikan autentikasi</div>
+          </div>
+          <div class="callout-warn mt-2 text-xs">
+            Keamanan software tidak cukup hanya auth+authz. Butuh: input validation, encryption, secure coding, logging, dll. → <strong>Salah semua</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q8 SALAH -->
+    <div class="q-wrong p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number" style="color:#f87171;border-color:#ef4444">8</span>
+        <div class="flex-1">
+          <span class="badge badge-wrong mb-2">❌ Salah (dijawab: Biba Integrity)</span>
+          <p class="text-sm font-semibold mb-2">Security model yang digunakan SIAK-NG adalah:</p>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="q-wrong px-3 py-2 text-red-300">❌ a. Biba Integrity (dijawab)</div>
+            <div class="q-neutral px-3 py-2 opacity-50">b. HRU</div>
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ c. Salah semua</div>
+            <div class="q-neutral px-3 py-2 opacity-50">d. Bell-LaPadula</div>
+          </div>
+          <div class="callout-warn mt-2 text-xs">SIAK-NG menggunakan model access control berbasis peran (RBAC) yang tidak persis cocok dengan model formal Biba/Bell-LaPadula/HRU → <strong>Salah semua</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q9 BENAR -->
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number">9</span>
+        <div class="flex-1">
+          <span class="badge badge-correct mb-2">✅ Benar</span>
+          <p class="text-sm font-semibold mb-2">Saat menggunakan hotspot kampus, autentikasi dilakukan di:</p>
+          <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. Authentication provider</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q10 SALAH -->
+    <div class="q-wrong p-4">
+      <div class="flex gap-3 items-start">
+        <span class="q-number" style="color:#f87171;border-color:#ef4444">10</span>
+        <div class="flex-1">
+          <span class="badge badge-wrong mb-2">❌ Salah</span>
+          <p class="text-sm font-semibold mb-2">Mahasiswa enroll ke kuliah PKPL di SCELE, metode yang digunakan:</p>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="q-neutral px-3 py-2 opacity-50">a. Autentikasi dan otorisasi</div>
+            <div class="q-neutral px-3 py-2 opacity-50">b. Otorisasi saja</div>
+            <div class="q-correct px-3 py-2 font-bold text-green-300">✅ c. Autentikasi saja</div>
+            <div class="q-neutral px-3 py-2 opacity-50">d. Salah semua</div>
+          </div>
+          <div class="callout-warn mt-2 text-xs">
+            Proses enroll = login (autentikasi siapa kamu) lalu klik enroll. Tidak ada pembatasan akses berdasarkan role → hanya autentikasi, bukan otorisasi khusus.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONCEPTUAL DEEP DIVE Q5 -->
+  <div class="card p-5 mb-6">
+    <h3 class="text-lg font-bold mb-4 text-accent">🧠 Conceptual Deep Dive – Auth & MFA</h3>
+
+    <div class="grid md:grid-cols-3 gap-3 mb-4">
+      <div class="card2 p-3">
+        <p class="text-xs font-bold text-blue-300 mb-2">💭 What You Know</p>
+        <p class="text-xs text-muted">Password, PIN, security question. Bisa dicuri/lupa.</p>
+      </div>
+      <div class="card2 p-3">
+        <p class="text-xs font-bold text-green-300 mb-2">📱 What You Have</p>
+        <p class="text-xs text-muted">Kartu ATM, HP (OTP), token hardware, KTM*. Bisa hilang/dicuri.</p>
+      </div>
+      <div class="card2 p-3">
+        <p class="text-xs font-bold text-purple-300 mb-2">🧬 What You Are</p>
+        <p class="text-xs text-muted">Fingerprint, face ID, iris scan. Tidak bisa diganti jika bocor.</p>
+      </div>
+    </div>
+
+    <div class="callout-warn mb-3 text-xs">
+      <strong>⚠️ MFA = faktor dari kategori BERBEDA.</strong> PIN + Password = 2× "what you know" = bukan MFA. Kartu ATM + OTP via HP = 2× "what you have" = bukan MFA sejati menurut definisi ketat.
+    </div>
+
+    <pre><code><span class="cm">// Authentication vs Authorization</span>
+
+<span class="kw">Authentication</span> = "Siapa kamu?" → verifikasi identitas
+  Contoh: login dengan username + password
+
+<span class="fn">Authorization</span>  = "Apa yang boleh kamu lakukan?" → kontrol akses  
+  Contoh: mahasiswa bisa lihat nilai sendiri, tapi tidak bisa edit
+
+<span class="str">OAuth 2.0</span>      = framework untuk <span class="fn">Authorization</span>
+<span class="str">OIDC</span>           = extension OAuth untuk <span class="kw">Authentication</span> juga
+→ Dalam praktik modern, OAuth melakukan <span class="kw">keduanya</span></code></pre>
+  </div>
+</div>
+
+<!-- ==================== QUIZ 6 ==================== -->
+<div id="section-q6" class="section">
+  <div class="mb-6">
+    <span class="badge badge-amber">Quiz 6 · 28 Maret 2026</span>
+    <span class="badge badge-correct ml-2">20/20 · 100% 🏆</span>
+    <h2 class="text-2xl font-extrabold mt-3">Input Validation & Sanitization</h2>
+    <p class="text-muted text-sm mt-1">Stack Canaries, Whitelist, Parameterized Queries, Syntactic vs Semantic Validation</p>
+  </div>
+
+  <div class="space-y-3 mb-8">
+    <h3 class="text-lg font-bold text-accent">📋 Daftar Soal & Jawaban Benar (Semua Benar!)</h3>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">1</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Fungsi "stack canaries" dalam buffer overflow defense?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ d. Nilai acak yang ditempatkan sebelum return address; jika nilai berubah, program dihentikan</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">2</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Tujuan utama input sanitization?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Membersihkan input dari pengguna yang mencurigakan</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">3</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Mengapa syntactic validation harus SEBELUM semantic validation?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Tidak ada gunanya memeriksa logika bisnis jika format data tidak valid</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">4</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Tujuan utama input validation dalam pengembangan perangkat lunak?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ a. Memastikan keamanan, keandalan, dan ketahanan aplikasi</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">5</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Contoh semantic validation yang benar?</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+          <div class="q-neutral px-3 py-2 opacity-50">a. Nomor telepon harus 10 digit (Syntactic!)</div>
+          <div class="q-neutral px-3 py-2 opacity-50">b. Password minimal 8 karakter (Syntactic!)</div>
+          <div class="q-neutral px-3 py-2 opacity-50">c. Email format user@domain.com (Syntactic!)</div>
+          <div class="q-correct px-3 py-2 font-bold text-green-300">✅ d. Tanggal mulai harus sebelum tanggal selesai</div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">6</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Layer keamanan yang membatasi dampak breach meski attacker sudah mengakses database?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ a. Encryption at rest</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">7</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Perbedaan input validation vs input sanitization?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ a. Validation: memeriksa apakah data dapat diterima | Sanitization: mengubah data menjadi bentuk aman</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">8</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">"Whitelisting" dalam konteks input validation?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ a. Hanya mengizinkan input yang diketahui aman dan sesuai pola yang ditentukan</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">9</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Keuntungan "least privilege" untuk database account?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Membatasi risiko serangan, tidak bisa menjalankan perintah berbahaya seperti DROP TABLE</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">10</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Yang BUKAN termasuk jenis injection attack?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. DDoS (DDoS = volumetric attack, bukan injection)</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">11</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Field umur "250 tahun" gagal pada validasi jenis apa?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ d. Semantic validation (format angka valid, tapi secara logika bisnis tidak masuk akal)</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">12</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Kasus Heartland Data Breach (2008) menggunakan serangan:</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. SQL Injection</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">13</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Sumber input yang memerlukan validasi?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ d. Semua benar (forms, API pihak ketiga, file dari server – semuanya perlu validasi)</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">14</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Layer yang TIDAK ada di Heartland breach dan seharusnya mencegah SQLi?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ d. Parameterized queries</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">15</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Pendekatan paling tepat untuk validasi format email?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Regex untuk format + validasi server-side</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">16</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Mengapa client-side validation tidak boleh menjadi satu-satunya validasi?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ a. Dapat di-bypass dengan memodifikasi request langsung ke server</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">17</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">"Sanitize as close to the sink as possible" artinya?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. Membersihkan data tepat sebelum data digunakan pada "operasi berbahaya"</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">18</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Parameterized queries / prepared statements?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ d. Query dari pengguna diperlakukan sebagai DATA, bukan kode SQL yang bisa dieksekusi</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">19</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Kapan waktu tepat melakukan input validation?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Sesegera mungkin di setiap entry point (client dan server-side)</div>
+      </div></div>
+    </div>
+
+    <div class="q-correct p-4">
+      <div class="flex gap-3 items-start"><span class="q-number">20</span><div class="flex-1">
+        <span class="badge badge-correct mb-2">✅ Benar</span>
+        <p class="text-sm font-semibold mb-2">Mengapa input validation saja tidak cukup?</p>
+        <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. Input yang valid secara format masih bisa berbahaya dalam konteks tertentu</div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- CONCEPTUAL DEEP DIVE Q6 -->
+  <div class="card p-5 mb-6">
+    <h3 class="text-lg font-bold mb-4 text-accent">🧠 Conceptual Deep Dive – Input Validation</h3>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-4">
+      <div class="callout-info">
+        <p class="text-xs font-bold text-accent mb-2">🔑 Validation vs Sanitization</p>
+        <div class="text-xs space-y-1">
+          <div><strong>Validation</strong>: memeriksa – accept or reject</div>
+          <div><strong>Sanitization</strong>: mengubah – clean/escape/transform</div>
+          <div class="mt-2 text-muted">Keduanya diperlukan secara bersamaan!</div>
+        </div>
+      </div>
+      <div class="callout-purple">
+        <p class="text-xs font-bold text-purple-300 mb-2">🔑 Syntactic vs Semantic</p>
+        <div class="text-xs space-y-1">
+          <div><strong>Syntactic</strong>: format benar? (email punya @, tanggal dd/mm/yyyy)</div>
+          <div><strong>Semantic</strong>: nilai masuk akal? (umur &lt; 150, tanggal mulai &lt; selesai)</div>
+          <div class="mt-2 text-muted">Syntactic DULU, baru Semantic!</div>
+        </div>
+      </div>
+    </div>
+
+    <pre class="mb-4"><code><span class="cm">// Parameterized Query vs String Concatenation</span>
+
+<span class="cm">// ❌ RENTAN SQLi (string concat)</span>
+query = <span class="str">"SELECT * FROM users WHERE email = '"</span> + email + <span class="str">"'"</span>
+<span class="cm">// Input: ' OR '1'='1  → auth bypass!</span>
+
+<span class="cm">// ✅ AMAN (parameterized)</span>
+query = <span class="str">"SELECT * FROM users WHERE email = ?"</span>
+execute(query, [email])
+<span class="cm">// Input diperlakukan sebagai DATA, bukan kode SQL</span></code></pre>
+
+    <div class="callout-warn text-xs">
+      <strong>⚠️ Common Pitfalls</strong>
+      <ul class="list-disc list-inside mt-1 space-y-1 text-muted">
+        <li>Client-side validation mudah di-bypass via Burp Suite / curl → WAJIB validasi server-side juga</li>
+        <li>Whitelisting &gt; Blacklisting: lebih aman izinkan yang diketahui aman daripada blokir yang diketahui berbahaya</li>
+        <li>"Sanitize as close to sink" = sanitize RIGHT BEFORE use, bukan saat input masuk (karena data bisa melewati banyak layer)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== QUIZ 7 ==================== -->
+<div id="section-q7" class="section">
+  <div class="mb-6">
+    <span class="badge badge-amber">Quiz 7 · 4 April 2026</span>
+    <span class="badge badge-correct ml-2">20/20 · 100% 🏆</span>
+    <h2 class="text-2xl font-extrabold mt-3">Standard Web Application Vulnerabilities</h2>
+    <p class="text-muted text-sm mt-1">SQLi, XSS, CSRF, Session, Clickjacking, HSTS, CSP, Credential Stuffing</p>
+  </div>
+
+  <div class="space-y-3 mb-8">
+    <h3 class="text-lg font-bold text-accent">📋 Daftar Soal & Jawaban Benar (Semua Benar!)</h3>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">1</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">SQL Injection pertama kali didokumentasikan resmi pada tahun:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ a. 1998</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">2</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Konfigurasi cookie session paling aman?</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Secure=true, HttpOnly=true, SameSite=Strict</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">3</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Dampak paling kritis Command Injection?</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ d. Remote Code Execution – kendali penuh atas server</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">4</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Mengapa CSRF request berbahaya diterima server sebagai request sah?</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Browser otomatis menambahkan session cookie korban pada request ke situs target</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">5</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">htmlspecialchars() pada PHP digunakan sebagai mitigasi XSS karena:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. Mengubah karakter HTML khusus (&lt; &gt; &amp; ") menjadi HTML entities yang aman</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">6</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Session fixation adalah serangan di mana penyerang:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. Menetapkan session ID tertentu pada browser korban sebelum login, lalu menggunakannya setelah korban terautentikasi</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">7</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">XPath Injection menarget aplikasi yang menggunakan XPath untuk:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Mengambil dan memanipulasi data dari dokumen XML</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">8</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Pemeriksaan Referrer header membantu mitigasi CSRF karena:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. Server dapat memeriksa apakah request berasal dari domain yang sama</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">9</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Mekanisme paling umum mencegah CSRF?</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. Anti-CSRF token unik untuk setiap sesi atau request</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">10</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Dampak utama LDAP Injection?</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ a. Bypass autentikasi dan eskalasi privilege pada sistem enterprise</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">11</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Credential stuffing memanfaatkan kondisi di mana:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Pengguna memakai ulang email-password yang sama di berbagai layanan</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">12</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Header X-Frame-Options: DENY mencegah serangan:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ d. Clickjacking – melarang halaman dimuat di dalam &lt;frame&gt; atau &lt;iframe&gt;</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">13</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Anti-CSRF token bekerja dengan cara:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ c. Menyisipkan token acak unik per session ke setiap form; server menolak request tanpa token valid</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">14</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Payload <code class="text-yellow-300">' OR '1'='1</code> bertujuan untuk:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. Membuat kondisi WHERE selalu bernilai TRUE sehingga autentikasi terlewati</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">15</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Tiga aspek keamanan yang terdampak web application vulnerabilities?</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. Confidentiality, Integrity, Availability (CIA Triad)</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">16</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">MFA efektif melindungi dari credential stuffing karena:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. Meski kredensial bocor, penyerang tetap butuh faktor verifikasi tambahan</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">17</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Least privilege dalam mitigasi SQLi berarti:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ a. Akun DB hanya punya hak akses minimum – tidak ada hak DROP atau ALTER</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">18</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">HSTS (HTTP Strict Transport Security) melindungi dari:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ a. Protocol downgrade attack dan man-in-the-middle attack dengan memaksa HTTPS</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">19</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">Content-Security-Policy (CSP) header diimplementasikan untuk:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. Mendefinisikan daftar sumber tepercaya dari mana browser dapat memuat skrip dan stylesheet</div>
+    </div></div></div>
+
+    <div class="q-correct p-4"><div class="flex gap-3 items-start"><span class="q-number">20</span><div class="flex-1">
+      <span class="badge badge-correct mb-2">✅ Benar</span>
+      <p class="text-sm font-semibold mb-2">XSS terjadi karena aplikasi web:</p>
+      <div class="text-xs q-correct px-3 py-2 font-bold text-green-300">✅ b. Menampilkan input pengguna di halaman tanpa output encoding/escaping yang memadai</div>
+    </div></div></div>
+  </div>
+
+  <!-- CONCEPTUAL DEEP DIVE Q7 -->
+  <div class="card p-5 mb-6">
+    <h3 class="text-lg font-bold mb-4 text-accent">🧠 Conceptual Deep Dive – Web Vulnerabilities</h3>
+
+    <div class="grid md:grid-cols-2 gap-3 mb-4">
+      <div class="callout-info">
+        <p class="text-xs font-bold text-accent mb-2">🔑 XSS vs CSRF</p>
+        <div class="text-xs space-y-1">
+          <div><strong>XSS</strong>: inject script ke halaman → berjalan di browser korban</div>
+          <div><strong>CSRF</strong>: buat browser korban kirim request ke situs lain</div>
+          <div class="text-muted mt-1">XSS = "attacker berbicara ke browser", CSRF = "attacker memakai browser korban"</div>
+        </div>
+      </div>
+      <div class="callout-purple">
+        <p class="text-xs font-bold text-purple-300 mb-2">🔑 Security Headers</p>
+        <div class="text-xs space-y-1">
+          <div><strong>CSP</strong>: whitelist sumber script/style</div>
+          <div><strong>HSTS</strong>: paksa HTTPS, cegah downgrade</div>
+          <div><strong>X-Frame-Options: DENY</strong>: cegah clickjacking</div>
+          <div><strong>HttpOnly cookie</strong>: JS tidak bisa baca cookie</div>
+        </div>
+      </div>
+    </div>
+
+    <pre class="mb-4"><code><span class="cm">// SQL Injection: ' OR '1'='1 mechanism</span>
+<span class="cm">// Query original:</span>
+SELECT * <span class="kw">FROM</span> users <span class="kw">WHERE</span> email = <span class="str">'[INPUT]'</span> <span class="kw">AND</span> password = <span class="str">'...'</span>
+
+<span class="cm">// Setelah payload ' OR '1'='1 dimasukkan sebagai email:</span>
+SELECT * <span class="kw">FROM</span> users <span class="kw">WHERE</span> email = <span class="str">''</span> <span class="kw">OR</span> <span class="str">'1'</span>=<span class="str">'1'</span> <span class="kw">AND</span> password=<span class="str">'...'</span>
+<span class="cm">// '1'='1' selalu TRUE → WHERE clause selalu TRUE → semua user dikembalikan</span>
+<span class="cm">// → login berhasil tanpa password yang benar!</span></code></pre>
+
+    <pre><code><span class="cm">// Cookie Security Flags</span>
+Set-Cookie: sessionId=abc123;
+  <span class="kw">Secure</span>;      <span class="cm">// hanya kirim via HTTPS</span>
+  <span class="fn">HttpOnly</span>;    <span class="cm">// JS tidak bisa baca (document.cookie) → cegah XSS steal cookie</span>
+  <span class="str">SameSite=Strict</span> <span class="cm">// tidak dikirim pada cross-site request → cegah CSRF</span></code></pre>
+  </div>
+</div>
+
+<!-- ==================== PRACTICE SUITE ==================== -->
+<div id="section-practice" class="section">
+  <div class="mb-6">
+    <h2 class="text-2xl font-extrabold">🎯 Interactive Practice Suite</h2>
+    <p class="text-muted text-sm mt-1">Uji pemahamanmu! Pilih jawaban dan lihat penjelasan lengkapnya.</p>
+  </div>
+
+  <div id="practice-score" class="card p-4 mb-6 flex items-center gap-4" style="display:none!important">
+    <div class="score-circle" id="score-circle" style="background:rgba(16,185,129,0.15);border:2px solid #10b981;color:#34d399">0/0</div>
+    <div>
+      <p class="font-bold">Skor Latihan</p>
+      <p class="text-xs text-muted" id="score-text">Jawab soal untuk melihat skor</p>
+    </div>
+  </div>
+
+  <div class="space-y-6" id="practice-container">
+
+    <!-- P1 -->
+    <div class="card p-5" id="pq1">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="badge badge-accent">STRIDE</span>
+        <span class="badge badge-purple">Quiz 4</span>
+      </div>
+      <p class="font-semibold mb-3 text-sm">Seorang pengguna biasa berhasil mengakses fitur admin dan menghapus data user lain karena tidak ada pengecekan role. Ancaman STRIDE apa yang terjadi?</p>
+      <div class="space-y-2" id="pq1-opts">
+        <button class="option-btn" onclick="checkAnswer('pq1',this,'wrong')">a. Spoofing – penyerang memalsukan identitas</button>
+        <button class="option-btn" onclick="checkAnswer('pq1',this,'wrong')">b. Tampering – penyerang mengubah data</button>
+        <button class="option-btn" onclick="checkAnswer('pq1',this,'wrong')">c. Repudiation – penyerang menyangkal aksinya</button>
+        <button class="option-btn" onclick="checkAnswer('pq1',this,'correct')">d. Elevation of Privilege – mendapat hak akses lebih tinggi dari seharusnya</button>
+      </div>
+      <div class="explanation" id="pq1-exp">
+        <div class="callout-success mt-3 text-xs">
+          <strong>✅ Jawaban: Elevation of Privilege</strong><br><br>
+          EoP terjadi ketika seseorang mendapatkan akses/kemampuan LEBIH dari yang seharusnya dimiliki. Dalam kasus ini, user biasa dapat melakukan aksi admin → hak aksesnya "naik" (elevated) tanpa otorisasi yang sah.<br><br>
+          <strong>Cara membedakan:</strong><br>
+          • Spoofing = memalsukan SIAPA kamu (identitas)<br>
+          • Tampering = mengubah DATA/kode<br>
+          • EoP = melakukan sesuatu yang TIDAK BOLEH kamu lakukan<br>
+          • Repudiation = menyangkal bahwa kamu melakukan sesuatu
+        </div>
+      </div>
+    </div>
+
+    <!-- P2 -->
+    <div class="card p-5" id="pq2">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="badge badge-accent">MFA</span>
+        <span class="badge badge-amber">Quiz 5</span>
+      </div>
+      <p class="font-semibold mb-3 text-sm">Manakah kombinasi berikut yang merupakan contoh BENAR dari Multi-Factor Authentication (MFA)?</p>
+      <div class="space-y-2" id="pq2-opts">
+        <button class="option-btn" onclick="checkAnswer('pq2',this,'wrong')">a. Password + PIN (keduanya what you know)</button>
+        <button class="option-btn" onclick="checkAnswer('pq2',this,'correct')">b. Password (what you know) + OTP via SMS ke HP (what you have)</button>
+        <button class="option-btn" onclick="checkAnswer('pq2',this,'wrong')">c. Fingerprint + face scan (keduanya what you are)</button>
+        <button class="option-btn" onclick="checkAnswer('pq2',this,'wrong')">d. Kartu ATM + token hardware (keduanya what you have)</button>
+      </div>
+      <div class="explanation" id="pq2-exp">
+        <div class="callout-success mt-3 text-xs">
+          <strong>✅ Jawaban: Password + OTP via SMS</strong><br><br>
+          MFA sejati mengharuskan minimal dua faktor dari KATEGORI BERBEDA:<br>
+          • What you <strong>know</strong>: password, PIN, passphrase<br>
+          • What you <strong>have</strong>: HP (OTP), token hardware, kartu<br>
+          • What you <strong>are</strong>: fingerprint, face ID, iris<br><br>
+          Password (know) + OTP ke HP (have) = 2 kategori berbeda = ✅ MFA<br>
+          PIN + Password = 2× know = ❌ bukan MFA
+        </div>
+      </div>
+    </div>
+
+    <!-- P3 -->
+    <div class="card p-5" id="pq3">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="badge badge-accent">Input Validation</span>
+        <span class="badge badge-purple">Quiz 6</span>
+      </div>
+      <p class="font-semibold mb-3 text-sm">Developer mendapatkan input tanggal lahir "30-02-2000" (30 Februari tidak ada). Validasi jenis apa yang gagal?</p>
+      <div class="space-y-2" id="pq3-opts">
+        <button class="option-btn" onclick="checkAnswer('pq3',this,'wrong')">a. Syntactic validation – formatnya tidak sesuai</button>
+        <button class="option-btn" onclick="checkAnswer('pq3',this,'correct')">b. Semantic validation – format valid tapi tanggal tidak masuk akal</button>
+        <button class="option-btn" onclick="checkAnswer('pq3',this,'wrong')">c. Authentication validation – tidak ada kaitannya dengan auth</button>
+        <button class="option-btn" onclick="checkAnswer('pq3',this,'wrong')">d. Output encoding validation – ini soal output, bukan input</button>
+      </div>
+      <div class="explanation" id="pq3-exp">
+        <div class="callout-success mt-3 text-xs">
+          <strong>✅ Jawaban: Semantic validation</strong><br><br>
+          "30-02-2000" secara FORMAT (syntactic) bisa diterima: tiga angka dipisah tanda hubung. Tapi secara makna/logika (semantic): Februari tidak pernah punya 30 hari → gagal semantic validation.<br><br>
+          <strong>Analogi:</strong><br>
+          • Syntactic: apakah kalimatnya pakai tata bahasa yang benar?<br>
+          • Semantic: apakah kalimatnya masuk akal artinya?<br><br>
+          "Colorless green ideas sleep furiously" → ✅ Syntactic (grammatically correct) ❌ Semantic (tidak masuk akal)
+        </div>
+      </div>
+    </div>
+
+    <!-- P4 -->
+    <div class="card p-5" id="pq4">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="badge badge-accent">CSRF</span>
+        <span class="badge badge-wrong">Quiz 7</span>
+      </div>
+      <p class="font-semibold mb-3 text-sm">User A sedang login di bank.com. Penyerang mengirimkan link ke A yang ketika diklik, secara diam-diam melakukan transfer. Apa yang membuat serangan ini berhasil?</p>
+      <div class="space-y-2" id="pq4-opts">
+        <button class="option-btn" onclick="checkAnswer('pq4',this,'wrong')">a. Penyerang mencuri password User A terlebih dahulu</button>
+        <button class="option-btn" onclick="checkAnswer('pq4',this,'wrong')">b. Server bank.com tidak menggunakan HTTPS</button>
+        <button class="option-btn" onclick="checkAnswer('pq4',this,'correct')">c. Browser User A otomatis menyertakan session cookie bank.com pada setiap request ke bank.com</button>
+        <button class="option-btn" onclick="checkAnswer('pq4',this,'wrong')">d. Penyerang menyuntikkan script ke halaman bank.com</button>
+      </div>
+      <div class="explanation" id="pq4-exp">
+        <div class="callout-success mt-3 text-xs">
+          <strong>✅ Jawaban: Browser otomatis sertakan cookie</strong><br><br>
+          Inilah inti dari CSRF (Cross-Site Request Forgery):<br>
+          Browser selalu mengirimkan cookie yang relevan ke domain tujuan, TERMASUK jika request berasal dari situs lain. Penyerang tidak perlu tahu isi cookie – mereka hanya perlu membuat browser korban mengirimkan request ke target.<br><br>
+          <strong>Mitigasi utama:</strong><br>
+          • Anti-CSRF token (server generate token unik, embed di form, verifikasi saat submit)<br>
+          • SameSite=Strict cookie flag (browser tidak kirim cookie untuk cross-site request)<br>
+          • Verifikasi Referrer/Origin header<br><br>
+          Note: Opsi d adalah deskripsi XSS, bukan CSRF.
+        </div>
+      </div>
+    </div>
+
+    <!-- P5 -->
+    <div class="card p-5" id="pq5">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="badge badge-accent">Attack Tree</span>
+        <span class="badge badge-purple">Quiz 4</span>
+      </div>
+      <p class="font-semibold mb-3 text-sm">Untuk mengeksfiltrasi data dari server, penyerang HARUS: (1) mendapatkan akses jaringan internal, DAN (2) bypass firewall database. Struktur node dalam attack tree?</p>
+      <div class="space-y-2" id="pq5-opts">
+        <button class="option-btn" onclick="checkAnswer('pq5',this,'wrong')">a. OR node – salah satu langkah sudah cukup</button>
+        <button class="option-btn" onclick="checkAnswer('pq5',this,'correct')">b. AND node – semua langkah harus terpenuhi</button>
+        <button class="option-btn" onclick="checkAnswer('pq5',this,'wrong')">c. Root node – ini adalah goal utama</button>
+        <button class="option-btn" onclick="checkAnswer('pq5',this,'wrong')">d. Leaf node – ini adalah aksi primitif terbawah</button>
+      </div>
+      <div class="explanation" id="pq5-exp">
+        <div class="callout-success mt-3 text-xs">
+          <strong>✅ Jawaban: AND node</strong><br><br>
+          AND node digunakan ketika SEMUA kondisi/langkah anak harus terpenuhi untuk mencapai tujuan parent.<br><br>
+          Kata kunci yang menandakan AND node: "harus", "dan", "both", "requires all"<br>
+          Kata kunci yang menandakan OR node: "atau", "salah satu", "any of", "either"<br><br>
+          <strong>Visual mental model:</strong><br>
+          AND node: parent ← [child1] ∧ [child2]  (keduanya wajib)<br>
+          OR node:  parent ← [child1] ∨ [child2]  (salah satu cukup)
+        </div>
+      </div>
+    </div>
+
+    <!-- P6 -->
+    <div class="card p-5" id="pq6">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="badge badge-accent">XSS</span>
+        <span class="badge badge-wrong">Quiz 7</span>
+      </div>
+      <p class="font-semibold mb-3 text-sm">Sebuah website menampilkan nama pengguna langsung dari database: <code class="text-yellow-300">&lt;h1&gt;Halo, &lt;?= $username ?&gt;!&lt;/h1&gt;</code>. Penyerang mendaftarkan dengan nama: <code class="text-red-300">&lt;script&gt;alert(1)&lt;/script&gt;</code>. Serangan apa ini dan bagaimana mitigasinya?</p>
+      <div class="space-y-2" id="pq6-opts">
+        <button class="option-btn" onclick="checkAnswer('pq6',this,'wrong')">a. SQL Injection – gunakan parameterized queries</button>
+        <button class="option-btn" onclick="checkAnswer('pq6',this,'correct')">b. Stored XSS – gunakan output encoding/escaping (htmlspecialchars)</button>
+        <button class="option-btn" onclick="checkAnswer('pq6',this,'wrong')">c. CSRF – gunakan anti-CSRF token</button>
+        <button class="option-btn" onclick="checkAnswer('pq6',this,'wrong')">d. Session Fixation – regenerate session ID setelah login</button>
+      </div>
+      <div class="explanation" id="pq6-exp">
+        <div class="callout-success mt-3 text-xs">
+          <strong>✅ Jawaban: Stored XSS</strong><br><br>
+          Ini adalah Stored (Persistent) XSS: script berbahaya disimpan ke database, dan dieksekusi setiap kali halaman dimuat oleh korban manapun.<br><br>
+          <strong>Jenis XSS:</strong><br>
+          • Stored: payload tersimpan di database, dieksekusi setiap load<br>
+          • Reflected: payload di URL, dieksekusi sekali saat klik link<br>
+          • DOM-based: terjadi di client-side JavaScript<br><br>
+          <strong>Mitigasi:</strong><br>
+          <code>htmlspecialchars($username, ENT_QUOTES, 'UTF-8')</code><br>
+          Mengubah &lt; → &amp;lt; dan &gt; → &amp;gt; sehingga tidak diinterpretasi sebagai HTML tag.<br><br>
+          Content-Security-Policy juga membantu dengan membatasi sumber script yang diizinkan.
+        </div>
+      </div>
+    </div>
+
+    <!-- P7 -->
+    <div class="card p-5" id="pq7">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="badge badge-accent">OAuth & Auth</span>
+        <span class="badge badge-amber">Quiz 5</span>
+      </div>
+      <p class="font-semibold mb-3 text-sm">Saat kamu login dengan Google di aplikasi pihak ketiga (misalnya Spotify), proses apa yang sebenarnya terjadi?</p>
+      <div class="space-y-2" id="pq7-opts">
+        <button class="option-btn" onclick="checkAnswer('pq7',this,'wrong')">a. Spotify menerima password Google-mu untuk diverifikasi</button>
+        <button class="option-btn" onclick="checkAnswer('pq7',this,'wrong')">b. Google hanya memberikan otorisasi, tidak ada autentikasi</button>
+        <button class="option-btn" onclick="checkAnswer('pq7',this,'correct')">c. Google melakukan autentikasi (siapa kamu) lalu memberikan token otorisasi ke Spotify (apa yang boleh diakses)</button>
+        <button class="option-btn" onclick="checkAnswer('pq7',this,'wrong')">d. Spotify menyimpan token Google-mu secara permanen tanpa expiry</button>
+      </div>
+      <div class="explanation" id="pq7-exp">
+        <div class="callout-success mt-3 text-xs">
+          <strong>✅ Jawaban: Autentikasi + Otorisasi via Google</strong><br><br>
+          Alur OAuth 2.0 + OIDC:<br>
+          1. Kamu klik "Login with Google" di Spotify<br>
+          2. Redirect ke Google → <strong>autentikasi</strong> (verifikasi email + password)<br>
+          3. Google minta konfirmasi: "Izinkan Spotify akses profil & email?"<br>
+          4. Kamu setuju → Google beri <strong>authorization code</strong> ke Spotify<br>
+          5. Spotify tukar code dengan <strong>access token</strong> + <strong>ID token</strong><br>
+          6. ID token berisi info siapa kamu → Spotify tahu kamu siapa<br><br>
+          Spotify TIDAK PERNAH tahu password Google-mu. Ini prinsip inti OAuth: delegasi akses tanpa berbagi credential.
+        </div>
+      </div>
+    </div>
+
+    <!-- P8 -->
+    <div class="card p-5" id="pq8">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="badge badge-accent">Security Headers</span>
+        <span class="badge badge-wrong">Quiz 7</span>
+      </div>
+      <p class="font-semibold mb-3 text-sm">Pasangkan security header dengan fungsinya yang tepat. Header manakah yang KHUSUS melindungi dari serangan Clickjacking?</p>
+      <div class="space-y-2" id="pq8-opts">
+        <button class="option-btn" onclick="checkAnswer('pq8',this,'wrong')">a. Content-Security-Policy – whitelist sumber konten</button>
+        <button class="option-btn" onclick="checkAnswer('pq8',this,'wrong')">b. HTTP Strict Transport Security – paksa HTTPS</button>
+        <button class="option-btn" onclick="checkAnswer('pq8',this,'correct')">c. X-Frame-Options: DENY – cegah loading halaman dalam &lt;iframe&gt;</button>
+        <button class="option-btn" onclick="checkAnswer('pq8',this,'wrong')">d. HttpOnly cookie flag – cegah JS baca cookie</button>
+      </div>
+      <div class="explanation" id="pq8-exp">
+        <div class="callout-success mt-3 text-xs">
+          <strong>✅ Jawaban: X-Frame-Options: DENY</strong><br><br>
+          Clickjacking bekerja dengan menyembunyikan halaman target dalam iframe transparan di atas halaman palsu. Korban mengira klik tombol di halaman palsu, padahal kliknya "diteruskan" ke tombol di halaman target.<br><br>
+          <strong>X-Frame-Options: DENY</strong> mencegah browser memuat halaman tersebut dalam frame/iframe apapun.<br><br>
+          <strong>Alternatif modern:</strong> CSP dengan directive <code>frame-ancestors 'none'</code><br><br>
+          <strong>Ringkasan semua header:</strong><br>
+          • CSP → cegah XSS (whitelist script sources)<br>
+          • HSTS → cegah MITM downgrade ke HTTP<br>
+          • X-Frame-Options → cegah Clickjacking<br>
+          • HttpOnly → cegah XSS steal cookie via JS
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end practice-container -->
+
+  <div class="mt-6 flex gap-3 flex-wrap">
+    <button onclick="resetPractice()" class="px-5 py-2 rounded-lg text-sm font-bold" style="background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);color:var(--accent)">🔄 Reset Semua Soal</button>
+  </div>
+</div>
+
+<!-- ==================== REFERENCES ==================== -->
+<div class="mt-10 card p-6">
+  <h2 class="text-xl font-extrabold mb-4">📚 References & Materi Dasar</h2>
+  <div class="grid md:grid-cols-2 gap-4">
+
+    <div class="card2 p-4">
+      <p class="text-xs font-bold text-accent mb-2">Quiz 4 – Threat Modeling</p>
+      <ul class="text-xs space-y-1 text-muted list-disc list-inside">
+        <li>STRIDE Threat Model – Microsoft SDL</li>
+        <li>DREAD Risk Assessment Model</li>
+        <li>Data Flow Diagrams (DFD) – Yourdon notation</li>
+        <li>Attack Trees – Bruce Schneier (1999)</li>
+        <li>Trust Boundaries dalam sistem terdistribusi</li>
+        <li>CIA Triad (Confidentiality, Integrity, Availability)</li>
+      </ul>
+    </div>
+
+    <div class="card2 p-4">
+      <p class="text-xs font-bold text-amber-300 mb-2">Quiz 5 – Authentication & Authorization</p>
+      <ul class="text-xs space-y-1 text-muted list-disc list-inside">
+        <li>Authentication Factors: Knowledge, Possession, Inherence</li>
+        <li>Multi-Factor Authentication (NIST SP 800-63B)</li>
+        <li>OAuth 2.0 RFC 6749</li>
+        <li>OpenID Connect (OIDC)</li>
+        <li>RBAC (Role-Based Access Control)</li>
+        <li>Password security: NIST guidelines (length &gt; complexity)</li>
+      </ul>
+    </div>
+
+    <div class="card2 p-4">
+      <p class="text-xs font-bold text-purple-300 mb-2">Quiz 6 – Input Validation & Sanitization</p>
+      <ul class="text-xs space-y-1 text-muted list-disc list-inside">
+        <li>OWASP Input Validation Cheat Sheet</li>
+        <li>SQL Injection Prevention – Parameterized Queries</li>
+        <li>Stack Buffer Overflow & Stack Canaries</li>
+        <li>Heartland Payment Systems Breach (2008)</li>
+        <li>Whitelist vs Blacklist validation</li>
+        <li>Principle of Least Privilege</li>
+        <li>Encryption at rest vs in transit</li>
+      </ul>
+    </div>
+
+    <div class="card2 p-4">
+      <p class="text-xs font-bold text-green-300 mb-2">Quiz 7 – Web Application Vulnerabilities</p>
+      <ul class="text-xs space-y-1 text-muted list-disc list-inside">
+        <li>OWASP Top 10 (2021)</li>
+        <li>XSS: Stored, Reflected, DOM-based</li>
+        <li>CSRF – Cross-Site Request Forgery</li>
+        <li>Session Management (OWASP Cheat Sheet)</li>
+        <li>HTTP Security Headers (MDN Web Docs)</li>
+        <li>Credential Stuffing Attack</li>
+        <li>Clickjacking & X-Frame-Options</li>
+        <li>OWASP Juice Shop (hands-on practice)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout-info mt-4 text-xs">
+    <strong>💡 Rekomendasi Belajar Lanjutan:</strong><br>
+    Praktikkan di <strong>OWASP WebGoat</strong> atau <strong>OWASP Juice Shop</strong> untuk pemahaman hands-on tentang SQLi, XSS, CSRF, dan vulnerability lainnya. Gunakan <strong>Burp Suite Community Edition</strong> untuk intercept dan modify HTTP requests.
+  </div>
+</div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="border-t px-4 py-6 text-center text-xs text-muted" style="border-color:var(--border)">
+  Pengantar Keamanan Perangkat Lunak · PROG. S1 FAK. REGULER · Genap 2025/2026
+</footer>
+
+<script>
+// Tab navigation
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Practice quiz
+let practiceScore = { correct: 0, total: 0, answered: {} };
+
+function checkAnswer(qId, btn, result) {
+  if (practiceScore.answered[qId]) return;
+  practiceScore.answered[qId] = true;
+
+  const opts = document.querySelectorAll(`#${qId}-opts button`);
+  opts.forEach(b => {
+    b.disabled = true;
+    if (b === btn) {
+      b.classList.add(result === 'correct' ? 'correct-ans' : 'wrong-ans');
+      b.innerHTML = (result === 'correct' ? '✅ ' : '❌ ') + b.innerHTML;
+    }
+  });
+
+  // If wrong, highlight correct
+  if (result === 'wrong') {
+    opts.forEach(b => {
+      if (b.onclick && b.onclick.toString().includes("'correct'")) {
+        b.classList.add('correct-ans');
+      }
+    });
+    practiceScore.total++;
+  } else {
+    practiceScore.correct++;
+    practiceScore.total++;
+  }
+
+  // Show explanation
+  const exp = document.getElementById(qId + '-exp');
+  if (exp) {
+    exp.classList.add('shown');
+  }
+
+  updateScore();
+}
+
+function updateScore() {
+  const circle = document.getElementById('score-circle');
+  const text = document.getElementById('score-text');
+  if (circle) {
+    circle.textContent = `${practiceScore.correct}/${practiceScore.total}`;
+    const pct = practiceScore.total > 0 ? (practiceScore.correct / practiceScore.total * 100) : 0;
+    if (pct >= 70) {
+      circle.style.color = '#34d399';
+      circle.style.borderColor = '#10b981';
+      circle.style.background = 'rgba(16,185,129,0.15)';
+    } else {
+      circle.style.color = '#f87171';
+      circle.style.borderColor = '#ef4444';
+      circle.style.background = 'rgba(239,68,68,0.15)';
+    }
+  }
+  if (text) {
+    text.textContent = `${practiceScore.total} soal dijawab, ${practiceScore.correct} benar`;
+  }
+  document.getElementById('practice-score').style.display = 'flex';
+}
+
+function resetPractice() {
+  practiceScore = { correct: 0, total: 0, answered: {} };
+  
+  const allOpts = document.querySelectorAll('.option-btn');
+  allOpts.forEach(btn => {
+    btn.disabled = false;
+    btn.classList.remove('correct-ans', 'wrong-ans');
+    // Remove ✅/❌ prefix
+    btn.innerHTML = btn.innerHTML.replace(/^[✅❌]\s/, '');
+  });
+
+  document.querySelectorAll('.explanation').forEach(e => e.classList.remove('shown'));
+  document.getElementById('practice-score').style.display = 'none';
+}
+
+// Init Lucide icons
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.lucide) lucide.createIcons();
+});
+</script>
+</body>
+</html>

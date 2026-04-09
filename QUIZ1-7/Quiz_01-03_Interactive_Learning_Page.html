@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PKPL Quiz 1–3 – Interactive Learning</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #1a1e27;
+    --border: #252b38;
+    --accent: #06b6d4;
+    --accent2: #8b5cf6;
+    --accent3: #f59e0b;
+    --correct: #10b981;
+    --wrong: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; }
+  code, pre, .mono { font-family: 'Space Mono', monospace; }
+  
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--surface); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Nav */
+  .nav-tab { transition: all 0.2s; border-bottom: 2px solid transparent; }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-tab:not(.active) { color: var(--muted); }
+  .nav-tab:hover:not(.active) { color: var(--text); }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; }
+  .card2 { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; }
+
+  /* Soal boxes */
+  .q-correct { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.35); border-radius: 8px; }
+  .q-wrong { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; }
+  .q-neutral { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; }
+
+  /* Practice */
+  .option-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.18s; text-align: left; width: 100%; padding: 10px 14px; color: var(--text); font-family: 'Syne', sans-serif; }
+  .option-btn:hover:not(:disabled) { border-color: var(--accent); background: rgba(6,182,212,0.07); }
+  .option-btn.correct-ans { background: rgba(16,185,129,0.15); border-color: var(--correct); color: #6ee7b7; }
+  .option-btn.wrong-ans { background: rgba(239,68,68,0.15); border-color: var(--wrong); color: #fca5a5; }
+
+  /* Badge */
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+  .badge-correct { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+  .badge-wrong { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+  .badge-accent { background: rgba(6,182,212,0.1); color: var(--accent); border: 1px solid rgba(6,182,212,0.25); }
+  .badge-purple { background: rgba(124,58,237,0.15); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+  .badge-amber { background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+
+  /* Callout */
+  .callout-info { background: rgba(6,182,212,0.06); border-left: 3px solid var(--accent); padding: 12px 16px; border-radius: 0 8px 8px 0; }
+  .callout-warn { background: rgba(245,158,11,0.07); border-left: 3px solid var(--accent3); padding: 12px 16px; border-radius: 0 8px 8px 0; }
+
+  /* Section */
+  .section { display: none; }
+  .section.active { display: block; }
+  .explanation { display: none; margin-top: 10px; }
+  .explanation.shown { display: block; }
+
+  .top-bar { height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3)); }
+  nav { position: sticky; top: 0; z-index: 50; background: rgba(10,12,16,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+  pre { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; padding: 14px; overflow-x: auto; font-size: 13px; }
+  .kw { color: #ff7b72; } .fn { color: #d2a8ff; } .str { color: #a5d6ff; } .num { color: #79c0ff; }
+  .score-circle { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; }
+</style>
+</head>
+<body>
+<div class="top-bar"></div>
+
+<header class="px-4 py-8 md:px-10 max-w-5xl mx-auto">
+  <p class="text-xs tracking-widest text-[#64748b] mb-1 mono uppercase">PKPL Interactive Portal</p>
+  <h1 class="text-3xl md:text-4xl font-extrabold leading-tight">Quiz 1–3 <span class="text-[#06b6d4]">Learning</span> Hub</h1>
+  <p class="text-muted mt-2 text-sm">Security Principles · UML & OCL · Secure Dynamic Modeling</p>
+</header>
+
+<nav class="px-4 md:px-10 max-w-5xl mx-auto">
+  <div class="flex gap-2 overflow-x-auto">
+    <button onclick="showSection('q1')" class="nav-tab active px-4 py-3 text-sm font-semibold whitespace-nowrap" id="tab-q1">🛡 Quiz 1</button>
+    <button onclick="showSection('q2')" class="nav-tab px-4 py-3 text-sm font-semibold whitespace-nowrap" id="tab-q2">📐 Quiz 2</button>
+    <button onclick="showSection('q3')" class="nav-tab px-4 py-3 text-sm font-semibold whitespace-nowrap" id="tab-q3">⚙ Quiz 3</button>
+    <button onclick="showSection('practice')" class="nav-tab px-4 py-3 text-sm font-semibold whitespace-nowrap" id="tab-practice">🎯 Practice Suite</button>
+  </div>
+</nav>
+
+<main class="px-4 md:px-10 max-w-5xl mx-auto pb-20 pt-6">
+
+  <!-- ==================== QUIZ 1 ==================== -->
+  <div id="section-q1" class="section active">
+    <!-- Quiz 1 Content -->
+    <div class="mb-6">
+      <span class="badge badge-accent">Security Principles</span>
+      <h2 class="text-2xl font-extrabold mt-2">Prinsip Keamanan, CIA Triad & SSDLC</h2>
+    </div>
+    <div id="q1-list" class="space-y-4 mb-10"></div>
+    
+    <div class="card p-6 mb-10">
+      <h3 class="text-lg font-bold mb-4 text-[#06b6d4]">🧠 Conceptual Deep Dive Q1</h3>
+      <div id="q1-concepts" class="grid md:grid-cols-2 gap-4"></div>
+    </div>
+  </div>
+
+  <!-- ==================== QUIZ 2 ==================== -->
+  <div id="section-q2" class="section">
+    <div class="mb-6">
+      <span class="badge badge-purple">Secure Functional Model</span>
+      <h2 class="text-2xl font-extrabold mt-2">UML Security: Stereotypes, OCL & Relationships</h2>
+    </div>
+    <div id="q2-list" class="space-y-4 mb-10"></div>
+
+    <div class="card p-6 mb-10">
+      <h3 class="text-lg font-bold mb-4 text-[#8b5cf6]">🧠 Conceptual Deep Dive Q2</h3>
+      <div id="q2-concepts" class="grid md:grid-cols-2 gap-4"></div>
+    </div>
+  </div>
+
+  <!-- ==================== QUIZ 3 ==================== -->
+  <div id="section-q3" class="section">
+    <div class="mb-6">
+      <span class="badge badge-amber">Secure Dynamic Model</span>
+      <h2 class="text-2xl font-extrabold mt-2">OCL Constraints & Dynamic Flow Analysis</h2>
+    </div>
+    <div id="q3-list" class="space-y-4 mb-10"></div>
+
+    <div class="card p-6 mb-10">
+      <h3 class="text-lg font-bold mb-4 text-[#f59e0b]">🧠 Conceptual Deep Dive Q3</h3>
+      <div id="q3-concepts" class="grid md:grid-cols-2 gap-4"></div>
+    </div>
+  </div>
+
+  <!-- ==================== PRACTICE ==================== -->
+  <div id="section-practice" class="section">
+    <div class="mb-8">
+      <h2 class="text-2xl font-extrabold">🎯 Practice Suite (Q1–Q3)</h2>
+      <p class="text-muted text-sm mt-1">Uji pemahamanmu sebelum UTS dengan soal-soal interaktif ini.</p>
+    </div>
+
+    <div id="practice-score" class="flex items-center gap-6 mb-10 card p-6" style="display:none">
+      <div id="score-circle" class="score-circle"></div>
+      <div>
+        <h4 class="font-bold">Hasil Latihan</h4>
+        <p id="score-text" class="text-sm text-muted"></p>
+        <button onclick="resetPractice()" class="mt-2 text-xs font-bold text-[#06b6d4] hover:underline">Ulangi Latihan</button>
+      </div>
+    </div>
+
+    <div id="practice-list" class="space-y-6"></div>
+  </div>
+
+</main>
+
+<script>
+// Tab Logic
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Data
+const q1Data = [
+  {q:"Ransomware yang mengenkripsi seluruh file organisasi terutama mempengaruhi aspek:",a:"Availability dan Integrity"},
+  {q:"Akar penyebab paling umum dari injection attack adalah kegagalan dalam:",a:"Validasi input dan sanitasi data"},
+  {q:"Code review dalam Secure SDLC terutama bertujuan untuk:",a:"Mendeteksi kerentanan sebelum aplikasi diproduksi"},
+  {q:"Tujuan utama threat modeling dalam SDLC adalah:",a:"Mengidentifikasi dan memitigasi ancaman sejak tahap desain"},
+  {q:"Security posture suatu organisasi paling tepat menggambarkan:",a:"Tingkat kesiapan dan efektivitas kontrol keamanan"},
+  {q:"Control atau safeguard dalam keamanan informasi bertujuan untuk:",a:"Mengurangi kemungkinan atau dampak risiko"},
+  {q:"Prinsip economy of mechanism menyarankan bahwa:",a:"Mekanisme keamanan harus sederhana dan sekecil mungkin"},
+  {q:"Mengurangi jumlah endpoint API publik yang tidak digunakan bertujuan untuk:",a:"Mengurangi exposure sistem"},
+  {q:"Jika sistem gagal dan secara otomatis memberikan akses penuh, prinsip apa yang dilanggar?",a:"Fail-safe defaults"},
+  {q:"Prinsip separation of privilege menekankan bahwa:",a:"Akses kritis sebaiknya membutuhkan lebih dari satu kondisi atau otorisasi"},
+  {q:"Sistem keamanan yang terlalu kompleks cenderung:",a:"Lebih rentan terhadap kesalahan implementasi"},
+  {q:"Penggunaan TLS dalam komunikasi jaringan terutama bertujuan untuk:",a:"Menjamin kerahasiaan dan integritas data selama transmisi"},
+  {q:"Penerapan prinsip least privilege berarti:",a:"Pengguna hanya diberikan hak akses minimum yang diperlukan"},
+  {q:"Enkripsi data yang disimpan di database bertujuan melindungi jika:",a:"Media penyimpanan dicuri atau diakses tanpa izin"},
+  {q:"Prinsip psychological acceptability menyatakan bahwa kontrol keamanan harus:",a:"Mudah digunakan agar tidak mendorong pengguna menghindarinya"},
+  {q:"Manakah praktik terbaik dalam manajemen sesi?",a:"Menggunakan session ID acak yang panjang dan via HTTPS"},
+  {q:"Perbedaan paling tepat antara exposure dan loss adalah:",a:"Exposure = terpaparnya aset, loss = kerugian aktual"},
+  {q:"Jika serangan berhasil karena tidak ada segmentasi jaringan publik dan DB internal, prinsip yang gagal adalah:",a:"Defense in Depth"},
+  {q:"Dalam konteks keamanan informasi, threat agent adalah:",a:"Entitas yang memiliki kemampuan dan niat eksploitasi"}
+];
+
+const q2Data = [
+  {q:"Audit trail berkaitan dengan security goal:",a:"Accountability"},
+  {q:"Relasi Aggregation berbeda dari Composition karena:",a:"Pada aggregation, bagian dapat eksis tanpa keseluruhan"},
+  {q:"Dalam OCL, kata kunci 'self' merujuk pada:",a:"Objek dalam konteks saat ini"},
+  {q:"Relasi <<include>> dalam use case diagram menunjukkan bahwa:",a:"Use case selalu menyertakan use case lain"},
+  {q:"Relasi Composition dalam class diagram menunjukkan bahwa:",a:"Bagian sangat bergantung pada keseluruhan (siklus hidup terikat)"},
+  {q:"Security goal Integrity berarti:",a:"Data tidak dapat diubah tanpa izin"},
+  {q:"Countermeasure dalam misuse case modeling berfungsi untuk:",a:"Mengurangi atau mencegah ancaman"},
+  {q:"Stereotype dalam UML ditulis dalam format:",a:"<<stereotype>>"},
+  {q:"Secure functional model bertujuan untuk:",a:"Mengintegrasikan keamanan ke dalam perilaku sistem sejak desain"},
+  {q:"Stereotype <<sensitive>> biasanya diberikan pada:",a:"Atribut yang menyimpan data sensitif"},
+  {q:"Threat-driven modeling berarti:",a:"Memulai dari ancaman dan tujuan penyerang"},
+  {q:"Stereotype tanpa constraint tambahan berarti:",a:"Hanya label semantik"},
+  {q:"Relasi <<extend>> digunakan ketika:",a:"Use case bersifat tambahan dan kondisional"},
+  {q:"SQL Injection terutama mengancam:",a:"Integrity dan Confidentiality"},
+  {q:"SDLC secure functional model memiliki sifat:",a:"Preventif"},
+  {q:"Stereotype kelas pengelola kriptografi:",a:"<<crypto>>"},
+  {q:"Aktor pendukung non-human (contoh: Payment Gateway) adalah:",a:"Supporting non-human actor"},
+  {q:"Non-functional requirement berkaitan dengan kualitas/performa:",a:"Sistem mampu memproses 1000 transaksi per menit"}
+];
+
+const q3Data = [
+  {q:"Jika addPayment dipanggil saat status Order = 'Confirmed' (pre: status = 'Pending'), maka:",a:"Operasi harus ditolak karena precondition tidak terpenuhi"},
+  {q:"Jika status Payment = 'Success' tapi Order tetap 'Pending' (post: Success implies Confirmed), maka:",a:"Postcondition dilanggar"},
+  {q:"Jika isAuthenticated = true padahal password 6 char (pre: >= 12), maka:",a:"Pelanggaran precondition dan postcondition"},
+  {q:"Jika confirm() dikirim async sebelum payment.process selesai, maka risiko desain:",a:"Precondition dapat gagal karena status payment belum berubah"},
+  {q:"Stereotype <<confidential>> pada message tanpa enkripsi berarti:",a:"Stereotype hanya anotasi desain dan tidak menjamin keamanan"},
+  {q:"Inkonsistensi antara stereotype <<authenticated>> dan OCL tanpa check auth:",a:"Terdapat inkonsistensi antara anotasi dan constraint formal"},
+  {q:"Activation bar pada sequence diagram menunjukkan:",a:"Durasi objek sedang memproses pesan"},
+  {q:"Authentication dilakukan setelah payment diproses, kelemahan:",a:"Kontrol akses diterapkan setelah aksi kritis terjadi"},
+  {q:"Destroy message ditandai dengan:",a:"Simbol X pada lifeline"},
+  {q:"Dynamic model + unsur keamanan bertujuan:",a:"Identifikasi kontrol hilang dan ancaman saat interaksi"},
+  {q:"Encapsulation bertujuan:",a:"Menyembunyikan detail internal dan melindungi state objek"},
+  {q:"Final node activity diagram:",a:"Lingkaran dengan titik di dalamnya"},
+  {q:"Fork node menunjukkan:",a:"Eksekusi paralel beberapa aktivitas"},
+  {q:"Error branch tanpa logging berimplikasi:",a:"Sulit melakukan audit dan forensic analysis"},
+  {q:"Postcondition ticket.status = 'Sold' tapi tetap 'Available':",a:"Pelanggaran postcondition"},
+  {q:"Sistem memiliki state diagram valid tapi sequence diagram melewatinya:",a:"Inkonsistensi antara model statis dan dinamis"},
+  {q:"Self-call rekursif sequence diagram:",a:"Loopback arrow dengan activation bar tambahan"},
+  {q:"Tidak adanya error handling menyebabkan:",a:"Silent failure dan inkonsistensi state"}
+];
+
+const practiceData = [
+  {q:"Database server bisa diakses langsung dari internet karena tidak ada segmentasi jaringan. Prinsip apa yang gagal?",o:["Least Privilege","Economy of Mechanism","Fail-Safe Defaults","Defense in Depth"],a:3,exp:"Defense in Depth menekankan perlindungan berlapis. Segmentasi jaringan memisahkan area publik (Internet/Web) dari area internal (Database)."},
+  {id:"p2",q:"Dalam OCL, jika Precondition GAGAL tapi sistem tetap mengeksekusi method dan mengubah state. Apa pelanggarannya?",o:["Hanya Precondition","Hanya Postcondition","Precondition dan Postcondition","Bukan pelanggaran"],a:2,exp:"Jika PRE gagal, operasi harus ditolak. Jika dijalankan, PRE dilanggar. Karena state berubah dari operasi ilegal, POST juga dilanggar."},
+  {q:"Sistem auto-logout user setelah 5 menit idle. Mitigasi serangan apa ini?",o:["SQL Injection","Session Hijacking","Ransomware","XSS"],a:1,exp:"Auto-logout mencegah sesi yang dibiarkan terbuka (idle) digunakan oleh orang lain (hijacking/unauthorized access)."},
+  {q:"Google prompt 'Pilih angka ini di HP anda' untuk login komputer baru. Faktor autentikasi apa ini?",o:["What you Know","What you Have","What you Are","Salah semua"],a:1,exp:"Google prompt membuktikan kamu MENGUASAI perangkat tersebut. Ini adalah Possession factor (What you have)."},
+  {q:"'Setiap aksi user di sistem dicatat dengan IP, Waktu, dan Detail'. Goal keamanan apa ini?",o:["Integrity","Accountability","Availability","Confidentiality"],a:1,exp:"Kemampuan melacak siapa melakukan apa adalah Accountability (lewat Audit Trail)."},
+  {q:"User enroll ke kuliah di SCELE (setelah login). Mekanisme apa yang digunakan?",o:["Otorisasi saja","Autentikasi saja","Autentikasi dan Otorisasi","Whitelist"],a:1,exp:"Di SCELE, saat klik enroll biasanya hanya dicek apakah kamu sudah login (autentikasi), tanpa cek role khusus (otorisasi)."},
+  {q:"Composition (◆) pada UML Class Diagram berarti:",o:["Bagian bisa ada tanpa whole","Bagian bergantung pada whole (siklus mati bersama)","Inheritance","Satu arah saja"],a:1,exp:"Composition (diamond hitam) adalah hubungan kuat di mana lifetime part dikelola oleh whole."},
+  {q:"Library Book <<sensitive>> tanpa OCL atau enkripsi terimplementasi. Status keamanan?",o:["Otomatis terenkripsi","Anotasi dokumentasi saja","Tidak boleh diakses","Private"],a:1,exp:"Stereotype hanyalah label semantik untuk dokumentasi desain sebelum diimplementasikan secara kode."},
+  {q:"Fork node vs Decision node di Activity Diagram:",o:["Fork=paralel, Decision=percabangan if","Fork=percabangan, Decision=loop","Keduanya sama","Fork=start, Decision=end"],a:0,exp:"Fork memecah alur menjadi beberapa thread paralel. Decision memilih salah satu alur berdasarkan guard condition."},
+  {q:"Prinsip Secure SDLC yang melakukan validasi keamanan di tahap awal desain disebut:",o:["Test-driven","Shift-left security","Waterfall","Agile"],a:1,exp:"Shift-left berarti membawa aktivitas (seperti keamanan) ke tahap lebih awal agar lebih murah dan mudah diperbaiki."}
+];
+
+// Render Lists
+function renderQuiz(listId, data, colorClass) {
+  const container = document.getElementById(listId);
+  data.forEach((item, idx) => {
+    container.innerHTML += `
+      <div class="q-correct p-4 fade-in">
+        <div class="flex gap-3 items-start">
+          <span class="w-7 h-7 flex items-center justify-center rounded bg-surface2 border border-border text-xs font-bold text-muted">${idx+1}</span>
+          <div class="flex-1">
+            <p class="text-sm font-semibold mb-2">${item.q}</p>
+            <div class="q-neutral px-3 py-2 text-xs font-bold text-[#10b981]">✅ ${item.a}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// Render Concepts
+function renderConcepts(containerId, list) {
+  const container = document.getElementById(containerId);
+}
+
+// Practice Execution
+let practiceState = { answered: {} };
+function renderPractice() {
+  const list = document.getElementById('practice-list');
+  practiceData.forEach((p, idx) => {
+    const qId = `practice-${idx}`;
+    list.innerHTML += `
+      <div class="card p-6" id="${qId}">
+        <div class="flex gap-3 items-start mb-4">
+          <span class="badge badge-amber shrink-0">Latihan ${idx+1}</span>
+          <p class="font-bold text-lg">${p.q}</p>
+        </div>
+        <div class="space-y-2" id="${qId}-opts">
+          ${p.o.map((opt, oi) => `
+            <button onclick="checkAnswer('${qId}', ${oi}, ${p.a}, ${idx})" class="option-btn" id="${qId}-opt-${oi}">${String.fromCharCode(65+oi)}. ${opt}</button>
+          `).join('')}
+        </div>
+        <div id="${qId}-feedback" class="mt-4 p-4 rounded-lg hidden text-sm"></div>
+      </div>
+    `;
+  });
+}
+
+let score = 0;
+function checkAnswer(qId, selected, correct, idx) {
+  if (practiceState.answered[qId]) return;
+  practiceState.answered[qId] = true;
+
+  const buttons = document.querySelectorAll(`#${qId}-opts button`);
+  buttons.forEach(b => b.disabled = true);
+
+  const feedback = document.getElementById(qId + '-feedback');
+  feedback.classList.remove('hidden');
+
+  if (selected === correct) {
+    score++;
+    document.getElementById(`${qId}-opt-${selected}`).classList.add('correct-ans');
+    feedback.innerHTML = `<div class="font-bold text-[#34d399] mb-1">Benar! ✅</div><p class="text-muted leading-relaxed">${practiceData[idx].exp}</p>`;
+    feedback.classList.add('q-correct');
+  } else {
+    document.getElementById(`${qId}-opt-${selected}`).classList.add('wrong-ans');
+    document.getElementById(`${qId}-opt-${correct}`).classList.add('correct-ans');
+    feedback.innerHTML = `<div class="font-bold text-[#ef4444] mb-1">Salah ❌ — Jawaban benar: ${String.fromCharCode(65+correct)}</div><p class="text-muted leading-relaxed">${practiceData[idx].exp}</p>`;
+    feedback.classList.add('q-wrong');
+  }
+  updateScoreUI();
+}
+
+function updateScoreUI() {
+  const total = practiceData.length;
+  const panel = document.getElementById('practice-score');
+  panel.style.display = 'flex';
+  const circle = document.getElementById('score-circle');
+  circle.textContent = `${score}/${total}`;
+  const pct = (score / total) * 100;
+  circle.style.borderColor = pct >= 70 ? '#10b981' : '#ef4444';
+  circle.style.color = pct >= 70 ? '#10b981' : '#ef4444';
+  document.getElementById('score-text').textContent = `${score} dari ${total} soal benar. (${Math.round(pct)}%)`;
+}
+
+function resetPractice() {
+  score = 0;
+  practiceState.answered = {};
+  document.getElementById('practice-list').innerHTML = '';
+  renderPractice();
+  document.getElementById('practice-score').style.display = 'none';
+}
+
+// Init
+renderQuiz('q1-list', q1Data, 'badge-accent');
+renderQuiz('q2-list', q2Data, 'badge-purple');
+renderQuiz('q3-list', q3Data, 'badge-amber');
+renderPractice();
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.lucide) lucide.createIcons();
+});
+</script>
+</body>
+</html>
